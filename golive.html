@@ -4,9 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Canvas - Go Live</title>
 
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -17,102 +18,147 @@
         Canvas
     </div>
 
-    <div class="nav-icons">
+    <div class="top-icons">
         <span>🔍</span>
         <a href="profile.html">👤</a>
     </div>
 
 </header>
 
+
 <main class="container">
 
-    <section class="go-live-header">
-
+    <section class="page-title">
         <h1>🎥 Go Live</h1>
-
         <p>Start streaming to your audience in seconds.</p>
-
     </section>
+
+
+    <!-- CAMERA -->
 
     <section class="camera-section">
 
-        <div class="camera-preview">
+        <div class="camera-box">
 
-            <video id="preview" autoplay muted playsinline></video>
+            <video
+                id="cameraPreview"
+                autoplay
+                muted
+                playsinline>
+            </video>
 
-            <div class="camera-placeholder">
+            <div id="cameraMessage">
                 Camera Preview
             </div>
 
         </div>
 
+
+        <div class="camera-controls">
+
+            <button id="cameraButton">
+                📷 Camera
+            </button>
+
+            <button id="micButton">
+                🎙️ Microphone
+            </button>
+
+        </div>
+
+        <p id="permissionMessage"></p>
+
     </section>
+
+
+    <!-- STREAM FORM -->
 
     <section class="stream-form">
 
-        <label>Stream Title</label>
+        <label for="streamTitle">
+            Stream Title
+        </label>
 
         <input
             type="text"
             id="streamTitle"
             placeholder="Enter stream title">
 
-        <label>Category</label>
+
+        <label for="category">
+            Category
+        </label>
 
         <select id="category">
+
             <option>Gaming</option>
             <option>Music</option>
             <option>Sports</option>
             <option>Education</option>
             <option>Technology</option>
+
         </select>
 
-        <label>Description</label>
+
+        <label for="description">
+            Description
+        </label>
 
         <textarea
             id="description"
             rows="4"
             placeholder="Tell viewers about your stream..."></textarea>
 
-        <label>Thumbnail</label>
 
-        <input type="file" accept="image/*">
+        <label for="thumbnail">
+            Thumbnail
+        </label>
 
-        <button class="start-btn">
+        <input
+            type="file"
+            id="thumbnail"
+            accept="image/*">
+
+
+        <button
+            id="startStreaming"
+            class="start-btn">
+
             🔴 Start Streaming
+
         </button>
 
     </section>
 
 </main>
 
+
 <nav class="bottom-nav">
 
-    <a href="index.html">🏠</a>
+    <a href="watch.html">
+        🏠
+        <span>Home</span>
+    </a>
 
-    <a href="watch.html">📺</a>
+    <a href="stream.html">
+        📺
+        <span>Stream</span>
+    </a>
 
-    <a href="go-live.html" class="active">➕</a>
+    <a href="golive.html" class="active">
+        ➕
+        <span>Go Live</span>
+    </a>
 
-    <a href="profile.html">👤</a>
+    <a href="profile.html">
+        👤
+        <span>Profile</span>
+    </a>
 
 </nav>
 
-<script src="js/script.js"></script>
+
+<script src="input.js"></script>
 
 </body>
-
-</html><!DOCTYPE html>
-<html>
-
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title></title>
-</head>
-
-<body>
-  
-</body>
-
 </html>
