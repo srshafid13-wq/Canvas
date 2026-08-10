@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Canvas - Sign Up</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#ffffff;
+color:#4b3024;
+min-height:100vh;
+}
+
+.container{
+width:100%;
+max-width:450px;
+margin:auto;
+padding:35px 25px;
+}
+
+.logo{
+text-align:center;
+font-size:42px;
+font-weight:bold;
+color:#6F4E37;
+margin-bottom:10px;
+}
+
+.subtitle{
+text-align:center;
+color:#777;
+margin-bottom:30px;
+}
+
+.form-group{
+margin-bottom:18px;
+}
+
+label{
+display:block;
+font-weight:bold;
+margin-bottom:7px;
+}
+
+input{
+width:100%;
+padding:14px;
+border:1px solid #ddd;
+border-radius:12px;
+font-size:16px;
+outline:none;
+background:#fafafa;
+}
+
+input:focus{
+border-color:#D4A017;
+background:#fff;
+}
+
+.password-box{
+position:relative;
+}
+
+.password-box input{
+padding-right:50px;
+}
+
+.show-password{
+position:absolute;
+right:12px;
+top:50%;
+transform:translateY(-50%);
+border:none;
+background:none;
+font-size:18px;
+cursor:pointer;
+}
+
+.button{
+width:100%;
+padding:15px;
+border:none;
+border-radius:12px;
+background:#6F4E37;
+color:white;
+font-size:17px;
+font-weight:bold;
+margin-top:8px;
+cursor:pointer;
+}
+
+.login{
+text-align:center;
+margin-top:22px;
+color:#777;
+}
+
+.login a{
+color:#6F4E37;
+font-weight:bold;
+text-decoration:none;
+}
+
+.message{
+text-align:center;
+margin-top:15px;
+font-size:14px;
+color:#b00020;
+}
+
+.note{
+margin-top:20px;
+font-size:12px;
+color:#999;
+text-align:center;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="logo">
+Canvas
+</div>
+
+<p class="subtitle">
+Create your Canvas account
+</p>
+
+
+<form id="signupForm">
+
+
+<!-- EMAIL -->
+
+<div class="form-group">
+
+<label>
+Email
+</label>
+
+<input
+type="email"
+id="email"
+placeholder="you@example.com"
+required
+>
+
+</div>
+
+
+<!-- USERNAME -->
+
+<div class="form-group">
+
+<label>
+Username
+</label>
+
+<input
+type="text"
+id="username"
+placeholder="@username"
+maxlength="20"
+required
+>
+
+</div>
+
+
+<!-- DISPLAY NAME -->
+
+<div class="form-group">
+
+<label>
+Display name
+</label>
+
+<input
+type="text"
+id="displayName"
+placeholder="Your name"
+maxlength="30"
+required
+>
+
+</div>
+
+
+<!-- PASSWORD -->
+
+<div class="form-group">
+
+<label>
+Password
+</label>
+
+<div class="password-box">
+
+<input
+type="password"
+id="password"
+placeholder="Create a password"
+minlength="8"
+required
+>
+
+<button
+type="button"
+class="show-password"
+onclick="togglePassword('password')"
+>
+👁️
+</button>
+
+</div>
+
+</div>
+
+
+<!-- CONFIRM PASSWORD -->
+
+<div class="form-group">
+
+<label>
+Confirm password
+</label>
+
+<div class="password-box">
+
+<input
+type="password"
+id="confirmPassword"
+placeholder="Enter your password again"
+minlength="8"
+required
+>
+
+<button
+type="button"
+class="show-password"
+onclick="togglePassword('confirmPassword')"
+>
+👁️
+</button>
+
+</div>
+
+</div>
+
+
+<button
+class="button"
+type="submit"
+>
+Create Account
+</button>
+
+
+</form>
+
+
+<p
+class="message"
+id="message"
+></p>
+
+
+<p class="login">
+
+Already have a Canvas account?
+
+<a href="login.html">
+Log in
+</a>
+
+</p>
+
+
+<p class="note">
+Your Canvas account will be connected to secure authentication when the backend is added.
+</p>
+
+</div>
+
+
+<script>
+
+/* SHOW / HIDE PASSWORD */
+
+function togglePassword(id){
+
+const input =
+document.getElementById(id);
+
+if(input.type === "password"){
+
+input.type = "text";
+
+}else{
+
+input.type = "password";
+
+}
+
+}
+
+
+/* CREATE ACCOUNT */
+
+document
+.getElementById("signupForm")
+.addEventListener("submit",function(e){
+
+e.preventDefault();
+
+
+const email =
+document
+.getElementById("email")
+.value
+.trim();
+
+
+const username =
+document
+.getElementById("username")
+.value
+.trim();
+
+
+const displayName =
+document
+.getElementById("displayName")
+.value
+.trim();
+
+
+const password =
+document
+.getElementById("password")
+.value;
+
+
+const confirmPassword =
+document
+.getElementById("confirmPassword")
+.value;
+
+
+const message =
+document
+.getElementById("message");
+
+
+/* CHECK PASSWORD */
+
+if(password.length < 8){
+
+message.textContent =
+"Password must be at least 8 characters.";
+
+return;
+
+}
+
+
+if(password !== confirmPassword){
+
+message.textContent =
+"Passwords do not match.";
+
+return;
+
+}
+
+
+/* FORMAT USERNAME */
+
+let finalUsername =
+username;
+
+if(!finalUsername.startsWith("@")){
+
+finalUsername =
+"@" + finalUsername;
+
+}
+
+
+/* CREATE ACCOUNT */
+
+const account = {
+
+email:email,
+
+username:finalUsername,
+
+displayName:displayName,
+
+password:password
+
+};
+
+
+/*
+TEMPORARY DEVELOPMENT STORAGE
+
+This is only for testing.
+We'll replace this with a real
+secure backend later.
+*/
+
+localStorage.setItem(
+"canvasAccount",
+JSON.stringify(account)
+);
+
+
+/* REMOVE OLD PROFILE */
+
+localStorage.removeItem(
+"canvasProfile"
+);
+
+
+/* ACCOUNT CREATED */
+
+alert(
+"Canvas account created successfully!"
+);
+
+
+/* GO TO LOGIN */
+
+window.location.href =
+"login.html";
+
+});
+
+</script>
+
+</body>
+
+  </html>
