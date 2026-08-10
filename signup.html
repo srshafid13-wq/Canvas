@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Canvas - Sign Up</title>
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Arial,sans-serif;
+}
+
+body{
+  background:#fff;
+  color:#4b3024;
+  min-height:100vh;
+}
+
+.container{
+  width:100%;
+  max-width:450px;
+  margin:auto;
+  padding:35px 25px;
+}
+
+.logo{
+  text-align:center;
+  font-size:42px;
+  font-weight:bold;
+  color:#6F4E37;
+  margin-bottom:10px;
+}
+
+.subtitle{
+  text-align:center;
+  color:#777;
+  margin-bottom:30px;
+}
+
+.form-group{
+  margin-bottom:18px;
+}
+
+label{
+  display:block;
+  font-weight:bold;
+  margin-bottom:7px;
+}
+
+input{
+  width:100%;
+  padding:14px;
+  border:1px solid #ddd;
+  border-radius:12px;
+  font-size:16px;
+  outline:none;
+  background:#fafafa;
+}
+
+input:focus{
+  border-color:#D4A017;
+  background:#fff;
+}
+
+.button{
+  width:100%;
+  padding:15px;
+  border:none;
+  border-radius:12px;
+  background:#6F4E37;
+  color:white;
+  font-size:17px;
+  font-weight:bold;
+  margin-top:8px;
+  cursor:pointer;
+}
+
+.login{
+  text-align:center;
+  margin-top:22px;
+  color:#777;
+}
+
+.login a{
+  color:#6F4E37;
+  font-weight:bold;
+  text-decoration:none;
+}
+
+.note{
+  margin-top:20px;
+  font-size:12px;
+  color:#999;
+  text-align:center;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="logo">Canvas</div>
+
+  <p class="subtitle">Create your Canvas account</p>
+
+  <form id="signupForm">
+
+    <div class="form-group">
+      <label>Email</label>
+      <input
+        type="email"
+        id="email"
+        placeholder="you@example.com"
+        required
+      >
+    </div>
+
+    <div class="form-group">
+      <label>Username</label>
+      <input
+        type="text"
+        id="username"
+        placeholder="@username"
+        maxlength="20"
+        required
+      >
+    </div>
+
+    <div class="form-group">
+      <label>Display name</label>
+      <input
+        type="text"
+        id="displayName"
+        placeholder="Your name"
+        maxlength="30"
+        required
+      >
+    </div>
+
+    <div class="form-group">
+      <label>Password</label>
+      <input
+        type="password"
+        id="password"
+        placeholder="Create a password"
+        minlength="8"
+        required
+      >
+    </div>
+
+    <div class="form-group">
+      <label>Confirm password</label>
+      <input
+        type="password"
+        id="confirmPassword"
+        placeholder="Enter your password again"
+        minlength="8"
+        required
+      >
+    </div>
+
+    <button class="button" type="submit">
+      Create Account
+    </button>
+
+  </form>
+
+  <p class="login">
+    Already have an account?
+    <a href="login.html">Log in</a>
+  </p>
+
+  <p class="note">
+    Canvas account authentication will later be connected
+    to a secure backend.
+  </p>
+
+</div>
+
+<script>
+
+document.getElementById("signupForm").addEventListener("submit", function(e){
+
+  e.preventDefault();
+
+  const email =
+    document.getElementById("email").value.trim();
+
+  const username =
+    document.getElementById("username").value.trim();
+
+  const displayName =
+    document.getElementById("displayName").value.trim();
+
+  const password =
+    document.getElementById("password").value;
+
+  const confirmPassword =
+    document.getElementById("confirmPassword").value;
+
+
+  if(password !== confirmPassword){
+
+    alert("Passwords do not match.");
+    return;
+
+  }
+
+
+  if(password.length < 8){
+
+    alert("Password must be at least 8 characters.");
+    return;
+
+  }
+
+
+  /*
+    TEMPORARY DEVELOPMENT ONLY.
+
+    This is NOT real secure authentication.
+    We'll replace this with a real backend/database.
+  */
+
+  const account = {
+
+    email: email,
+
+    username: username.startsWith("@")
+      ? username
+      : "@" + username,
+
+    displayName: displayName,
+
+    password: password
+
+  };
+
+
+  localStorage.setItem(
+    "canvasAccount",
+    JSON.stringify(account)
+  );
+
+
+  alert("Canvas account created!");
+
+  window.location.href = "profile.html";
+
+});
+
+</script>
+
+</body>
+</html><!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title></title>
+</head>
+
+<body>
+  
+</body>
+
+        </html>
