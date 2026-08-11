@@ -1,0 +1,472 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Canvas - Watch Live</title><style>
+
+body{
+    background:#FAF9F6;
+    color:#4A3728;
+}
+
+.stream-preview{
+    background:#F3E8D3;
+    border:2px solid #D4A017;
+}
+
+.chat-box{
+    background:#F3E8D3;
+}
+
+.message{
+    background:#ffffff;
+    color:#4A3728;
+}
+
+button{
+    background:#D4A017;
+}
+
+.logo{
+    color:#6F4E37;
+}
+
+.navbar{
+    background:#ffffff;
+}
+
+
+/* CHAT INPUT */
+
+.chat-input-area{
+    display:flex;
+    gap:8px;
+    margin-top:10px;
+}
+
+.chat-input-area input{
+    flex:1;
+    padding:12px;
+    border:1px solid #ddd;
+    border-radius:10px;
+}
+
+
+/* GIFT BUTTON */
+
+.gift-button{
+    width:50px;
+    padding:10px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+
+/* GIFT PANEL */
+
+.gift-panel{
+    display:none;
+    margin-top:12px;
+    padding:15px;
+    background:white;
+    border:1px solid #D4A017;
+    border-radius:15px;
+}
+
+.support-tabs{
+    display:flex;
+    gap:8px;
+    margin:12px 0;
+}
+
+.support-tabs button{
+    flex:1;
+}
+
+
+/* MONEY AND GIFTS */
+
+#moneyOptions,
+#giftOptions{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+}
+
+#moneyOptions button,
+#giftOptions button{
+    background:#FAF9F6;
+    color:#4A3728;
+    border:1px solid #D4A017;
+    border-radius:10px;
+    padding:10px;
+    cursor:pointer;
+}
+
+#giftOptions button{
+    min-width:75px;
+}
+
+
+/* SEND BUTTON */
+
+.send-gift-button{
+    width:100%;
+    margin-top:15px;
+    padding:13px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+</style></head><body><!-- HEADER --><header class="navbar"><div class="logo">
+Canvas
+</div><div class="nav-icons"><span>🔍</span>
+
+<a href="profile.html">
+👤
+</a></div></header><!-- MAIN --><main class="container"><!-- LIVE VIDEO --><div class="stream-preview"><video
+controls
+poster="">
+</video>
+
+</div><!-- STREAM INFO --><h2>
+🎮 Free Fire Ranked
+</h2><p>
+<strong>RafiGaming</strong>
+•
+👀 1,245 Watching
+</p><button>
+❤️ Follow
+</button><!-- CHAT --><section class="chat-box"><h3>
+💬 Live Chat
+</h3><div class="message"><b>Alpha:</b>
+Great gameplay! 🔥
+
+</div><div class="message"><b>Nova:</b>
+Let's go! 🚀
+
+</div><div class="message"><b>Shadow:</b>
+Win this match! 🎯
+
+</div><!-- CHAT INPUT --><div class="chat-input-area"><input
+type="text"
+id="chatInput"
+placeholder="Type a message..."
+
+«»
+
+<button
+class="gift-button"
+onclick="toggleGiftPanel()"
+
+«»
+
+🎁
+</button>
+
+</div><!-- GIFT PANEL --><div
+id="giftPanel"
+class="gift-panel"
+><h3>
+❤️ Support RafiGaming
+</h3><!-- SUPPORT TABS --><div class="support-tabs"><button
+onclick="showMoney()"
+
+«»
+
+💵 Money
+</button>
+
+<button
+onclick="showGifts()"
+
+«»
+
+🎁 Gifts
+</button>
+
+</div><!-- MONEY --><div
+id="moneyOptions"
+><button
+onclick="selectSupport(1)"
+
+«»
+
+$1
+</button>
+
+<button
+onclick="selectSupport(5)"
+
+«»
+
+$5
+</button>
+
+<button
+onclick="selectSupport(10)"
+
+«»
+
+$10
+</button>
+
+<button
+onclick="selectSupport(25)"
+
+«»
+
+$25
+</button>
+
+</div><!-- GIFTS --><div
+id="giftOptions"
+style="display:none;"
+><button
+onclick="selectGift('🍎','Apple',1)"
+
+«»
+
+🍎
+<br>
+
+Apple
+<br>
+
+$1
+
+</button><button
+onclick="selectGift('🍌','Banana',2)"
+
+«»
+
+🍌
+<br>
+
+Banana
+<br>
+
+$2
+
+</button><button
+onclick="selectGift('🌹','Rose',5)"
+
+«»
+
+🌹
+<br>
+
+Rose
+<br>
+
+$5
+
+</button><button
+onclick="selectGift('💎','Diamond',10)"
+
+«»
+
+💎
+<br>
+
+Diamond
+<br>
+
+$10
+
+</button><button
+onclick="selectGift('👑','Crown',25)"
+
+«»
+
+👑
+<br>
+
+Crown
+<br>
+
+$25
+
+</button></div><!-- SEND --><button
+class="send-gift-button"
+onclick="sendGift()"
+
+«»
+
+Send
+
+</button></div></section></main><!-- BOTTOM NAV --><nav class="bottom-nav"><a href="index.html">
+🏠
+</a><a href="watch.html">
+📺
+</a><a href="go-live.html">
+➕
+</a><a href="#">
+❤️
+</a><a href="profile.html">
+👤
+</a></nav><script>
+
+/* SELECTED SUPPORT */
+
+let selectedSupport = 0;
+
+let selectedGift = null;
+
+
+
+/* OPEN / CLOSE GIFT PANEL */
+
+function toggleGiftPanel(){
+
+const panel =
+document.getElementById("giftPanel");
+
+
+if(panel.style.display === "block"){
+
+panel.style.display = "none";
+
+}else{
+
+panel.style.display = "block";
+
+}
+
+}
+
+
+
+/* MONEY TAB */
+
+function showMoney(){
+
+document
+.getElementById("moneyOptions")
+.style.display = "flex";
+
+
+document
+.getElementById("giftOptions")
+.style.display = "none";
+
+}
+
+
+
+/* GIFTS TAB */
+
+function showGifts(){
+
+document
+.getElementById("moneyOptions")
+.style.display = "none";
+
+
+document
+.getElementById("giftOptions")
+.style.display = "flex";
+
+}
+
+
+
+/* SELECT MONEY */
+
+function selectSupport(amount){
+
+selectedSupport = amount;
+
+selectedGift = null;
+
+
+alert(
+"You selected $" +
+amount +
+" support."
+);
+
+}
+
+
+
+/* SELECT GIFT */
+
+function selectGift(
+emoji,
+name,
+amount
+){
+
+selectedGift = {
+
+emoji:emoji,
+
+name:name,
+
+amount:amount
+
+};
+
+
+selectedSupport = amount;
+
+
+alert(
+"You selected " +
+emoji +
+" " +
+name +
+" ($" +
+amount +
+")"
+);
+
+}
+
+
+
+/* SEND GIFT */
+
+function sendGift(){
+
+if(selectedSupport === 0){
+
+alert(
+"Please select a gift or amount first."
+);
+
+return;
+
+}
+
+
+if(selectedGift){
+
+alert(
+"You sent " +
+selectedGift.emoji +
+" " +
+selectedGift.name +
+" worth $" +
+selectedGift.amount +
+" to RafiGaming! ❤️"
+);
+
+}else{
+
+alert(
+"You supported RafiGaming with $" +
+selectedSupport +
+"! ❤️"
+);
+
+}
+
+
+selectedSupport = 0;
+
+selectedGift = null;
+
+}
+
+</script><script src="js/script.js"></script></body></html>
