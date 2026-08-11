@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Canvas - Watch Live</title>
+
+<link rel="stylesheet" href="style.css">
+
+<style>
+
+/* =========================
+   WATCH PAGE
+========================= */
+
+body{
+    margin:0;
+    padding-bottom:90px;
+    background:#FAF9F6;
+    color:#4A3728;
+}
+
+/* HEADER */
+
+.navbar{
+    height:70px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 20px;
+    background:#ffffff;
+    border-bottom:2px solid #D4A017;
+}
+
+.nav-icons{
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
+
+.nav-icons span,
+.nav-icons a{
+    font-size:24px;
+    text-decoration:none;
+    color:#6F4E37;
+}
+
+/* MAIN */
+
+.container{
+    width:100%;
+    max-width:900px;
+    margin:0 auto;
+    padding:20px 15px 100px;
+    box-sizing:border-box;
+}
+
+/* VIDEO */
+
+.stream-preview{
+    width:100%;
+    height:0;
+    padding-bottom:56.25%;
+    position:relative;
+    background:#222;
+    border:2px solid #D4A017;
+    border-radius:0;
+    overflow:hidden;
+    margin-bottom:25px;
+    box-sizing:border-box;
+}
+
+.stream-preview video{
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+}
+
+/* STREAM INFO */
+
+.stream-info{
+    margin-bottom:25px;
+}
+
+.stream-info h2{
+    font-size:30px;
+    line-height:1.25;
+    margin:0 0 12px;
+    color:#4A3728;
+}
+
+.stream-info p{
+    font-size:18px;
+    margin:0 0 15px;
+}
+
+/* FOLLOW */
+
+.follow-button{
+    width:auto;
+    margin:0;
+    padding:10px 18px;
+    background:#D4A017;
+    color:#111;
+    border:2px solid #4A3728;
+    border-radius:4px;
+    font-size:16px;
+    font-weight:bold;
+}
+
+/* CHAT */
+
+.chat-box{
+    width:100%;
+    background:#F3E8D3;
+    border-radius:0;
+    overflow:hidden;
+    box-sizing:border-box;
+}
+
+.chat-box h3{
+    margin:0;
+    padding:12px;
+    font-size:25px;
+    background:#F3E8D3;
+    color:#4A3728;
+}
+
+.message{
+    background:#ffffff;
+    color:#4A3728;
+    padding:3px 10px;
+    font-size:18px;
+    line-height:1.35;
+}
+
+/* CHAT INPUT */
+
+.chat-input-area{
+    display:flex;
+    gap:8px;
+    padding:12px;
+    background:#F3E8D3;
+    box-sizing:border-box;
+}
+
+.chat-input-area input{
+    flex:1;
+    min-width:0;
+    padding:14px;
+    border:1px solid #ddd;
+    border-radius:12px;
+    font-size:16px;
+    box-sizing:border-box;
+}
+
+/* GIFT BUTTON */
+
+.gift-button{
+    width:55px;
+    flex-shrink:0;
+    margin:0;
+    padding:10px;
+    background:#D4A017;
+    color:white;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+/* GIFT PANEL */
+
+.gift-panel{
+    display:none;
+    margin:0 12px 12px;
+    padding:15px;
+    background:white;
+    border:1px solid #D4A017;
+    border-radius:15px;
+}
+
+.gift-panel h3{
+    background:white;
+    padding:0;
+    margin:0 0 15px;
+}
+
+/* SUPPORT TABS */
+
+.support-tabs{
+    display:flex;
+    gap:8px;
+    margin:12px 0;
+}
+
+.support-tabs button{
+    flex:1;
+    margin:0;
+    padding:10px;
+}
+
+/* MONEY / GIFTS */
+
+#moneyOptions,
+#giftOptions{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+}
+
+#moneyOptions button,
+#giftOptions button{
+    width:auto;
+    min-width:60px;
+    margin:0;
+    background:#FAF9F6;
+    color:#4A3728;
+    border:1px solid #D4A017;
+    border-radius:10px;
+    padding:10px;
+}
+
+#giftOptions button{
+    min-width:75px;
+}
+
+/* SEND
