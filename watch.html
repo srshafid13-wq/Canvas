@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Canvas - Watch Live</title>
+
+<link rel="stylesheet" href="style.css">
+
+<style>
+
+/* =========================
+   WATCH PAGE
+========================= */
+
+body{
+    margin:0;
+    padding-bottom:90px;
+    background:#FAF9F6;
+    color:#4A3728;
+}
+
+/* HEADER */
+
+.navbar{
+    height:70px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 20px;
+    background:#ffffff;
+    border-bottom:2px solid #D4A017;
+}
+
+.nav-icons{
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
+
+.nav-icons span,
+.nav-icons a{
+    font-size:24px;
+    text-decoration:none;
+    color:#6F4E37;
+}
+
+/* MAIN */
+
+.container{
+    width:100%;
+    max-width:900px;
+    margin:0 auto;
+    padding:20px 15px 100px;
+    box-sizing:border-box;
+}
+
+/* VIDEO */
+
+.stream-preview{
+    width:100%;
+    height:0;
+    padding-bottom:56.25%;
+    position:relative;
+    background:#222;
+    border:2px solid #D4A017;
+    border-radius:0;
+    overflow:hidden;
+    margin-bottom:25px;
+    box-sizing:border-box;
+}
+
+.stream-preview video{
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+}
+
+/* STREAM INFO */
+
+.stream-info{
+    margin-bottom:25px;
+}
+
+.stream-info h2{
+    font-size:30px;
+    line-height:1.25;
+    margin:0 0 12px;
+    color:#4A3728;
+}
+
+.stream-info p{
+    font-size:18px;
+    margin:0 0 15px;
+}
+
+/* FOLLOW */
+
+.follow-button{
+    width:auto;
+    margin:0;
+    padding:10px 18px;
+    background:#D4A017;
+    color:#111;
+    border:2px solid #4A3728;
+    border-radius:4px;
+    font-size:16px;
+    font-weight:bold;
+}
+
+/* CHAT */
+
+.chat-box{
+    width:100%;
+    background:#F3E8D3;
+    border-radius:0;
+    overflow:hidden;
+    box-sizing:border-box;
+}
+
+.chat-box h3{
+    margin:0;
+    padding:12px;
+    font-size:25px;
+    background:#F3E8D3;
+    color:#4A3728;
+}
+
+.message{
+    background:#ffffff;
+    color:#4A3728;
+    padding:3px 10px;
+    font-size:18px;
+    line-height:1.35;
+}
+
+/* CHAT INPUT */
+
+.chat-input-area{
+    display:flex;
+    gap:8px;
+    padding:12px;
+    background:#F3E8D3;
+    box-sizing:border-box;
+}
+
+.chat-input-area input{
+    flex:1;
+    min-width:0;
+    padding:14px;
+    border:1px solid #ddd;
+    border-radius:12px;
+    font-size:16px;
+    box-sizing:border-box;
+}
+
+/* GIFT BUTTON */
+
+.gift-button{
+    width:55px;
+    flex-shrink:0;
+    margin:0;
+    padding:10px;
+    background:#D4A017;
+    color:white;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+/* GIFT PANEL */
+
+.gift-panel{
+    display:none;
+    margin:0 12px 12px;
+    padding:15px;
+    background:white;
+    border:1px solid #D4A017;
+    border-radius:15px;
+}
+
+.gift-panel h3{
+    background:white;
+    padding:0;
+    margin:0 0 15px;
+}
+
+/* SUPPORT TABS */
+
+.support-tabs{
+    display:flex;
+    gap:8px;
+    margin:12px 0;
+}
+
+.support-tabs button{
+    flex:1;
+    margin:0;
+    padding:10px;
+}
+
+/* MONEY / GIFTS */
+
+#moneyOptions,
+#giftOptions{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+}
+
+#moneyOptions button,
+#giftOptions button{
+    width:auto;
+    min-width:60px;
+    margin:0;
+    background:#FAF9F6;
+    color:#4A3728;
+    border:1px solid #D4A017;
+    border-radius:10px;
+    padding:10px;
+}
+
+#giftOptions button{
+    min-width:75px;
+}
+
+/* SEND */
+
+.send-gift-button{
+    width:100%;
+    margin:15px 0 0;
+    padding:13px;
+    background:#D4A017;
+    color:white;
+    border:none;
+    border-radius:10px;
+}
+
+/* =========================
+   BOTTOM NAV
+========================= */
+
+.bottom-nav{
+    position:fixed;
+    left:0;
+    bottom:0;
+    width:100%;
+    height:75px;
+    background:#ffffff;
+    border-top:2px solid #eeeeee;
+    display:flex;
+    justify-content:space-around;
+    align-items:center;
+    z-index:9999;
+    box-sizing:border-box;
+}
+
+.bottom-nav a{
+    flex:1;
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    text-decoration:none;
+    color:#4A3728;
+    font-size:25px;
+    line-height:1;
+}
+
+.bottom-nav span{
+    display:block;
+    margin-top:5px;
+    font-size:11px;
+    color:#777;
+}
+
+.bottom-nav a:hover,
+.bottom-nav a:active{
+    color:#D4A017;
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+<!-- =========================
+     HEADER
+========================= -->
+
+<header class="navbar">
+
+<div class="logo">
+Canvas
+</div>
+
+<div class="nav-icons">
+
+<span>🔍</span>
+
+<a href="profile.html">
+👤
+</a>
+
+</div>
+
+</header>
+
+
+
+<!-- =========================
+     MAIN
+========================= -->
+
+<main class="container">
+
+
+<!-- VIDEO -->
+
+<div class="stream-preview">
+
+<video
+controls
+playsinline
+poster="">
+</video>
+
+</div>
+
+
+
+<!-- STREAM INFO -->
+
+<section class="stream-info">
+
+<h2>
+🎮 Free Fire Ranked
+</h2>
+
+<p>
+<strong>RafiGaming</strong>
+•
+👀 1,245 Watching
+</p>
+
+<button
+class="follow-button"
+>
+❤️ Follow
+</button>
+
+</section>
+
+
+
+<!-- =========================
+     CHAT
+========================= -->
+
+<section class="chat-box">
+
+<h3>
+💬 Live Chat
+</h3>
+
+
+<div class="message">
+<b>Alpha:</b>
+Great gameplay! 🔥
+</div>
+
+
+<div class="message">
+<b>Nova:</b>
+Let's go! 🚀
+</div>
+
+
+<div class="message">
+<b>Shadow:</b>
+Win this match! 🎯
+</div>
+
+
+
+<!-- CHAT INPUT -->
+
+<div class="chat-input-area">
+
+<input
+type="text"
+id="chatInput"
+placeholder="Type a message..."
+>
+
+<button
+class="gift-button"
+onclick="toggleGiftPanel()"
+>
+🎁
+</button>
+
+</div>
+
+
+
+<!-- =========================
+     GIFT PANEL
+========================= -->
+
+<div
+id="giftPanel"
+class="gift-panel"
+>
+
+<h3>
+❤️ Support RafiGaming
+</h3>
+
+
+<div class="support-tabs">
+
+<button
+onclick="showMoney()"
+>
+💵 Money
+</button>
+
+
+<button
+onclick="showGifts()"
+>
+🎁 Gifts
+</button>
+
+</div>
+
+
+
+<!-- MONEY -->
+
+<div id="moneyOptions">
+
+<button onclick="selectSupport(1)">
+$1
+</button>
+
+<button onclick="selectSupport(5)">
+$5
+</button>
+
+<button onclick="selectSupport(10)">
+$10
+</button>
+
+<button onclick="selectSupport(25)">
+$25
+</button>
+
+</div>
+
+
+
+<!-- GIFTS -->
+
+<div
+id="giftOptions"
+style="display:none;"
+>
+
+<button
+onclick="selectGift('🍎','Apple',1)"
+>
+🍎
+<br>
+Apple
+<br>
+$1
+</button>
+
+
+<button
+onclick="selectGift('🍌','Banana',2)"
+>
+🍌
+<br>
+Banana
+<br>
+$2
+</button>
+
+
+<button
+onclick="selectGift('🌹','Rose',5)"
+>
+🌹
+<br>
+Rose
+<br>
+$5
+</button>
+
+
+<button
+onclick="selectGift('💎','Diamond',10)"
+>
+💎
+<br>
+Diamond
+<br>
+$10
+</button>
+
+
+<button
+onclick="selectGift('👑','Crown',25)"
+>
+👑
+<br>
+Crown
+<br>
+$25
+</button>
+
+</div>
+
+
+
+<button
+class="send-gift-button"
+onclick="sendGift()"
+>
+Send
+</button>
+
+</div>
+
+</section>
+
+</main>
+
+
+
+<!-- =========================
+     BOTTOM NAV
+========================= -->
+
+<nav class="bottom-nav">
+
+<a href="stream.html">
+
+🏠
+
+<span>
+Home
+</span>
+
+</a>
+
+
+<a href="stream.html">
+
+📺
+
+<span>
+Stream
+</span>
+
+</a>
+
+
+<a href="golive.html">
+
+➕
+
+<span>
+Go Live
+</span>
+
+</a>
+
+
+<a href="#">
+
+❤️
+
+<span>
+Support
+</span>
+
+</a>
+
+
+<a href="profile.html">
+
+👤
+
+<span>
+Profile
+</span>
+
+</a>
+
+</nav>
+
+
+
+<script>
+
+/* =========================
+   SUPPORT
+========================= */
+
+let selectedSupport = 0;
+
+let selectedGift = null;
+
+
+/* OPEN / CLOSE GIFT PANEL */
+
+function toggleGiftPanel(){
+
+const panel =
+document.getElementById("giftPanel");
+
+if(panel.style.display === "block"){
+
+panel.style.display = "none";
+
+}else{
+
+panel.style.display = "block";
+
+}
+
+}
+
+
+/* MONEY TAB */
+
+function showMoney(){
+
+document
+.getElementById("moneyOptions")
+.style.display = "flex";
+
+document
+.getElementById("giftOptions")
+.style.display = "none";
+
+}
+
+
+/* GIFTS TAB */
+
+function showGifts(){
+
+document
+.getElementById("moneyOptions")
+.style.display = "none";
+
+document
+.getElementById("giftOptions")
+.style.display = "flex";
+
+}
+
+
+/* SELECT MONEY */
+
+function selectSupport(amount){
+
+selectedSupport = amount;
+
+selectedGift = null;
+
+alert(
+"You selected $" +
+amount +
+" support."
+);
+
+}
+
+
+/* SELECT GIFT */
+
+function selectGift(
+emoji,
+name,
+amount
+){
+
+selectedGift = {
+
+emoji:emoji,
+name:name,
+amount:amount
+
+};
+
+selectedSupport = amount;
+
+alert(
+"You selected " +
+emoji +
+" " +
+name +
+" ($" +
+amount +
+")"
+);
+
+}
+
+
+/* SEND */
+
+function sendGift(){
+
+if(selectedSupport === 0){
+
+alert(
+"Please select a gift or amount first."
+);
+
+return;
+
+}
+
+
+if(selectedGift){
+
+alert(
+"You sent " +
+selectedGift.emoji +
+" " +
+selectedGift.name +
+" worth $" +
+selectedGift.amount +
+" to RafiGaming! ❤️"
+);
+
+}else{
+
+alert(
+"You supported RafiGaming with $" +
+selectedSupport +
+"! ❤️"
+);
+
+}
+
+
+selectedSupport = 0;
+
+selectedGift = null;
+
+}
+
+
+/* CHAT */
+
+document
+.getElementById("chatInput")
+.addEventListener("keydown",function(e){
+
+if(e.key === "Enter"){
+
+e.preventDefault();
+
+const message =
+this.value.trim();
+
+if(message !== ""){
+
+alert("Message sent: " + message);
+
+this.value = "";
+
+}
+
+}
+
+});
+
+</script>
+
+
+</body>
+
+  </html>
