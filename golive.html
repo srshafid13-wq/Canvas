@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Canvas - Go Live</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header class="navbar">
+
+    <div class="logo">
+        Canvas
+    </div>
+
+    <div class="top-icons">
+
+        <span>🔍</span>
+
+        <a href="profile.html">
+            ⬤
+        </a>
+
+    </div>
+
+</header>
+
+
+<main class="container">
+
+    <section class="page-title">
+
+        <h1>
+            🎥 Go Live
+        </h1>
+
+        <p>
+            Start streaming to your audience in seconds.
+        </p>
+
+        <p id="creatorName"></p>
+
+    </section>
+
+
+    <section class="camera-section">
+
+        <div class="camera-box">
+
+            <video
+                id="cameraPreview"
+                autoplay
+                muted
+                playsinline>
+            </video>
+
+            <div id="cameraMessage">
+                Camera Preview
+            </div>
+
+        </div>
+
+
+        <div class="camera-controls">
+
+            <button id="cameraButton">
+                📷 Camera
+            </button>
+
+            <button id="micButton">
+                🎙️ Microphone
+            </button>
+
+        </div>
+
+        <p id="permissionMessage"></p>
+
+    </section>
+
+
+    <section class="stream-form">
+
+        <label for="streamTitle">
+            Stream Title
+        </label>
+
+        <input
+            type="text"
+            id="streamTitle"
+            placeholder="Enter stream title"
+        >
+
+
+        <label for="category">
+            Category
+        </label>
+
+        <select id="category">
+
+            <option>Gaming</option>
+            <option>Music</option>
+            <option>Sports</option>
+            <option>Education</option>
+            <option>Technology</option>
+
+        </select>
+
+
+        <label for="description">
+            Description
+        </label>
+
+        <textarea
+            id="description"
+            rows="4"
+            placeholder="Tell viewers about your stream..."
+        ></textarea>
+
+
+        <label for="thumbnail">
+            Thumbnail
+        </label>
+
+        <input
+            type="file"
+            id="thumbnail"
+            accept="image/*"
+        >
+
+
+        <button
+            id="startStreaming"
+            class="start-btn">
+
+            🔴 Start Streaming
+
+        </button>
+
+    </section>
+
+</main>
+
+
+<nav class="bottom-nav">
+
+    <a href="stream.html">
+
+        ⌂
+
+        <span>
+            Home
+        </span>
+
+    </a>
+
+
+    <a href="stream.html">
+
+        ▣
+
+        <span>
+            Stream
+        </span>
+
+    </a>
+
+
+    <a href="golive.html" class="active">
+
+        ⊙
+
+        <span>
+            Go Live
+        </span>
+
+    </a>
+
+
+    <a href="profile.html">
+
+        ⬤
+
+        <span>
+            Profile
+        </span>
+
+    </a>
+
+</nav>
+
+
+<script>
+
+/* =========================================
+   CREATOR PROFILE
+========================================= */
+
+let creatorProfile = null;
+
+window.onload = function(){
+
+    const savedProfile =
+        localStorage.getItem("canvasProfile");
+
+    if(savedProfile){
+
+        creatorProfile =
+            JSON.parse(savedProfile);
+
+        document
+            .getElementById("creatorName")
+            .textContent =
+            "Streaming as " +
+            creatorProfile.name +
+            " " +
+            creatorProfile.username;
+
+    }else{
+
+        document
+            .getElementById("creatorName")
+            .textContent =
+            "Please create your Canvas profile first.";
+
+    }
+
+};
+
+
+/* =========================================
+   CAMERA
+========================================= */
+
+const cameraButton =
+    document.getElementById("cameraButton");
+
+const cameraPreview =
+    document.getElementById("cameraPreview");
+
+const cameraMessage =
+    document.getElementById("cameraMessage");
+
+const permissionMessage =
+    document.getElementById("permissionMessage");
+
+let cameraStream = null;
+
+
+cameraButton.onclick = async function(){
+
+    try{
+
+        if(
+            !navigator.mediaDevices ||
+            !navigator.mediaDevices.getUserMedia
+        ){
+
+            permissionMessage.textContent =
+            "Camera is not supported or permission is blocked in this browser.";
+
+            return;
+
+        }
+
+
+        cameraStream =
+        await navigator.mediaDevices.getUserMedia({
+
+            video:{
+                facingMode:"user"
+            },
+
+            audio:false
+
+        });
+
+
+        cameraPreview.srcObject =
+        cameraStream;
+
+        cameraPreview.style.display =
+        "block";
+
+        cameraMessage.style.display =
+        "none";
+
+        permissionMessage.textContent =
+        "";
+
+        cameraButton.textContent =
+        "📷 Camera On";
+
+
+    }catch(error){
+
+        console.log("Camera error:", error);
+
+        if(error.name === "NotAllowedError"){
+
+            permissionMessage.textContent =
+            "Camera permission was denied. Allow camera access in Chrome.";
+
+        }
+
+        else if(error.name === "NotFoundError"){
+
+            permissionMessage.textContent =
+            "No camera was found on this device.";
+
+        }
+
+        else{
+
+            permissionMessage.textContent =
+            "Camera error: " +
+            error.name;
+
+        }
+
+    }
+
+};
+
+
+/* =========================================
+   MICROPHONE
+========================================= */
+
+const micButton =
+    document.getElementById("micButton");
+
+let microphoneEnabled = false;
+
+
+micButton.onclick = async function(){
+
+    try{
+
+        if(!cameraStream){
+
+            cameraStream =
+            await navigator.mediaDevices.getUserMedia({
+
+                audio:true
+
+            });
+
+        }else{
+
+            const audioStream =
+            await navigator.mediaDevices.getUserMedia({
+
+                audio:true
+
+            });
+
+            audioStream
+            .getAudioTracks()
+            .forEach(track => {
+
+                cameraStream.addTrack(track);
+
+            });
+
+        }
+
+
+        microphoneEnabled = true;
+
+        micButton.textContent =
+        "🎙️ Microphone On";
+
+
+    }catch(error){
+
+        console.log(
+            "Microphone error:",
+            error
+        );
+
+        permissionMessage.textContent =
+        "Microphone permission was denied. Allow microphone access in Chrome.";
+
+    }
+
+};
+
+
+/* =========================================
+   START STREAMING
+========================================= */
+
+document
+.getElementById("startStreaming")
+.onclick = function(){
+
+    if(!creatorProfile){
+
+        alert(
+            "Please create your Canvas profile first."
+        );
+
+        window.location.href =
+        "profile.html";
+
+        return;
+
+    }
+
+
+    const title =
+    document
+    .getElementById("streamTitle")
+    .value
+    .trim();
+
+
+    const category =
+    document
+    .getElementById("category")
+    .value;
+
+
+    const description =
+    document
+    .getElementById("description")
+    .value
+    .trim();
+
+
+    if(title === ""){
+
+        alert(
+            "Please enter a stream title."
+        );
+
+        return;
+
+    }
+
+
+    const streamData = {
+
+        creatorName:
+        creatorProfile.name,
+
+        creatorUsername:
+        creatorProfile.username,
+
+        title:
+        title,
+
+        category:
+        category,
+
+        description:
+        description,
+
+        isLive:
+        true,
+
+        startedAt:
+        Date.now()
+
+    };
+
+
+    localStorage.setItem(
+        "canvasLiveStream",
+        JSON.stringify(streamData)
+    );
+
+
+    alert(
+        "🔴 You are now live!"
+    );
+
+
+    window.location.href =
+    "watch.html";
+
+};
+
+</script>
+
+</body>
+
+              </html>
