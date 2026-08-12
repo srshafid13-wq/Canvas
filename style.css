@@ -1,0 +1,719 @@
+/* =========================================
+   CANVAS - MAIN STYLE
+========================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    min-height: 100%;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #ffffff;
+    color: #4b3326;
+}
+
+
+/* =========================================
+   NAVBAR
+========================================= */
+
+.navbar {
+    width: 100%;
+    height: 80px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 25px;
+
+    background: #ffffff;
+    border-bottom: 2px solid #d4a62a;
+}
+
+.logo {
+    font-size: 38px;
+    font-weight: 800;
+    color: #4b3326;
+}
+
+.top-icons {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.top-icons span,
+.top-icons a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 38px;
+    height: 38px;
+
+    font-size: 27px;
+
+    text-decoration: none;
+}
+
+
+/* =========================================
+   GENERAL CONTAINER
+========================================= */
+
+.container {
+    width: 100%;
+    max-width: 900px;
+
+    margin: 0 auto;
+
+    padding: 35px 20px 110px;
+}
+
+
+/* =========================================
+   GO LIVE PAGE TITLE
+========================================= */
+
+.page-title {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.page-title h1 {
+    font-size: 42px;
+    font-weight: 800;
+    color: #4b3326;
+
+    margin-bottom: 8px;
+}
+
+.page-title p {
+    font-size: 18px;
+    color: #6a574c;
+}
+
+#creatorName {
+    margin-top: 8px;
+    font-size: 15px;
+    color: #8a6b58;
+}
+
+
+/* =========================================
+   CAMERA SECTION
+========================================= */
+
+.camera-section {
+    width: 100%;
+    margin-bottom: 30px;
+}
+
+.camera-box {
+    position: relative;
+
+    width: 100%;
+    max-width: 760px;
+
+    height: 420px;
+
+    margin: 0 auto 15px;
+
+    overflow: hidden;
+
+    background: #241a15;
+
+    border-radius: 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#cameraPreview {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    display: none;
+
+    border-radius: 18px;
+}
+
+#cameraMessage {
+    position: absolute;
+
+    top: 50%;
+    left: 50%;
+
+    transform: translate(-50%, -50%);
+
+    color: #ffffff;
+
+    font-size: 22px;
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================
+   CAMERA CONTROLS
+========================================= */
+
+.camera-controls {
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    gap: 12px;
+
+    margin-top: 12px;
+}
+
+.camera-controls button {
+    padding: 12px 20px;
+
+    background: #ffffff;
+
+    color: #4b3326;
+
+    border: 2px solid #4b3326;
+
+    border-radius: 10px;
+
+    font-size: 16px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+.camera-controls button:hover {
+    background: #4b3326;
+    color: #ffffff;
+}
+
+.camera-controls button:active {
+    transform: scale(0.96);
+}
+
+#permissionMessage {
+    text-align: center;
+
+    margin-top: 10px;
+
+    font-size: 14px;
+
+    color: #b33a3a;
+}
+
+
+/* =========================================
+   STREAM FORM
+========================================= */
+
+.stream-form {
+    width: 100%;
+    max-width: 760px;
+
+    margin: 0 auto;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 8px;
+}
+
+.stream-form label {
+    font-size: 16px;
+    font-weight: 700;
+
+    color: #4b3326;
+
+    margin-top: 8px;
+}
+
+.stream-form input[type="text"],
+.stream-form select,
+.stream-form textarea {
+    width: 100%;
+
+    padding: 13px 14px;
+
+    background: #ffffff;
+
+    color: #4b3326;
+
+    border: 2px solid #d8c8bd;
+
+    border-radius: 10px;
+
+    font-family: Arial, Helvetica, sans-serif;
+
+    font-size: 16px;
+
+    outline: none;
+}
+
+.stream-form input[type="text"]:focus,
+.stream-form select:focus,
+.stream-form textarea:focus {
+    border-color: #4b3326;
+}
+
+.stream-form textarea {
+    resize: vertical;
+
+    min-height: 110px;
+}
+
+.stream-form input[type="file"] {
+    width: 100%;
+
+    padding: 10px;
+
+    background: #ffffff;
+
+    border: 2px solid #d8c8bd;
+
+    border-radius: 10px;
+
+    color: #4b3326;
+
+    font-size: 15px;
+}
+
+
+/* =========================================
+   START STREAMING BUTTON
+========================================= */
+
+.start-btn {
+    width: 100%;
+
+    margin-top: 18px;
+
+    padding: 16px 20px;
+
+    background: #4b3326;
+
+    color: #ffffff;
+
+    border: none;
+
+    border-radius: 12px;
+
+    font-size: 19px;
+    font-weight: 800;
+
+    cursor: pointer;
+
+    box-shadow: 0 6px 15px rgba(75, 51, 38, 0.20);
+
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease;
+}
+
+.start-btn:hover {
+    background: #634534;
+
+    transform: translateY(-2px);
+}
+
+.start-btn:active {
+    transform: scale(0.97);
+}
+
+
+/* =========================================
+   BOTTOM NAVIGATION
+========================================= */
+
+.bottom-nav {
+    position: fixed;
+
+    left: 0;
+    bottom: 0;
+
+    width: 100%;
+
+    height: 70px;
+
+    display: flex;
+
+    justify-content: space-around;
+    align-items: center;
+
+    background: #ffffff;
+
+    border-top: 2px solid #ead9c8;
+
+    z-index: 1000;
+}
+
+.bottom-nav a {
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 3px;
+
+    min-width: 65px;
+
+    color: #4b3326;
+
+    text-decoration: none;
+
+    font-size: 23px;
+
+    font-weight: 700;
+}
+
+.bottom-nav a span {
+    font-size: 12px;
+
+    font-weight: 600;
+}
+
+.bottom-nav a:hover {
+    color: #8a5b3d;
+}
+
+
+/* =========================================
+   STREAM PAGE
+========================================= */
+
+.stream-page {
+    width: 100%;
+    min-height: calc(100vh - 80px);
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    text-align: center;
+
+    padding: 55px 20px 100px;
+}
+
+.stream-header {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 45px;
+}
+
+.stream-header h1 {
+    font-size: 46px;
+    font-weight: 800;
+    color: #4b3326;
+    margin-bottom: 12px;
+}
+
+.stream-header p {
+    font-size: 20px;
+    color: #6a574c;
+}
+
+.live-streams {
+    width: 100%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.empty-stream {
+    width: 100%;
+    max-width: 600px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    text-align: center;
+}
+
+.stream-symbol {
+    font-size: 70px;
+    line-height: 1;
+
+    margin-bottom: 25px;
+}
+
+.empty-stream h2 {
+    font-size: 32px;
+    font-weight: 800;
+
+    color: #4b3326;
+
+    margin-bottom: 12px;
+}
+
+.empty-stream p {
+    max-width: 500px;
+
+    font-size: 18px;
+    line-height: 1.6;
+
+    color: #6a574c;
+
+    margin-bottom: 35px;
+}
+
+.go-live-button {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    min-width: 210px;
+
+    padding: 18px 45px;
+
+    background: #4b3326;
+    color: #ffffff;
+
+    border: none;
+    border-radius: 14px;
+
+    font-size: 22px;
+    font-weight: 800;
+
+    text-decoration: none;
+
+    box-shadow: 0 7px 16px rgba(75, 51, 38, 0.25);
+
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.go-live-button:hover {
+    background: #634534;
+
+    transform: translateY(-3px);
+
+    box-shadow: 0 10px 20px rgba(75, 51, 38, 0.30);
+}
+
+.go-live-button:active {
+    transform: scale(0.96);
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 600px) {
+
+    .navbar {
+        height: 75px;
+        padding: 0 18px;
+    }
+
+    .logo {
+        font-size: 34px;
+    }
+
+    .top-icons {
+        gap: 8px;
+    }
+
+    .top-icons span,
+    .top-icons a {
+        width: 36px;
+        height: 36px;
+        font-size: 25px;
+    }
+
+
+    .container {
+        padding: 30px 15px 100px;
+    }
+
+
+    .page-title {
+        margin-bottom: 22px;
+    }
+
+    .page-title h1 {
+        font-size: 36px;
+    }
+
+    .page-title p {
+        font-size: 17px;
+    }
+
+
+    .camera-box {
+        height: 250px;
+
+        border-radius: 15px;
+    }
+
+    #cameraPreview {
+        border-radius: 15px;
+    }
+
+    #cameraMessage {
+        font-size: 19px;
+    }
+
+
+    .camera-controls {
+        gap: 8px;
+    }
+
+    .camera-controls button {
+        flex: 1;
+
+        padding: 11px 8px;
+
+        font-size: 14px;
+    }
+
+
+    .stream-form label {
+        font-size: 15px;
+    }
+
+
+    .stream-form input[type="text"],
+    .stream-form select,
+    .stream-form textarea {
+        font-size: 16px;
+    }
+
+
+    .start-btn {
+        font-size: 18px;
+        padding: 15px;
+    }
+
+
+    .bottom-nav {
+        height: 65px;
+    }
+
+    .bottom-nav a {
+        font-size: 21px;
+    }
+
+    .bottom-nav a span {
+        font-size: 11px;
+    }
+
+
+    .stream-page {
+        min-height: calc(100vh - 75px);
+
+        padding: 45px 18px 100px;
+    }
+
+    .stream-header {
+        margin-bottom: 40px;
+    }
+
+    .stream-header h1 {
+        font-size: 40px;
+    }
+
+    .stream-header p {
+        font-size: 18px;
+    }
+
+    .stream-symbol {
+        font-size: 62px;
+        margin-bottom: 22px;
+    }
+
+    .empty-stream h2 {
+        font-size: 27px;
+    }
+
+    .empty-stream p {
+        font-size: 17px;
+        max-width: 360px;
+        margin-bottom: 30px;
+    }
+
+    .go-live-button {
+        min-width: 200px;
+
+        padding: 17px 40px;
+
+        font-size: 20px;
+        border-radius: 13px;
+    }
+}
+
+
+/* =========================================
+   SMALL PHONES
+========================================= */
+
+@media (max-width: 380px) {
+
+    .container {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    .page-title h1 {
+        font-size: 32px;
+    }
+
+    .camera-box {
+        height: 220px;
+    }
+
+    .stream-page {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    .stream-header h1 {
+        font-size: 36px;
+    }
+
+    .stream-header p {
+        font-size: 17px;
+    }
+
+    .stream-symbol {
+        font-size: 55px;
+    }
+
+    .empty-stream h2 {
+        font-size: 24px;
+    }
+
+    .empty-stream p {
+        font-size: 16px;
+    }
+
+    .go-live-button {
+        width: 100%;
+        max-width: 260px;
+    }
+  }
