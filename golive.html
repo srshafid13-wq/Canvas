@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Canvas - Go Live</title>
+
+<link rel="stylesheet" href="style.css">
+
+<style>
+
+/* =========================================
+   GO LIVE PAGE
+========================================= */
+
+.stream-form {
+    width: 100%;
+    max-width: 760px;
+    margin: 0 auto;
+}
+
+.stream-form label {
+    display: block;
+    margin: 18px 0 8px;
+
+    font-size: 16px;
+    font-weight: 700;
+
+    color: #4b3326;
+}
+
+.stream-form input[type="text"],
+.stream-form select,
+.stream-form textarea,
+.stream-form input[type="file"] {
+
+    width: 100%;
+
+    padding: 14px 15px;
+
+    border: 1px solid #d8c7bb;
+    border-radius: 12px;
+
+    background: #ffffff;
+    color: #4b3326;
+
+    font-size: 16px;
+
+    outline: none;
+}
+
+.stream-form input[type="text"]:focus,
+.stream-form select:focus,
+.stream-form textarea:focus {
+    border-color: #d4a62a;
+}
+
+.stream-form textarea {
+    resize: vertical;
+    min-height: 110px;
+}
+
+.stream-form input[type="file"] {
+    padding: 11px;
+}
+
+
+/* =========================================
+   START STREAMING BUTTON
+========================================= */
+
+.start-btn {
+    width: 100%;
+
+    margin-top: 28px;
+    padding: 17px;
+
+    border: none;
+    border-radius: 14px;
+
+    background: #4b3326;
+    color: #ffffff;
+
+    font-size: 19px;
+    font-weight: 800;
+
+    cursor: pointer;
+
+    box-shadow: 0 5px 15px rgba(75, 51, 38, 0.18);
+
+    transition: 0.2s ease;
+}
+
+.start-btn:hover {
+    background: #5d4030;
+    transform: translateY(-1px);
+}
+
+.start-btn:active {
+    transform: scale(0.98);
+}
+
+
+/* =========================================
+   CAMERA BUTTON ACTIVE STATE
+========================================= */
+
+.camera-controls button.active {
+    background: #d4a62a;
+    color: #ffffff;
+    border-color: #d4a62a;
+}
+
+
+/* =========================================
+   PERMISSION MESSAGE
+========================================= */
+
+#permissionMessage {
+    text-align: center;
+
+    margin-top: 10px;
+
+    font-size: 14px;
+
+    color: #8a6b58;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================
+     NAVBAR
+========================================= -->
+
+<header class="navbar">
+
+    <div class="logo">
+        Canvas
+    </div>
+
+    <div class="top-icons">
+
+        <span>🔍</span>
+
+        <a href="profile.html">
+            ⬤
+        </a>
+
+    </div>
+
+</header>
+
+
+<!-- =========================================
+     MAIN
+========================================= -->
+
+<main class="container">
+
+
+    <!-- PAGE TITLE -->
+
+    <section class="page-title">
+
+        <h1>
+            🎥 Go Live
+        </h1>
+
+        <p>
+            Start streaming to your audience in seconds.
+        </p>
+
+        <p id="creatorName"></p>
+
+    </section>
+
+
+
+    <!-- =====================================
+         CAMERA
+    ====================================== -->
+
+    <section class="camera-section">
+
+        <div class="camera-box">
+
+            <video
+                id="cameraPreview"
+                autoplay
+                muted
+                playsinline>
+            </video>
+
+            <div id="cameraMessage">
+                Camera Preview
+            </div>
+
+        </div>
+
+
+        <div class="camera-controls">
+
+            <button
+                id="cameraButton"
+                type="button">
+
+                📷 Camera
+
+            </button>
+
+
+            <button
+                id="micButton"
+                type="button">
+
+                🎙️ Microphone
+
+            </button>
+
+        </div>
+
+
+        <p id="permissionMessage"></p>
+
+    </section>
+
+
+
+    <!-- =====================================
+         STREAM INFORMATION
+    ====================================== -->
+
+    <section class="stream-form">
+
+
+        <label for="streamTitle">
+            Stream Title
+        </label>
+
+        <input
+            type="text"
+            id="streamTitle"
+            placeholder="Enter stream title">
+
+
+
+        <label for="category">
+            Category
+        </label>
+
+        <select id="category">
+
+            <option>Gaming</option>
+
+            <option>Music</option>
+
+            <option>Sports</option>
+
+            <option>Education</option>
+
+            <option>Technology</option>
+
+        </select>
+
+
+
+        <label for="description">
+            Description
+        </label>
+
+        <textarea
+            id="description"
+            rows="4"
+            placeholder="Tell viewers about your stream..."></textarea>
+
+
+
+        <label for="thumbnail">
+            Thumbnail
+        </label>
+
+        <input
+            type="file"
+            id="thumbnail"
+            accept="image/*">
+
+
+
+        <button
+            id="startStreaming"
+            class="start-btn"
+            type="button">
+
+            🔴 Go Live
+
+        </button>
+
+    </section>
+
+</main>
+
+
+
+<!-- =========================================
+     BOTTOM NAVIGATION
+========================================= -->
+
+<nav class="bottom-nav">
+
+
+    <a href="stream.html">
+
+        ⌂
+
+        <span>
+            Home
+        </span>
+
+    </a>
+
+
+
+    <a href="stream.html">
+
+        ▣
+
+        <span>
+            Stream
+        </span>
+
+    </a>
+
+
+
+    <a
+        href="golive.html"
+        class="active">
+
+        ⊙
+
+        <span>
+            Go Live
+        </span>
+
+    </a>
+
+
+
+    <a href="profile.html">
+
+        ⬤
+
+        <span>
+            Profile
+        </span>
+
+    </a>
+
+</nav>
+
+
+
+<script>
+
+/* =========================================
+   CREATOR PROFILE
+========================================= */
+
+let creatorProfile = null;
+
+window.onload = function () {
+
+    const savedProfile =
+        localStorage.getItem("canvasProfile");
+
+
+    if (savedProfile) {
+
+        try {
+
+            creatorProfile =
+                JSON.parse(savedProfile);
+
+
+            document
+                .getElementById("creatorName")
+                .textContent =
+                "Streaming as " +
+                (creatorProfile.name || "") +
+                " " +
+                (creatorProfile.username || "");
+
+        }
+
+        catch (error) {
+
+            document
+                .getElementById("creatorName")
+                .textContent =
+                "Canvas Creator";
+
+        }
+
+    }
+
+    else {
+
+        document
+            .getElementById("creatorName")
+            .textContent =
+            "Please create your Canvas profile first.";
+
+    }
+
+};
+
+
+
+/* =========================================
+   CAMERA ELEMENTS
+========================================= */
+
+const cameraButton =
+    document.getElementById("cameraButton");
+
+const micButton =
+    document.getElementById("micButton");
+
+const cameraPreview =
+    document.getElementById("cameraPreview");
+
+const cameraMessage =
+    document.getElementById("cameraMessage");
+
+const permissionMessage =
+    document.getElementById("permissionMessage");
+
+const startStreaming =
+    document.getElementById("startStreaming");
+
+
+let cameraStream = null;
+let micStream = null;
+
+
+/* =========================================
+   CAMERA
+========================================= */
+
+cameraButton.onclick = async function () {
+
+    try {
+
+        if (
+            !navigator.mediaDevices ||
+            !navigator.mediaDevices.getUserMedia
+        ) {
+
+            permissionMessage.textContent =
+                "Camera is not supported on this browser.";
+
+            return;
+
+        }
+
+
+        if (cameraStream) {
+
+            cameraStream
+                .getTracks()
+                .forEach(track => track.stop());
+
+            cameraStream = null;
+
+            cameraPreview.srcObject = null;
+
+            cameraPreview.style.display = "none";
+
+            cameraMessage.style.display = "block";
+
+            cameraButton.classList.remove("active");
+
+            permissionMessage.textContent =
+                "Camera turned off.";
+
+            return;
+
+        }
+
+
+        cameraStream =
+            await navigator.mediaDevices.getUserMedia({
+                video: true,
+                audio: false
+            });
+
+
+        cameraPreview.srcObject =
+            cameraStream;
+
+
+        cameraPreview.style.display =
+            "block";
+
+
+        cameraMessage.style.display =
+            "none";
+
+
+        cameraButton.classList.add("active");
+
+
+        permissionMessage.textContent =
+            "Camera is ready.";
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        permissionMessage.textContent =
+            "Camera permission was denied or unavailable.";
+
+    }
+
+};
+
+
+
+/* =========================================
+   MICROPHONE
+========================================= */
+
+micButton.onclick = async function () {
+
+    try {
+
+        if (!navigator.mediaDevices ||
+            !navigator.mediaDevices.getUserMedia) {
+
+            permissionMessage.textContent =
+                "Microphone is not supported on this browser.";
+
+            return;
+
+        }
+
+
+        if (micStream) {
+
+            micStream
+                .getTracks()
+                .forEach(track => track.stop());
+
+            micStream = null;
+
+            micButton.classList.remove("active");
+
+            permissionMessage.textContent =
+                "Microphone turned off.";
+
+            return;
+
+        }
+
+
+        micStream =
+            await navigator.mediaDevices.getUserMedia({
+                audio: true,
+                video: false
+            });
+
+
+        micButton.classList.add("active");
+
+
+        permissionMessage.textContent =
+            "Microphone is ready.";
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        permissionMessage.textContent =
+            "Microphone permission was denied or unavailable.";
+
+    }
+
+};
+
+
+
+/* =========================================
+   GO LIVE
+========================================= */
+
+startStreaming.onclick = function () {
+
+    const title =
+        document
+            .getElementById("streamTitle")
+            .value
+            .trim();
+
+
+    const category =
+        document
+            .getElementById("category")
+            .value;
+
+
+    const description =
+        document
+            .getElementById("description")
+            .value
+            .trim();
+
+
+    if (!title) {
+
+        permissionMessage.textContent =
+            "Please enter a stream title.";
+
+        document
+            .getElementById("streamTitle")
+            .focus();
+
+        return;
+
+    }
+
+
+    if (!cameraStream) {
+
+        permissionMessage.textContent =
+            "Please turn on your camera first.";
+
+        return;
+
+    }
+
+
+    /* SAVE STREAM INFORMATION */
+
+    const streamData = {
+
+        title: title,
+
+        category: category,
+
+        description: description,
+
+        creator:
+            creatorProfile
+                ? creatorProfile.name
+                : "Canvas Creator",
+
+        username:
+            creatorProfile
+                ? creatorProfile.username
+                : "",
+
+        isLive: true
+
+    };
+
+
+    localStorage.setItem(
+        "canvasLiveStream",
+        JSON.stringify(streamData)
+    );
+
+
+    permissionMessage.textContent =
+        "Your stream is ready to go live!";
+
+};
+
+</script>
+
+
+</body>
+
+  </html>
