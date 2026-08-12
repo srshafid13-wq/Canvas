@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Canvas - Go Live</title>
+
+<link rel="stylesheet" href="style.css">
+
+<style>
+
+/* =========================================
+   GO LIVE PAGE
+========================================= */
+
+.container {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 35px 20px 100px;
+}
+
+.page-title {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.page-title h1 {
+    color: #4b3326;
+    font-size: 40px;
+    margin-bottom: 8px;
+}
+
+.page-title p {
+    color: #6a574c;
+    font-size: 17px;
+    margin: 5px 0;
+}
+
+
+/* CAMERA */
+
+.camera-section {
+    width: 100%;
+    margin-bottom: 30px;
+}
+
+.camera-box {
+    position: relative;
+    width: 100%;
+    height: 400px;
+    background: #211914;
+    border-radius: 18px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#cameraPreview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: none;
+    border-radius: 18px;
+}
+
+#cameraMessage {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    color: white;
+    font-size: 22px;
+    font-weight: 600;
+}
+
+
+/* CAMERA BUTTONS */
+
+.camera-controls {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 15px;
+}
+
+.camera-controls button {
+    padding: 12px 22px;
+
+    background: white;
+    color: #4b3326;
+
+    border: 2px solid #4b3326;
+    border-radius: 10px;
+
+    font-size: 16px;
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+.camera-controls button:hover {
+    background: #4b3326;
+    color: white;
+}
+
+#permissionMessage {
+    text-align: center;
+    margin-top: 10px;
+    color: #a33;
+}
+
+
+/* =========================================
+   STREAM FORM
+========================================= */
+
+.stream-form {
+    width: 100%;
+    max-width: 760px;
+    margin: 0 auto;
+
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.stream-form label {
+    margin-top: 10px;
+
+    color: #4b3326;
+
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.stream-form input[type="text"],
+.stream-form select,
+.stream-form textarea {
+    width: 100%;
+
+    padding: 13px;
+
+    border: 2px solid #d8c8bd;
+    border-radius: 10px;
+
+    background: white;
+
+    color: #4b3326;
+
+    font-size: 16px;
+
+    outline: none;
+}
+
+.stream-form textarea {
+    min-height: 110px;
+    resize: vertical;
+}
+
+.stream-form input[type="file"] {
+    width: 100%;
+
+    padding: 10px;
+
+    border: 2px solid #d8c8bd;
+    border-radius: 10px;
+
+    background: white;
+}
+
+
+/* START BUTTON */
+
+.start-btn {
+    width: 100%;
+
+    margin-top: 18px;
+
+    padding: 16px;
+
+    background: #4b3326;
+    color: white;
+
+    border: none;
+    border-radius: 12px;
+
+    font-size: 19px;
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+.start-btn:hover {
+    background: #634534;
+}
+
+
+/* =========================================
+   BOTTOM NAV
+========================================= */
+
+.bottom-nav {
+    position: fixed;
+
+    left: 0;
+    bottom: 0;
+
+    width: 100%;
+    height: 70px;
+
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+
+    background: white;
+
+    border-top: 2px solid #ead9c8;
+
+    z-index: 9999;
+}
+
+.bottom-nav a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    color: #4b3326;
+
+    text-decoration: none;
+
+    font-size: 22px;
+    font-weight: bold;
+
+    min-width: 65px;
+}
+
+.bottom-nav a span {
+    font-size: 12px;
+    margin-top: 3px;
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 600px) {
+
+    .container {
+        padding: 25px 15px 95px;
+    }
+
+    .page-title h1 {
+        font-size: 34px;
+    }
+
+    .page-title p {
+        font-size: 16px;
+    }
+
+    .camera-box {
+        height: 250px;
+        border-radius: 15px;
+    }
+
+    #cameraPreview {
+        border-radius: 15px;
+    }
+
+    #cameraMessage {
+        font-size: 19px;
+    }
+
+    .camera-controls {
+        gap: 8px;
+    }
+
+    .camera-controls button {
+        flex: 1;
+        padding: 11px 5px;
+        font-size: 14px;
+    }
+
+    .stream-form input[type="text"],
+    .stream-form select,
+    .stream-form textarea {
+        font-size: 16px;
+    }
+
+    .start-btn {
+        font-size: 18px;
+    }
+
+}
+
+
+/* =========================================
+   HEADER
+========================================= */
+
+.navbar {
+    width: 100%;
+    height: 80px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 25px;
+
+    background: white;
+
+    border-bottom: 2px solid #d4a62a;
+}
+
+.logo {
+    font-size: 38px;
+    font-weight: 800;
+    color: #4b3326;
+}
+
+.top-icons {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.top-icons span,
+.top-icons a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 38px;
+    height: 38px;
+
+    text-decoration: none;
+
+    font-size: 27px;
+}
+
+
+/* MOBILE HEADER */
+
+@media (max-width: 600px) {
+
+    .navbar {
+        height: 75px;
+        padding: 0 18px;
+    }
+
+    .logo {
+        font-size: 34px;
+    }
+
+}
+
+
+/* =========================================
+   CAMERA MESSAGE
+========================================= */
+
+#creatorName {
+    color: #8a6b58;
+    font-size: 14px;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- HEADER -->
+
+<header class="navbar">
+
+<div class="logo">
+Canvas
+</div>
+
+<div class="top-icons">
+
+<span>🔍</span>
+
+<a href="profile.html">
+⬤
+</a>
+
+</div>
+
+</header>
+
+
+
+<!-- MAIN -->
+
+<main class="container">
+
+
+<section class="page-title">
+
+<h1>
+🎥 Go Live
+</h1>
+
+<p>
+Start streaming to your audience in seconds.
+</p>
+
+<p id="creatorName"></p>
+
+</section>
+
+
+
+<!-- CAMERA -->
+
+<section class="camera-section">
+
+<div class="camera-box">
+
+<video
+id="cameraPreview"
+autoplay
+muted
+playsinline>
+</video>
+
+<div id="cameraMessage">
+Camera Preview
+</div>
+
+</div>
+
+
+<div class="camera-controls">
+
+<button id="cameraButton">
+📷 Camera
+</button>
+
+<button id="micButton">
+🎙️ Microphone
+</button>
+
+</div>
+
+<p id="permissionMessage"></p>
+
+</section>
+
+
+
+<!-- STREAM FORM -->
+
+<section class="stream-form">
+
+<label for="streamTitle">
+Stream Title
+</label>
+
+<input
+type="text"
+id="streamTitle"
+placeholder="Enter stream title"
+>
+
+
+<label for="category">
+Category
+</label>
+
+<select id="category">
+
+<option>Gaming</option>
+<option>Music</option>
+<option>Sports</option>
+<option>Education</option>
+<option>Technology</option>
+
+</select>
+
+
+<label for="description">
+Description
+</label>
+
+<textarea
+id="description"
+rows="4"
+placeholder="Tell viewers about your stream..."
+></textarea>
+
+
+<label for="thumbnail">
+Thumbnail
+</label>
+
+<input
+type="file"
+id="thumbnail"
+accept="image/*"
+>
+
+
+<button
+id="startStreaming"
+class="start-btn">
+
+🔴 Start Streaming
+
+</button>
+
+</section>
+
+
+</main>
+
+
+
+<!-- BOTTOM NAV -->
+
+<nav class="bottom-nav">
+
+<a href="stream.html">
+⌂
+<span>Home</span>
+</a>
+
+<a href="stream.html">
+▣
+<span>Stream</span>
+</a>
+
+<a href="golive.html">
+⊙
+<span>Go Live</span>
+</a>
+
+<a href="profile.html">
+⬤
+<span>Profile</span>
+</a>
+
+</nav>
+
+
+
+<script>
+
+/* =========================================
+   CREATOR PROFILE
+========================================= */
+
+let creatorProfile = null;
+
+window.onload = function(){
+
+const savedProfile =
+localStorage.getItem("canvasProfile");
+
+if(savedProfile){
+
+creatorProfile =
+JSON.parse(savedProfile);
+
+document
+.getElementById("creatorName")
+.textContent =
+"Streaming as " +
+creatorProfile.name +
+" " +
+creatorProfile.username;
+
+}else{
+
+document
+.getElementById("creatorName")
+.textContent =
+"Please create your Canvas profile first.";
+
+}
+
+};
+
+
+/* =========================================
+   CAMERA
+========================================= */
+
+const cameraButton =
+document.getElementById("cameraButton");
+
+const cameraPreview =
+document.getElementById("cameraPreview");
+
+const cameraMessage =
+document.getElementById("cameraMessage");
+
+const permissionMessage =
+document.getElementById("permissionMessage");
+
+let cameraStream = null;
+
+
+cameraButton.onclick = async function(){
+
+try{
+
+if(
+!navigator.mediaDevices ||
+!navigator.mediaDevices.getUserMedia
+){
+
+permissionMessage.textContent =
+"Camera is not supported or permission is blocked in this browser.";
+
+return;
+
+}
+
+
+cameraStream =
+await navigator.mediaDevices.getUserMedia({
+
+video:{
+facingMode:"user"
+},
+
+audio:false
+
+});
+
+
+cameraPreview.srcObject =
+cameraStream;
+
+cameraPreview.style.display =
+"block";
+
+cameraMessage.style.display =
+"none";
+
+permissionMessage.textContent =
+"";
+
+cameraButton.textContent =
+"📷 Camera On";
+
+
+}catch(error){
+
+console.log("Camera error:", error);
+
+if(error.name === "NotAllowedError"){
+
+permissionMessage.textContent =
+"Camera permission was denied. Allow camera access in Chrome.";
+
+}
+
+else if(error.name === "NotFoundError"){
+
+permissionMessage.textContent =
+"No camera was found on this device.";
+
+}
+
+else{
+
+permissionMessage.textContent =
+"Camera error: " +
+error.name;
+
+}
+
+}
+
+};
+
+
+/* =========================================
+   MICROPHONE
+========================================= */
+
+const micButton =
+document.getElementById("micButton");
+
+let microphoneEnabled = false;
+
+
+micButton.onclick = async function(){
+
+try{
+
+if(!cameraStream){
+
+cameraStream =
+await navigator.mediaDevices.getUserMedia({
+
+audio:true
+
+});
+
+}else{
+
+const audioStream =
+await navigator.mediaDevices.getUserMedia({
+
+audio:true
+
+});
+
+audioStream
+.getAudioTracks()
+.forEach(track => {
+
+cameraStream.addTrack(track);
+
+});
+
+}
+
+
+microphoneEnabled = true;
+
+micButton.textContent =
+"🎙️ Microphone On";
+
+
+}catch(error){
+
+console.log(
+"Microphone error:",
+error
+);
+
+permissionMessage.textContent =
+"Microphone permission was denied. Allow microphone access in Chrome.";
+
+}
+
+};
+
+
+/* =========================================
+   START STREAMING
+========================================= */
+
+document
+.getElementById("startStreaming")
+.onclick = function(){
+
+if(!creatorProfile){
+
+alert(
+"Please create your Canvas profile first."
+);
+
+window.location.href =
+"profile.html";
+
+return;
+
+}
+
+
+const title =
+document
+.getElementById("streamTitle")
+.value
+.trim();
+
+
+const category =
+document
+.getElementById("category")
+.value;
+
+
+const description =
+document
+.getElementById("description")
+.value
+.trim();
+
+
+if(title === ""){
+
+alert(
+"Please enter a stream title."
+);
+
+return;
+
+}
+
+
+const streamData = {
+
+creatorName:
+creatorProfile.name,
+
+creatorUsername:
+creatorProfile.username,
+
+title:
+title,
+
+category:
+category,
+
+description:
+description,
+
+isLive:
+true,
+
+startedAt:
+Date.now()
+
+};
+
+
+localStorage.setItem(
+"canvasLiveStream",
+JSON.stringify(streamData)
+);
+
+
+alert(
+"🔴 You are now live!"
+);
+
+
+window.location.href =
+"watch.html";
+
+};
+
+</script>
+
+
+</body>
+
+  </html>
