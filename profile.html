@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Canvas Profile</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#ffffff;
+color:#4b3024;
+min-height:100vh;
+padding-bottom:90px;
+}
+
+/* HEADER */
+
+.navbar{
+height:70px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:0 20px;
+border-bottom:1px solid #eeeeee;
+}
+
+.logo{
+font-size:28px;
+font-weight:bold;
+color:#6F4E37;
+}
+
+.back{
+font-size:28px;
+text-decoration:none;
+color:#6F4E37;
+}
+
+/* PROFILE */
+
+.profile-container{
+padding:30px 22px;
+max-width:600px;
+margin:auto;
+}
+
+.profile-title{
+font-size:30px;
+font-weight:bold;
+margin-bottom:8px;
+}
+
+.profile-subtitle{
+color:#777;
+font-size:16px;
+margin-bottom:30px;
+}
+
+/* AVATAR */
+
+.avatar-section{
+text-align:center;
+margin-bottom:30px;
+}
+
+.avatar{
+width:110px;
+height:110px;
+border-radius:50%;
+background:#f1f1f1;
+display:flex;
+align-items:center;
+justify-content:center;
+margin:auto;
+overflow:hidden;
+border:3px solid #D4A017;
+font-size:50px;
+color:#6F4E37;
+}
+
+.avatar img{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+.photo-button{
+display:inline-block;
+margin-top:12px;
+color:#6F4E37;
+font-weight:bold;
+cursor:pointer;
+}
+
+#photoInput{
+display:none;
+}
+
+/* FORM */
+
+.form-group{
+margin-bottom:20px;
+}
+
+.form-group label{
+display:block;
+font-weight:bold;
+margin-bottom:8px;
+font-size:15px;
+}
+
+.form-group input,
+.form-group textarea{
+width:100%;
+padding:14px;
+border:1px solid #dddddd;
+border-radius:12px;
+font-size:16px;
+outline:none;
+background:#fafafa;
+color:#333;
+}
+
+.form-group input:focus,
+.form-group textarea:focus{
+border-color:#D4A017;
+background:#ffffff;
+}
+
+.form-group textarea{
+height:100px;
+resize:none;
+}
+
+/* SAVE */
+
+.save-button{
+width:100%;
+padding:15px;
+border:none;
+border-radius:12px;
+background:#6F4E37;
+color:white;
+font-size:17px;
+font-weight:bold;
+cursor:pointer;
+}
+
+/* PROFILE VIEW */
+
+#profileView{
+display:none;
+text-align:center;
+}
+
+.profile-name{
+font-size:28px;
+font-weight:bold;
+margin-top:18px;
+}
+
+.profile-username{
+color:#777;
+margin-top:5px;
+}
+
+.profile-bio{
+margin:18px auto;
+max-width:400px;
+line-height:1.5;
+color:#555;
+}
+
+/* STATS */
+
+.stats{
+display:flex;
+justify-content:center;
+gap:45px;
+margin:25px 0;
+}
+
+.stat strong{
+display:block;
+font-size:20px;
+color:#4b3024;
+}
+
+.stat span{
+font-size:14px;
+color:#777;
+}
+
+/* ACCOUNT INFO */
+
+.account-section{
+margin-top:30px;
+text-align:left;
+border-top:1px solid #eeeeee;
+padding-top:25px;
+}
+
+.account-title{
+font-size:20px;
+font-weight:bold;
+margin-bottom:18px;
+}
+
+.account-item{
+padding:15px 0;
+border-bottom:1px solid #eeeeee;
+}
+
+.account-label{
+font-size:13px;
+color:#777;
+margin-bottom:5px;
+}
+
+.account-value{
+font-size:16px;
+color:#333;
+word-break:break-word;
+}
+
+/* BUTTONS */
+
+.edit-button,
+.password-button,
+.logout-button{
+width:100%;
+padding:13px;
+border-radius:10px;
+font-size:15px;
+font-weight:bold;
+cursor:pointer;
+margin-top:12px;
+}
+
+.edit-button{
+border:1px solid #6F4E37;
+background:white;
+color:#6F4E37;
+}
+
+.password-button{
+border:1px solid #D4A017;
+background:white;
+color:#6F4E37;
+}
+
+.logout-button{
+border:1px solid #ddd;
+background:#fff;
+color:#777;
+}
+
+/* BOTTOM NAV */
+
+.bottom-nav{
+position:fixed;
+bottom:0;
+left:0;
+width:100%;
+height:75px;
+background:white;
+border-top:1px solid #eeeeee;
+display:flex;
+justify-content:space-around;
+align-items:center;
+z-index:100;
+}
+
+.bottom-nav a{
+text-decoration:none;
+font-size:26px;
+text-align:center;
+color:#4b3024;
+}
+
+.bottom-nav span{
+display:block;
+font-size:11px;
+color:#777;
+margin-top:3px;
+}
+
+/* CHANGE PASSWORD */
+
+#passwordSection{
+display:none;
+margin-top:25px;
+padding-top:20px;
+border-top:1px solid #eeeeee;
+text-align:left;
+}
+
+.password-title{
+font-size:20px;
+font-weight:bold;
+margin-bottom:18px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+<!-- HEADER -->
+
+<header class="navbar">
+
+<a href="index.html" class="back">
+‹
+</a>
+
+<div class="logo">
+Canvas
+</div>
+
+<div></div>
+
+</header>
+
+
+
+<main class="profile-container">
+
+
+<!-- CREATE PROFILE -->
+
+<div id="createProfile">
+
+<h1 class="profile-title">
+Create your profile
+</h1>
+
+<p class="profile-subtitle">
+Set up your Canvas profile and let people know who you are.
+</p>
+
+
+<div class="avatar-section">
+
+<div class="avatar" id="avatarPreview">
+👤
+</div>
+
+<label
+class="photo-button"
+for="photoInput"
+>
+Choose profile picture
+</label>
+
+<input
+type="file"
+id="photoInput"
+accept="image/*"
+>
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Display name
+</label>
+
+<input
+type="text"
+id="displayName"
+placeholder="Your name"
+maxlength="30"
+>
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Username
+</label>
+
+<input
+type="text"
+id="username"
+placeholder="@username"
+maxlength="20"
+>
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Bio
+</label>
+
+<textarea
+id="bio"
+placeholder="Tell people about yourself..."
+maxlength="150"
+></textarea>
+
+</div>
+
+
+<button
+class="save-button"
+onclick="saveProfile()"
+>
+Create Profile
+</button>
+
+</div>
+
+
+
+<!-- PROFILE VIEW -->
+
+<div id="profileView">
+
+<div
+class="avatar"
+id="profileAvatar"
+>
+👤
+</div>
+
+
+<h1
+class="profile-name"
+id="profileName"
+>
+</h1>
+
+
+<p
+class="profile-username"
+id="profileUsername"
+>
+</p>
+
+
+<p
+class="profile-bio"
+id="profileBio"
+>
+</p>
+
+
+<!-- STATS -->
+
+<div class="stats">
+
+<div class="stat">
+
+<strong>
+0
+</strong>
+
+<span>
+Followers
+</span>
+
+</div>
+
+
+<div class="stat">
+
+<strong>
+0
+</strong>
+
+<span>
+Following
+</span>
+
+</div>
+
+</div>
+
+
+
+<!-- ACCOUNT -->
+
+<div class="account-section">
+
+<h2 class="account-title">
+Account
+</h2>
+
+
+<div class="account-item">
+
+<div class="account-label">
+Email
+</div>
+
+<div
+class="account-value"
+id="accountEmail"
+>
+Not available
+</div>
+
+</div>
+
+
+<div class="account-item">
+
+<div class="account-label">
+Password
+</div>
+
+<div class="account-value">
+••••••••
+</div>
+
+</div>
+
+
+<button
+class="edit-button"
+onclick="editProfile()"
+>
+Edit Profile
+</button>
+
+
+<button
+class="password-button"
+onclick="togglePasswordSection()"
+>
+Change Password
+</button>
+
+
+<button
+class="logout-button"
+onclick="logout()"
+>
+Log Out
+</button>
+
+
+
+<!-- CHANGE PASSWORD -->
+
+<div id="passwordSection">
+
+<h2 class="password-title">
+Change Password
+</h2>
+
+
+<div class="form-group">
+
+<label>
+Current password
+</label>
+
+<input
+type="password"
+id="currentPassword"
+placeholder="Current password"
+>
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+New password
+</label>
+
+<input
+type="password"
+id="newPassword"
+placeholder="New password"
+minlength="8"
+>
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Confirm new password
+</label>
+
+<input
+type="password"
+id="confirmNewPassword"
+placeholder="Confirm new password"
+minlength="8"
+>
+
+</div>
+
+
+<button
+class="save-button"
+onclick="changePassword()"
+>
+Save New Password
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+</main>
+
+
+
+<!-- BOTTOM NAV -->
+
+<nav class="bottom-nav">
+
+<a href="stream.html">
+🏠
+<span>Home</span>
+</a>
+
+
+<a href="stream.html">
+📺
+<span>Stream</span>
+</a>
+
+
+<a href="golive.html">
+➕
+<span>Go Live</span>
+</a>
+
+
+<a href="profile.html">
+👤
+<span>Profile</span>
+</a>
+
+</nav>
+
+
+
+<script>
+
+let selectedPhoto = "";
+
+
+/* LOAD PROFILE */
+
+window.onload = function(){
+
+const savedProfile =
+localStorage.getItem("canvasProfile");
+
+if(savedProfile){
+
+const profile =
+JSON.parse(savedProfile);
+
+showProfile(profile);
+
+}
+
+};
+
+
+/* PHOTO */
+
+document
+.getElementById("photoInput")
+.addEventListener("change",function(){
+
+const file = this.files[0];
+
+if(!file) return;
+
+const reader =
+new FileReader();
+
+reader.onload = function(e){
+
+selectedPhoto =
+e.target.result;
+
+document
+.getElementById("avatarPreview")
+.innerHTML =
+'<img src="' +
+selectedPhoto +
+'">';
+
+};
+
+reader.readAsDataURL(file);
+
+});
+
+
+
+/* SAVE PROFILE */
+
+function saveProfile(){
+
+const name =
+document
+.getElementById("displayName")
+.value
+.trim();
+
+
+const username =
+document
+.getElementById("username")
+.value
+.trim();
+
+
+const bio =
+document
+.getElementById("bio")
+.value
+.trim();
+
+
+if(name === ""){
+
+alert(
+"Please enter your display name."
+);
+
+return;
+
+}
+
+
+if(username === ""){
+
+alert(
+"Please choose a username."
+);
+
+return;
+
+}
+
+
+let finalUsername =
+username;
+
+
+if(!finalUsername.startsWith("@")){
+
+finalUsername =
+"@" + finalUsername;
+
+}
+
+
+const profile = {
+
+name:name,
+
+username:finalUsername,
+
+bio:bio,
+
+photo:selectedPhoto
+
+};
+
+
+localStorage.setItem(
+"canvasProfile",
+JSON.stringify(profile)
+);
+
+
+showProfile(profile);
+
+}
+
+
+
+/* SHOW PROFILE */
+
+function showProfile(profile){
+
+document
+.getElementById("createProfile")
+.style.display="none";
+
+
+document
+.getElementById("profileView")
+.style.display="block";
+
+
+document
+.getElementById("profileName")
+.textContent =
+profile.name;
+
+
+document
+.getElementById("profileUsername")
+.textContent =
+profile.username;
+
+
+document
+.getElementById("profileBio")
+.textContent =
+profile.bio ||
+"No bio yet.";
+
+
+/* ACCOUNT EMAIL */
+
+const savedAccount =
+localStorage.getItem("canvasAccount");
+
+
+if(savedAccount){
+
+const account =
+JSON.parse(savedAccount);
+
+document
+.getElementById("accountEmail")
+.textContent =
+account.email ||
+"Not available";
+
+}
+
+
+if(profile.photo){
+
+document
+.getElementById("profileAvatar")
+.innerHTML =
+'<img src="' +
+profile.photo +
+'">';
+
+}
+
+}
+
+
+
+/* EDIT PROFILE */
+
+function editProfile(){
+
+const savedProfile =
+localStorage.getItem("canvasProfile");
+
+
+if(!savedProfile){
+
+return;
+
+}
+
+
+const profile =
+JSON.parse(savedProfile);
+
+
+document
+.getElementById("createProfile")
+.style.display="block";
+
+
+document
+.getElementById("profileView")
+.style.display="none";
+
+
+document
+.getElementById("displayName")
+.value =
+profile.name;
+
+
+document
+.getElementById("username")
+.value =
+profile.username;
+
+
+document
+.getElementById("bio")
+.value =
+profile.bio;
+
+
+selectedPhoto =
+profile.photo || "";
+
+
+if(profile.photo){
+
+document
+.getElementById("avatarPreview")
+.innerHTML =
+'<img src="' +
+profile.photo +
+'">';
+
+}
+
+}
+
+
+
+/* CHANGE PASSWORD SECTION */
+
+function togglePasswordSection(){
+
+const section =
+document.getElementById("passwordSection");
+
+if(!section){
+alert("Password section not found.");
+return;
+}
+
+if(section.style.display === "block"){
+
+section.style.display = "none";
+
+}else{
+
+section.style.display = "block";
+
+}
+
+}
+
+
+
+/* CHANGE PASSWORD */
+
+function changePassword(){
+
+const currentPassword =
+document
+.getElementById("currentPassword")
+.value;
+
+
+const newPassword =
+document
+.getElementById("newPassword")
+.value;
+
+
+const confirmPassword =
+document
+.getElementById("confirmNewPassword")
+.value;
+
+
+const savedAccount =
+localStorage.getItem("canvasAccount");
+
+
+if(!savedAccount){
+
+alert(
+"No Canvas account found."
+);
+
+return;
+
+}
+
+
+const account =
+JSON.parse(savedAccount);
+
+
+if(currentPassword !== account.password){
+
+alert(
+"Current password is incorrect."
+);
+
+return;
+
+}
+
+
+if(newPassword.length < 8){
+
+alert(
+"New password must be at least 8 characters."
+);
+
+return;
+
+}
+
+
+if(newPassword !== confirmPassword){
+
+alert(
+"New passwords do not match."
+);
+
+return;
+
+}
+
+
+account.password =
+newPassword;
+
+
+localStorage.setItem(
+"canvasAccount",
+JSON.stringify(account)
+);
+
+
+alert(
+"Password changed successfully."
+);
+
+
+document
+.getElementById("currentPassword")
+.value="";
+
+
+document
+.getElementById("newPassword")
+.value="";
+
+
+document
+.getElementById("confirmNewPassword")
+.value="";
+
+
+document
+.getElementById("passwordSection")
+.style.display="none";
+
+}
+
+
+
+/* LOG OUT */
+
+function logout(){
+
+localStorage.removeItem(
+"canvasLoggedIn"
+);
+
+window.location.href =
+"login.html";
+
+}
+
+</script>
+
+</body>
+
+</html><!DOCTYPE html>
