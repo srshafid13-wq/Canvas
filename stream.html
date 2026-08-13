@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Canvas - Stream</title>
+
+<link rel="stylesheet" href="style.css">
+
+<style>
+
+/* =========================================
+   MODERN GLASS SEARCH BUTTON
+========================================= */
+
+.search-button {
+    width: 40px;
+    height: 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid rgba(75, 51, 38, 0.18);
+
+    border-radius: 14px;
+
+    background: rgba(255, 255, 255, 0.65);
+
+    color: #4b3326;
+
+    cursor: pointer;
+
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+
+    box-shadow:
+        0 4px 12px rgba(75, 51, 38, 0.08);
+
+    transition: 0.2s ease;
+}
+
+.search-button:hover {
+    transform: translateY(-1px);
+    border-color: #d4a62a;
+}
+
+.search-button:active {
+    transform: scale(0.94);
+}
+
+.search-button svg {
+    display: block;
+}
+
+
+/* =========================================
+   SEARCH PANEL
+========================================= */
+
+.search-panel {
+    display: none;
+
+    position: fixed;
+
+    top: 82px;
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    width: calc(100% - 30px);
+    max-width: 600px;
+
+    padding: 18px;
+
+    background: rgba(255, 255, 255, 0.94);
+
+    border: 1px solid rgba(75, 51, 38, 0.15);
+
+    border-radius: 20px;
+
+    box-shadow:
+        0 12px 35px rgba(75, 51, 38, 0.14);
+
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+
+    z-index: 2000;
+}
+
+.search-panel.active {
+    display: block;
+}
+
+.search-row {
+    display: flex;
+    gap: 10px;
+}
+
+.search-input {
+    flex: 1;
+
+    min-width: 0;
+
+    padding: 13px 15px;
+
+    border: 2px solid #d8c7bb;
+
+    border-radius: 13px;
+
+    background: #ffffff;
+
+    color: #4b3326;
+
+    font-size: 16px;
+
+    outline: none;
+}
+
+.search-input:focus {
+    border-color: #d4a62a;
+}
+
+.search-submit {
+    width: 48px;
+
+    border: none;
+
+    border-radius: 13px;
+
+    background: #4b3326;
+
+    color: #ffffff;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+}
+
+.search-submit:active {
+    transform: scale(0.95);
+}
+
+.search-result {
+    margin-top: 14px;
+
+    color: #6a574c;
+
+    font-size: 14px;
+
+    line-height: 1.5;
+}
+
+
+/* =========================================
+   PROFILE PICTURE ICON
+========================================= */
+
+.top-icons a#topProfileIcon {
+    width: 40px;
+    height: 40px;
+
+    border-radius: 50%;
+
+    overflow: hidden;
+
+    padding: 0;
+
+    background: #f1f1f1;
+
+    border: 2px solid #d4a62a;
+}
+
+.top-icons a#topProfileIcon img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+
+    border-radius: 50%;
+}
+
+
+/* =========================================
+   BOTTOM PROFILE PICTURE
+========================================= */
+
+.bottom-nav a#bottomProfileIcon {
+    position: relative;
+}
+
+.bottom-nav a#bottomProfileIcon img {
+    width: 25px;
+    height: 25px;
+
+    display: block;
+
+    object-fit: cover;
+
+    border-radius: 50%;
+
+    border: 1.5px solid #d4a62a;
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+<!-- =========================================
+     TOP NAVBAR
+========================================= -->
+
+<header class="navbar">
+
+    <div class="logo">
+        Canvas
+    </div>
+
+
+    <div class="top-icons">
+
+
+        <!-- SEARCH -->
+
+        <button
+            class="search-button"
+            id="searchButton"
+            type="button"
+            onclick="openSearch()"
+            aria-label="Search"
+        >
+
+            <!-- SEARCH ICON #7 -->
+
+            <svg
+                width="25"
+                height="25"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+            >
+
+                <circle
+                    cx="11"
+                    cy="11"
+                    r="7"
+                    stroke="currentColor"
+                    stroke-width="2.8"
+                />
+
+                <path
+                    d="M16.5 16.5L21 21"
+                    stroke="currentColor"
+                    stroke-width="2.8"
+                    stroke-linecap="round"
+                />
+
+            </svg>
+
+        </button>
+
+
+        <!-- PROFILE -->
+
+        <a
+            href="profile.html"
+            class="icon"
+            id="topProfileIcon"
+        >
+            ⬤
+        </a>
+
+
+    </div>
+
+</header>
+
+
+
+<!-- =========================================
+     SEARCH PANEL
+========================================= -->
+
+<div
+    class="search-panel"
+    id="searchPanel"
+>
+
+    <div class="search-row">
+
+        <input
+            type="search"
+            id="searchInput"
+            class="search-input"
+            placeholder="Search Canvas..."
+            autocomplete="off"
+        >
+
+        <button
+            class="search-submit"
+            type="button"
+            onclick="performSearch()"
+            aria-label="Search"
+        >
+
+            <svg
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+            >
+
+                <circle
+                    cx="11"
+                    cy="11"
+                    r="7"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                />
+
+                <path
+                    d="M16.5 16.5L21 21"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                />
+
+            </svg>
+
+        </button>
+
+    </div>
+
+
+    <div
+        class="search-result"
+        id="searchResult"
+    >
+        Search for streams, creators, or categories.
+    </div>
+
+</div>
+
+
+
+<!-- =========================================
+     STREAM PAGE
+========================================= -->
+
+<main class="stream-page">
+
+
+    <section class="stream-header">
+
+        <h1>
+            Stream
+        </h1>
+
+        <p>
+            Watch live streams on Canvas
+        </p>
+
+    </section>
+
+
+
+    <!-- =====================================
+         LIVE STREAM AREA
+    ====================================== -->
+
+    <section class="live-streams">
+
+
+        <div class="empty-stream">
+
+
+            <div class="stream-symbol">
+                ▣
+            </div>
+
+
+            <h2>
+                No live streams yet
+            </h2>
+
+
+            <p>
+                When someone goes live, their stream will appear here.
+            </p>
+
+
+            <a
+                href="golive.html"
+                class="go-live-button"
+            >
+                🔴 Start Streaming
+            </a>
+
+
+        </div>
+
+
+    </section>
+
+
+</main>
+
+
+
+<!-- =========================================
+     BOTTOM NAVIGATION
+========================================= -->
+
+<nav class="bottom-nav">
+
+
+    <!-- HOME -->
+
+    <a href="stream.html">
+
+        ⌂
+
+        <span>
+            Home
+        </span>
+
+    </a>
+
+
+
+    <!-- STREAM -->
+
+    <a
+        href="stream.html"
+        class="active"
+    >
+
+        ▣
+
+        <span>
+            Stream
+        </span>
+
+    </a>
+
+
+
+    <!-- GO LIVE -->
+
+    <a href="golive.html">
+
+        ⊙
+
+        <span>
+            Go Live
+        </span>
+
+    </a>
+
+
+
+    <!-- PROFILE -->
+
+    <a
+        href="profile.html"
+        id="bottomProfileIcon"
+    >
+
+        ⬤
+
+        <span>
+            Profile
+        </span>
+
+    </a>
+
+
+</nav>
+
+
+
+<!-- =========================================
+     JAVASCRIPT
+========================================= -->
+
+<script>
+
+
+/* =========================================
+   PROFILE PICTURE SYNC
+========================================= */
+
+function loadProfilePicture(){
+
+    const savedProfile =
+        localStorage.getItem("canvasProfile");
+
+
+    if(!savedProfile) return;
+
+
+    try {
+
+        const profile =
+            JSON.parse(savedProfile);
+
+
+        if(!profile.photo) return;
+
+
+        /* TOP PROFILE ICON */
+
+        const topIcon =
+            document.getElementById(
+                "topProfileIcon"
+            );
+
+
+        if(topIcon){
+
+            topIcon.innerHTML =
+                '<img src="' +
+                profile.photo +
+                '" alt="Profile">';
+
+        }
+
+
+        /* BOTTOM PROFILE ICON */
+
+        const bottomIcon =
+            document.getElementById(
+                "bottomProfileIcon"
+            );
+
+
+        if(bottomIcon){
+
+            bottomIcon.innerHTML =
+                '<img src="' +
+                profile.photo +
+                '" alt="Profile">' +
+                '<span>Profile</span>';
+
+        }
+
+    }
+
+    catch(error){
+
+        console.error(
+            "Could not load profile picture.",
+            error
+        );
+
+    }
+
+}
+
+
+
+/* =========================================
+   OPEN / CLOSE SEARCH
+========================================= */
+
+function openSearch(){
+
+    const panel =
+        document.getElementById("searchPanel");
+
+    const input =
+        document.getElementById("searchInput");
+
+
+    if(!panel) return;
+
+
+    panel.classList.toggle("active");
+
+
+    if(panel.classList.contains("active")){
+
+        setTimeout(function(){
+
+            input.focus();
+
+        },100);
+
+    }
+
+}
+
+
+
+/* =========================================
+   PERFORM SEARCH
+========================================= */
+
+function performSearch(){
+
+    const input =
+        document.getElementById("searchInput");
+
+    const result =
+        document.getElementById("searchResult");
+
+
+    const searchTerm =
+        input.value.trim();
+
+
+    if(!searchTerm){
+
+        result.textContent =
+            "Please enter something to search.";
+
+        input.focus();
+
+        return;
+
+    }
+
+
+    /* CHECK CURRENT LIVE STREAM */
+
+    const savedStream =
+        localStorage.getItem(
+            "canvasLiveStream"
+        );
+
+
+    if(savedStream){
+
+        try {
+
+            const stream =
+                JSON.parse(savedStream);
+
+
+            const searchableText = (
+
+                (stream.title || "") +
+                " " +
+                (stream.category || "") +
+                " " +
+                (stream.description || "") +
+                " " +
+                (stream.creator || "") +
+                " " +
+                (stream.username || "")
+
+            ).toLowerCase();
+
+
+            if(
+                searchableText.includes(
+                    searchTerm.toLowerCase()
+                )
+            ){
+
+                result.innerHTML =
+                    "<strong>Live stream found:</strong><br>" +
+                    (stream.title || "Untitled Stream") +
+                    "<br>" +
+                    "by " +
+                    (stream.creator || "Canvas Creator");
+
+                return;
+
+            }
+
+        }
+
+        catch(error){
+
+            console.error(
+                "Could not read live stream.",
+                error
+            );
+
+        }
+
+    }
+
+
+    result.textContent =
+        'No results found for "' +
+        searchTerm +
+        '".';
+
+}
+
+
+
+/* =========================================
+   ENTER KEY SEARCH
+========================================= */
+
+document.addEventListener(
+    "keydown",
+    function(event){
+
+        const input =
+            document.getElementById(
+                "searchInput"
+            );
+
+
+        if(
+            event.key === "Enter" &&
+            document.activeElement === input
+        ){
+
+            performSearch();
+
+        }
+
+
+        if(event.key === "Escape"){
+
+            const panel =
+                document.getElementById(
+                    "searchPanel"
+                );
+
+
+            if(panel){
+
+                panel.classList.remove(
+                    "active"
+                );
+
+            }
+
+        }
+
+    }
+);
+
+
+
+/* =========================================
+   PAGE LOAD
+========================================= */
+
+window.addEventListener(
+    "DOMContentLoaded",
+    loadProfilePicture
+);
+
+
+</script>
+
+
+</body>
+
+  </html>
