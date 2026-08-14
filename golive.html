@@ -1,0 +1,1783 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Canvas - Go Live</title>
+
+<link rel="stylesheet" href="style.css">
+
+<style>
+
+/* =========================================
+   GO LIVE PAGE
+========================================= */
+
+.container {
+    padding-bottom: 110px;
+}
+
+.page-title {
+    width: 100%;
+    max-width: 760px;
+    margin: 0 auto 28px;
+    text-align: center;
+}
+
+.page-title h1 {
+    color: #4b3326;
+    font-size: 28px;
+    font-weight: 800;
+    margin-bottom: 8px;
+}
+
+.page-title p {
+    color: #8a6b58;
+    font-size: 15px;
+    margin-bottom: 5px;
+}
+
+#creatorName {
+    color: #4b3326;
+    font-weight: 700;
+}
+
+
+/* =========================================
+   CAMERA
+========================================= */
+
+.camera-section {
+    width: 100%;
+    max-width: 760px;
+    margin: 0 auto 30px;
+}
+
+.camera-box {
+    width: 100%;
+    height: 360px;
+
+    background: #251b17;
+
+    border-radius: 22px;
+
+    overflow: hidden;
+
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    box-shadow:
+        0 8px 25px rgba(75, 51, 38, 0.12);
+}
+
+#cameraPreview {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    display: none;
+
+    border-radius: 22px;
+}
+
+#cameraMessage {
+    color: #ffffff;
+
+    font-size: 18px;
+    font-weight: 700;
+
+    text-align: center;
+}
+
+
+/* =========================================
+   CAMERA CONTROLS
+========================================= */
+
+.camera-controls {
+    width: 100%;
+
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+
+    gap: 16px;
+
+    margin-top: 24px;
+}
+
+.camera-controls button {
+    width: 100%;
+
+    min-height: 62px;
+
+    padding: 14px 12px;
+
+    border: 1px solid rgba(75, 51, 38, 0.16);
+
+    border-radius: 18px;
+
+    background: #ffffff;
+
+    color: #4b3326;
+
+    font-size: 16px;
+    font-weight: 800;
+
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 10px;
+
+    box-shadow:
+        0 5px 15px rgba(75, 51, 38, 0.08);
+
+    transition: 0.2s ease;
+}
+
+.camera-controls button:hover {
+    border-color: #d4a62a;
+    transform: translateY(-1px);
+}
+
+.camera-controls button:active {
+    transform: scale(0.97);
+}
+
+.camera-controls button.active {
+    background: #d4a62a;
+    color: #ffffff;
+    border-color: #d4a62a;
+}
+
+
+/* =========================================
+   CAMERA + MICROPHONE ICONS
+========================================= */
+
+.control-icon {
+    width: 26px;
+    height: 26px;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+}
+
+.control-icon svg {
+    width: 26px;
+    height: 26px;
+
+    display: block;
+}
+
+
+/* =========================================
+   PERMISSION MESSAGE
+========================================= */
+
+#permissionMessage {
+    text-align: center;
+
+    margin-top: 12px;
+
+    min-height: 20px;
+
+    font-size: 14px;
+
+    color: #8a6b58;
+}
+
+
+/* =========================================
+   STREAM FORM
+========================================= */
+
+.stream-form {
+    width: 100%;
+    max-width: 760px;
+
+    margin: 0 auto;
+}
+
+.stream-form label.form-label {
+    display: block;
+
+    margin: 22px 0 9px;
+
+    font-size: 17px;
+    font-weight: 800;
+
+    color: #4b3326;
+}
+
+.stream-form input[type="text"],
+.stream-form select,
+.stream-form textarea {
+    width: 100%;
+
+    padding: 16px 15px;
+
+    border: 2px solid #d8c7bb;
+
+    border-radius: 16px;
+
+    background: #ffffff;
+
+    color: #4b3326;
+
+    font-size: 17px;
+
+    outline: none;
+
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.stream-form input[type="text"]:focus,
+.stream-form select:focus,
+.stream-form textarea:focus {
+    border-color: #d4a62a;
+
+    box-shadow:
+        0 0 0 2px rgba(212, 166, 42, 0.08);
+}
+
+.stream-form textarea {
+    resize: vertical;
+
+    min-height: 150px;
+}
+
+
+/* =========================================
+   THUMBNAIL UPLOAD
+========================================= */
+
+.photo-upload {
+    width: 100%;
+
+    min-height: 58px;
+
+    padding: 15px;
+
+    border: 1px solid rgba(75, 51, 38, 0.16);
+
+    border-radius: 16px;
+
+    background: #ffffff;
+
+    color: #4b3326;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    font-size: 16px;
+    font-weight: 800;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 5px 15px rgba(75, 51, 38, 0.08);
+
+    transition: 0.2s ease;
+}
+
+.photo-upload:hover {
+    border-color: #d4a62a;
+    transform: translateY(-1px);
+}
+
+.photo-upload:active {
+    transform: scale(0.97);
+}
+
+.thumbnail-preview {
+    width: 100%;
+
+    margin-top: 12px;
+
+    display: none;
+
+    border-radius: 16px;
+
+    overflow: hidden;
+
+    border: 1px solid #eaded6;
+}
+
+.thumbnail-preview img {
+    width: 100%;
+
+    max-height: 220px;
+
+    object-fit: cover;
+
+    display: block;
+}
+
+
+/* =========================================
+   STREAMING BUTTONS
+========================================= */
+
+.streaming-buttons {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 14px;
+
+    margin-top: 28px;
+}
+
+.start-btn,
+.stop-btn {
+    width: 100%;
+
+    padding: 18px;
+
+    border: none;
+
+    border-radius: 16px;
+
+    color: #ffffff;
+
+    font-size: 18px;
+
+    font-weight: 800;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 5px 15px rgba(75, 51, 38, 0.18);
+
+    transition: 0.2s ease;
+}
+
+.start-btn {
+    background: #4b3326;
+}
+
+.start-btn:hover {
+    background: #5d4030;
+    transform: translateY(-1px);
+}
+
+.stop-btn {
+    background: #9b2c2c;
+}
+
+.stop-btn:hover {
+    background: #7f2020;
+    transform: translateY(-1px);
+}
+
+.start-btn:active,
+.stop-btn:active {
+    transform: scale(0.98);
+}
+
+.start-btn:disabled,
+.stop-btn:disabled {
+    cursor: not-allowed;
+
+    opacity: 0.65;
+
+    transform: none;
+}
+
+
+/* =========================================
+   HIDDEN STOP BUTTON
+========================================= */
+
+.stop-btn.hidden {
+    display: none;
+}
+
+
+/* =========================================
+   IMPORTANT PROFILE ICON FIX
+========================================= */
+
+.top-icons a#topProfileIcon {
+    width: 40px;
+    height: 40px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    overflow: hidden;
+
+    background: #4b3326;
+
+    color: #ffffff;
+
+    border: 2px solid #d4a62a;
+
+    text-decoration: none;
+
+    font-size: 20px;
+}
+
+.top-icons a#topProfileIcon img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    display: block;
+
+    border-radius: 50%;
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 600px) {
+
+    .page-title h1 {
+        font-size: 25px;
+    }
+
+    .camera-box {
+        height: 260px;
+
+        border-radius: 20px;
+    }
+
+    #cameraPreview {
+        border-radius: 20px;
+    }
+
+    .camera-controls {
+        gap: 12px;
+    }
+
+    .camera-controls button {
+        min-height: 58px;
+
+        padding: 14px 8px;
+
+        font-size: 15px;
+    }
+
+    .control-icon,
+    .control-icon svg {
+        width: 24px;
+        height: 24px;
+    }
+
+    .stream-form label.form-label {
+        font-size: 16px;
+    }
+
+    .stream-form input[type="text"],
+    .stream-form select,
+    .stream-form textarea {
+        font-size: 16px;
+    }
+
+    .streaming-buttons {
+        grid-template-columns: 1fr;
+    }
+
+    .top-icons a#topProfileIcon {
+        width: 40px;
+        height: 40px;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+<!-- =========================================
+     NAVBAR
+========================================= -->
+
+<header class="navbar">
+
+    <div class="logo">
+        Canvas
+    </div>
+
+    <div class="top-icons">
+
+        <!-- SEARCH -->
+
+        <span>
+
+            <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg">
+
+                <circle
+                    cx="11"
+                    cy="11"
+                    r="7"
+                    stroke="currentColor"
+                    stroke-width="2.8"
+                />
+
+                <path
+                    d="M16.5 16.5L21 21"
+                    stroke="currentColor"
+                    stroke-width="2.8"
+                    stroke-linecap="round"
+                />
+
+            </svg>
+
+        </span>
+
+
+        <!-- PROFILE -->
+
+        <a
+            href="profile.html"
+            id="topProfileIcon"
+            aria-label="Profile">
+
+            <span id="topProfileFallback">●</span>
+
+            <img
+                id="topProfileImage"
+                src=""
+                alt="Profile"
+                style="display:none;">
+
+        </a>
+
+    </div>
+
+</header>
+
+
+<!-- =========================================
+     MAIN
+========================================= -->
+
+<main class="container">
+
+    <section class="page-title">
+
+        <h1>
+            🎥 Go Live
+        </h1>
+
+        <p>
+            Start streaming to your audience in seconds.
+        </p>
+
+        <p id="creatorName"></p>
+
+    </section>
+
+
+    <!-- CAMERA SECTION -->
+
+    <section class="camera-section">
+
+        <div class="camera-box">
+
+            <video
+                id="cameraPreview"
+                autoplay
+                muted
+                playsinline>
+            </video>
+
+            <div id="cameraMessage">
+                Camera Preview
+            </div>
+
+        </div>
+
+
+    <div class="camera-controls">
+
+        <button
+            id="cameraButton"
+            type="button">
+
+            <span class="control-icon">
+
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg">
+
+                    <rect
+                        x="3"
+                        y="6"
+                        width="14"
+                        height="12"
+                        rx="2.5"
+                        stroke="currentColor"
+                        stroke-width="2.2"/>
+
+                    <path
+                        d="M17 10L21 7.8V16.2L17 14"
+                        stroke="currentColor"
+                        stroke-width="2.2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"/>
+
+                </svg>
+
+            </span>
+
+            Camera
+
+        </button>
+
+
+        <button
+            id="micButton"
+            type="button">
+
+            <span class="control-icon">
+
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg">
+
+                    <rect
+                        x="8"
+                        y="3"
+                        width="8"
+                        height="12"
+                        rx="4"
+                        stroke="currentColor"
+                        stroke-width="2.2"/>
+
+                    <path
+                        d="M5 11V12C5 15.866 8.134 19 12 19C15.866 19 19 15.866 19 12V11"
+                        stroke="currentColor"
+                        stroke-width="2.2"
+                        stroke-linecap="round"/>
+
+                    <path
+                        d="M12 19V22"
+                        stroke="currentColor"
+                        stroke-width="2.2"
+                        stroke-linecap="round"/>
+
+                    <path
+                        d="M9 22H15"
+                        stroke="currentColor"
+                        stroke-width="2.2"
+                        stroke-linecap="round"/>
+
+                </svg>
+
+            </span>
+
+            Microphone
+
+        </button>
+
+    </div>
+
+    <p id="permissionMessage"></p>
+
+  </section>
+  <!-- =========================================
+     STREAM INFORMATION
+========================================= -->
+
+<section class="stream-form">
+
+    <!-- STREAM TITLE -->
+
+    <label
+        class="form-label"
+        for="streamTitle">
+
+        Stream Title
+
+    </label>
+
+    <input
+        type="text"
+        id="streamTitle"
+        placeholder="Enter stream title">
+
+
+    <!-- CATEGORY -->
+
+    <label
+        class="form-label"
+        for="category">
+
+        Category
+
+    </label>
+
+    <select id="category">
+
+        <option value="Gaming">
+            Gaming
+        </option>
+
+        <option value="Music">
+            Music
+        </option>
+
+        <option value="Sports">
+            Sports
+        </option>
+
+        <option value="Entertainment">
+            Entertainment
+        </option>
+
+        <option value="Education">
+            Education
+        </option>
+
+        <option value="Technology">
+            Technology
+        </option>
+
+    </select>
+
+
+    <!-- DESCRIPTION -->
+
+    <label
+        class="form-label"
+        for="description">
+
+        Description
+
+    </label>
+
+    <textarea
+        id="description"
+        rows="4"
+        placeholder="Tell viewers about your stream..."></textarea>
+
+
+    <!-- THUMBNAIL -->
+
+    <label
+        class="form-label"
+        for="thumbnail">
+
+        Thumbnail
+
+    </label>
+
+    <label
+        for="thumbnail"
+        class="photo-upload">
+
+        Choose a photo
+
+    </label>
+
+    <input
+        type="file"
+        id="thumbnail"
+        accept="image/*"
+        style="display:none;">
+
+
+    <!-- THUMBNAIL PREVIEW -->
+
+    <div
+        class="thumbnail-preview"
+        id="thumbnailPreview">
+
+        <img
+            id="thumbnailImage"
+            src=""
+            alt="Thumbnail preview">
+
+    </div>
+
+
+    <!-- =========================================
+         STREAMING BUTTONS
+    ========================================= -->
+
+    <div class="streaming-buttons">
+
+        <!-- START -->
+
+        <button
+            id="startStreaming"
+            class="start-btn"
+            type="button">
+
+            🔴 Start Streaming
+
+        </button>
+
+
+        <!-- STOP -->
+
+        <button
+            id="stopStreaming"
+            class="stop-btn hidden"
+            type="button">
+
+            ⏹ Stop Streaming
+
+        </button>
+
+    </div>
+
+</section>
+
+</main>
+
+
+<!-- =========================================
+     BOTTOM NAVIGATION
+========================================= -->
+
+<nav class="bottom-nav">
+
+    <!-- HOME -->
+
+    <a href="stream.html">
+
+        <div>⌂</div>
+
+        <span>
+            Home
+        </span>
+
+    </a>
+
+
+    <!-- STREAM -->
+
+    <a href="stream.html">
+
+        <div>▣</div>
+
+        <span>
+            Stream
+        </span>
+
+    </a>
+
+
+    <!-- GO LIVE -->
+
+    <a
+        href="golive.html"
+        class="active">
+
+        <div>⊙</div>
+
+        <span>
+            Go Live
+        </span>
+
+    </a>
+
+
+    <!-- PROFILE -->
+
+    <a
+        href="profile.html"
+        id="bottomProfileIcon">
+
+        <div id="bottomProfileFallback">
+            ●
+        </div>
+
+        <img
+            id="bottomProfileImage"
+            src=""
+            alt="Profile"
+            style="display:none;">
+
+        <span>
+            Profile
+        </span>
+
+    </a>
+
+</nav>
+
+
+<!-- =========================================
+     JAVASCRIPT
+========================================= -->
+
+<script>
+
+
+/* =========================================
+   PROFILE
+========================================= */
+
+let creatorProfile = null;
+
+
+window.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const savedProfile =
+            localStorage.getItem("canvasProfile");
+
+
+        if (savedProfile) {
+
+            try {
+
+                creatorProfile =
+                    JSON.parse(savedProfile);
+
+
+                const creatorName =
+                    document.getElementById(
+                        "creatorName"
+                    );
+
+
+                creatorName.textContent =
+                    "Streaming as " +
+                    (
+                        creatorProfile.name || ""
+                    ) +
+                    " " +
+                    (
+                        creatorProfile.username || ""
+                    );
+
+
+                /* PROFILE IMAGE */
+
+                const profileImage =
+                    creatorProfile.profileImage ||
+                    creatorProfile.image ||
+                    creatorProfile.photo ||
+                    creatorProfile.avatar ||
+                    "";
+
+
+                const topImage =
+                    document.getElementById(
+                        "topProfileImage"
+                    );
+
+
+                const topFallback =
+                    document.getElementById(
+                        "topProfileFallback"
+                    );
+
+
+                const bottomImage =
+                    document.getElementById(
+                        "bottomProfileImage"
+                    );
+
+
+                const bottomFallback =
+                    document.getElementById(
+                        "bottomProfileFallback"
+                    );
+
+
+                if (profileImage) {
+
+                    topImage.src =
+                        profileImage;
+
+                    topImage.style.display =
+                        "block";
+
+                    topFallback.style.display =
+                        "none";
+
+
+                    bottomImage.src =
+                        profileImage;
+
+                    bottomImage.style.display =
+                        "block";
+
+                    bottomFallback.style.display =
+                        "none";
+
+                }
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Profile loading error:",
+                    error
+                );
+
+
+                document
+                    .getElementById(
+                        "creatorName"
+                    )
+                    .textContent =
+                    "Canvas Creator";
+
+            }
+
+        }
+
+        else {
+
+            document
+                .getElementById(
+                    "creatorName"
+                )
+                .textContent =
+                "Please create your Canvas profile first.";
+
+        }
+
+    }
+);
+
+
+
+/* =========================================
+   CAMERA ELEMENTS
+========================================= */
+
+const cameraButton =
+    document.getElementById(
+        "cameraButton"
+    );
+
+
+const micButton =
+    document.getElementById(
+        "micButton"
+    );
+
+
+const cameraPreview =
+    document.getElementById(
+        "cameraPreview"
+    );
+
+
+const cameraMessage =
+    document.getElementById(
+        "cameraMessage"
+    );
+
+
+const permissionMessage =
+    document.getElementById(
+        "permissionMessage"
+    );
+
+
+const startStreaming =
+    document.getElementById(
+        "startStreaming"
+    );
+
+
+const stopStreaming =
+    document.getElementById(
+        "stopStreaming"
+    );
+
+
+let cameraStream = null;
+
+let micStream = null;
+
+let isStreaming = false;
+
+
+/* =========================================
+   CAMERA
+========================================= */
+
+cameraButton.onclick =
+    async function () {
+
+        try {
+
+            if (
+                !navigator.mediaDevices ||
+                !navigator.mediaDevices.getUserMedia
+            ) {
+
+                permissionMessage.textContent =
+                    "Camera is not supported on this browser.";
+
+                return;
+
+            }
+
+
+            /* TURN CAMERA OFF */
+
+            if (cameraStream) {
+
+                cameraStream
+                    .getTracks()
+                    .forEach(
+                        track =>
+                            track.stop()
+                    );
+
+
+                cameraStream = null;
+
+
+                cameraPreview.srcObject =
+                    null;
+
+
+                cameraPreview.style.display =
+                    "none";
+
+
+                cameraMessage.style.display =
+                    "block";
+
+
+                cameraButton.classList.remove(
+                    "active"
+                );
+
+
+                permissionMessage.textContent =
+                    "Camera turned off.";
+
+                return;
+
+            }
+
+
+            /* TURN CAMERA ON */
+
+            cameraStream =
+                await navigator.mediaDevices
+                    .getUserMedia({
+
+                        video: true,
+
+                        audio: false
+
+                    });
+
+
+            cameraPreview.srcObject =
+                cameraStream;
+
+
+            cameraPreview.style.display =
+                "block";
+
+
+            cameraMessage.style.display =
+                "none";
+
+
+            cameraButton.classList.add(
+                "active"
+            );
+
+
+            permissionMessage.textContent =
+                "Camera is ready.";
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "Camera error:",
+                error
+            );
+
+
+            permissionMessage.textContent =
+                "Camera permission was denied or unavailable.";
+
+        }
+
+    };
+
+
+/* =========================================
+   MICROPHONE
+========================================= */
+
+micButton.onclick =
+    async function () {
+
+        try {
+
+            if (
+                !navigator.mediaDevices ||
+                !navigator.mediaDevices.getUserMedia
+            ) {
+
+                permissionMessage.textContent =
+                    "Microphone is not supported on this browser.";
+
+                return;
+
+            }
+
+
+            /* TURN MICROPHONE OFF */
+
+            if (micStream) {
+
+                micStream
+                    .getTracks()
+                    .forEach(
+                        track =>
+                            track.stop()
+                    );
+
+
+                micStream = null;
+
+
+                micButton.classList.remove(
+                    "active"
+                );
+
+
+                permissionMessage.textContent =
+                    "Microphone turned off.";
+
+                return;
+
+            }
+
+
+            /* TURN MICROPHONE ON */
+
+            micStream =
+                await navigator.mediaDevices
+                    .getUserMedia({
+
+                        audio: true,
+
+                        video: false
+
+                    });
+
+
+            micButton.classList.add(
+                "active"
+            );
+
+
+            permissionMessage.textContent =
+                "Microphone is ready.";
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "Microphone error:",
+                error
+            );
+
+
+            permissionMessage.textContent =
+                "Microphone permission was denied or unavailable.";
+
+        }
+
+    };
+  /* =========================================
+   THUMBNAIL PREVIEW
+========================================= */
+
+const thumbnailInput =
+    document.getElementById(
+        "thumbnail"
+    );
+
+
+const thumbnailPreview =
+    document.getElementById(
+        "thumbnailPreview"
+    );
+
+
+const thumbnailImage =
+    document.getElementById(
+        "thumbnailImage"
+    );
+
+
+thumbnailInput.addEventListener(
+    "change",
+    function () {
+
+        const file =
+            this.files[0];
+
+
+        if (!file) {
+
+            thumbnailPreview.style.display =
+                "none";
+
+            thumbnailImage.src =
+                "";
+
+            return;
+
+        }
+
+
+        if (
+            !file.type.startsWith(
+                "image/"
+            )
+        ) {
+
+            permissionMessage.textContent =
+                "Please choose an image.";
+
+            this.value =
+                "";
+
+            return;
+
+        }
+
+
+        const reader =
+            new FileReader();
+
+
+        reader.onload =
+            function (event) {
+
+                thumbnailImage.src =
+                    event.target.result;
+
+
+                thumbnailPreview.style.display =
+                    "block";
+
+
+                permissionMessage.textContent =
+                    "Thumbnail selected.";
+
+            };
+
+
+        reader.readAsDataURL(
+            file
+        );
+
+    }
+);
+
+
+
+/* =========================================
+   START STREAMING
+========================================= */
+
+startStreaming.onclick =
+    function () {
+
+        /* ---------------------------------
+           PREVENT DUPLICATE START
+        --------------------------------- */
+
+        if (isStreaming) {
+            return;
+        }
+
+
+        /* ---------------------------------
+           CHECK STREAM TITLE
+        --------------------------------- */
+
+        const streamTitle =
+            document.getElementById(
+                "streamTitle"
+            ).value.trim();
+
+
+        if (!streamTitle) {
+
+            permissionMessage.textContent =
+                "Please enter a stream title.";
+
+            document
+                .getElementById(
+                    "streamTitle"
+                )
+                .focus();
+
+            return;
+
+        }
+
+
+        /* ---------------------------------
+           CHECK CAMERA OR MICROPHONE
+        --------------------------------- */
+
+        if (
+            !cameraStream &&
+            !micStream
+        ) {
+
+            permissionMessage.textContent =
+                "Turn on your camera or microphone first.";
+
+            return;
+
+        }
+
+
+        /* ---------------------------------
+           GET STREAM INFORMATION
+        --------------------------------- */
+
+        const category =
+            document.getElementById(
+                "category"
+            ).value;
+
+
+        const description =
+            document.getElementById(
+                "description"
+            ).value.trim();
+
+
+        /* ---------------------------------
+           CREATE STREAM DATA
+        --------------------------------- */
+
+        const streamData = {
+
+            title:
+                streamTitle,
+
+            category:
+                category,
+
+            description:
+                description,
+
+            creator:
+                creatorProfile || null,
+
+            thumbnail:
+                thumbnailImage.src || "",
+
+            startedAt:
+                new Date().toISOString(),
+
+            live:
+                true
+
+        };
+
+
+        /* ---------------------------------
+           SAVE LIVE STREAM
+        --------------------------------- */
+
+        localStorage.setItem(
+            "canvasLiveStream",
+            JSON.stringify(
+                streamData
+            )
+        );
+
+
+        /* ---------------------------------
+           STREAM STATE
+        --------------------------------- */
+
+        isStreaming = true;
+
+
+        /* ---------------------------------
+           BUTTONS
+        --------------------------------- */
+
+        startStreaming.style.display =
+            "none";
+
+
+        stopStreaming.classList.remove(
+            "hidden"
+        );
+
+
+        /* ---------------------------------
+           STREAMING STATUS
+        --------------------------------- */
+
+        permissionMessage.textContent =
+            "🔴 Your Canvas stream is LIVE.";
+
+
+        console.log(
+            "Canvas stream started:",
+            streamData
+        );
+
+    };
+
+
+
+/* =========================================
+   STOP STREAMING
+========================================= */
+
+stopStreaming.onclick =
+    function () {
+
+        /* ---------------------------------
+           NOTHING TO STOP
+        --------------------------------- */
+
+        if (!isStreaming) {
+            return;
+        }
+
+
+        /* ---------------------------------
+           UPDATE LOCAL STREAM
+        --------------------------------- */
+
+        const savedStream =
+            localStorage.getItem(
+                "canvasLiveStream"
+            );
+
+
+        if (savedStream) {
+
+            try {
+
+                const streamData =
+                    JSON.parse(
+                        savedStream
+                    );
+
+
+                streamData.live =
+                    false;
+
+
+                streamData.endedAt =
+                    new Date().toISOString();
+
+
+                localStorage.setItem(
+                    "canvasLiveStream",
+                    JSON.stringify(
+                        streamData
+                    )
+                );
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Stream data error:",
+                    error
+                );
+
+            }
+
+        }
+
+
+        /* ---------------------------------
+           STOP CAMERA
+        --------------------------------- */
+
+        if (cameraStream) {
+
+            cameraStream
+                .getTracks()
+                .forEach(
+                    track =>
+                        track.stop()
+                );
+
+
+            cameraStream = null;
+
+        }
+
+
+        cameraPreview.srcObject =
+            null;
+
+
+        cameraPreview.style.display =
+            "none";
+
+
+        cameraMessage.style.display =
+            "block";
+
+
+        cameraButton.classList.remove(
+            "active"
+        );
+
+
+        /* ---------------------------------
+           STOP MICROPHONE
+        --------------------------------- */
+
+        if (micStream) {
+
+            micStream
+                .getTracks()
+                .forEach(
+                    track =>
+                        track.stop()
+                );
+
+
+            micStream = null;
+
+        }
+
+
+        micButton.classList.remove(
+            "active"
+        );
+
+
+        /* ---------------------------------
+           UPDATE STATE
+        --------------------------------- */
+
+        isStreaming =
+            false;
+
+
+        /* ---------------------------------
+           UPDATE BUTTONS
+        --------------------------------- */
+
+        stopStreaming.classList.add(
+            "hidden"
+        );
+
+
+        startStreaming.style.display =
+            "block";
+
+
+        /* ---------------------------------
+           STATUS
+        --------------------------------- */
+
+        permissionMessage.textContent =
+            "Your Canvas stream has ended.";
+
+
+        console.log(
+            "Canvas stream stopped."
+        );
+
+    };
+
+
+
+/* =========================================
+   PAGE CLEANUP
+========================================= */
+
+window.addEventListener(
+    "beforeunload",
+    function () {
+
+        if (cameraStream) {
+
+            cameraStream
+                .getTracks()
+                .forEach(
+                    track =>
+                        track.stop()
+                );
+
+        }
+
+
+        if (micStream) {
+
+            micStream
+                .getTracks()
+                .forEach(
+                    track =>
+                        track.stop()
+                );
+
+        }
+
+    }
+);
+
+
+</script>
+
+</body>
+
+</html>
