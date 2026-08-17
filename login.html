@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Canvas - Login</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#ffffff;
+color:#4b3024;
+min-height:100vh;
+}
+
+.container{
+width:100%;
+max-width:450px;
+margin:auto;
+padding:45px 25px;
+}
+
+.logo{
+text-align:center;
+font-size:42px;
+font-weight:bold;
+color:#6F4E37;
+margin-bottom:10px;
+}
+
+.subtitle{
+text-align:center;
+color:#777;
+margin-bottom:35px;
+}
+
+.form-group{
+margin-bottom:20px;
+}
+
+label{
+display:block;
+font-weight:bold;
+margin-bottom:8px;
+}
+
+input{
+width:100%;
+padding:14px;
+border:1px solid #ddd;
+border-radius:12px;
+font-size:16px;
+outline:none;
+background:#fafafa;
+}
+
+input:focus{
+border-color:#D4A017;
+background:#fff;
+}
+
+.password-box{
+position:relative;
+}
+
+.password-box input{
+padding-right:50px;
+}
+
+.show-password{
+position:absolute;
+right:12px;
+top:50%;
+transform:translateY(-50%);
+border:none;
+background:none;
+font-size:18px;
+cursor:pointer;
+}
+
+.login-button{
+width:100%;
+padding:15px;
+border:none;
+border-radius:12px;
+background:#6F4E37;
+color:white;
+font-size:17px;
+font-weight:bold;
+cursor:pointer;
+margin-top:5px;
+}
+
+.login-button:disabled{
+opacity:.6;
+cursor:not-allowed;
+}
+
+.forgot{
+display:block;
+text-align:right;
+margin-top:12px;
+color:#6F4E37;
+font-size:14px;
+text-decoration:none;
+}
+
+.signup{
+text-align:center;
+margin-top:25px;
+color:#777;
+}
+
+.signup a{
+color:#6F4E37;
+font-weight:bold;
+text-decoration:none;
+}
+
+.message{
+text-align:center;
+margin-top:15px;
+font-size:14px;
+color:#b00020;
+line-height:1.5;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="logo">
+Canvas
+</div>
+
+<p class="subtitle">
+Welcome back to Canvas
+</p>
+
+
+<form id="loginForm">
+
+
+<!-- =========================================
+     EMAIL
+========================================= -->
+
+<div class="form-group">
+
+<label for="email">
+Email
+</label>
+
+<input
+type="email"
+id="email"
+placeholder="you@example.com"
+autocomplete="email"
+required
+>
+
+</div>
+
+
+<!-- =========================================
+     PASSWORD
+========================================= -->
+
+<div class="form-group">
+
+<label for="password">
+Password
+</label>
+
+<div class="password-box">
+
+<input
+type="password"
+id="password"
+placeholder="Your password"
+autocomplete="current-password"
+required
+>
+
+<button
+type="button"
+class="show-password"
+onclick="togglePassword()"
+>
+👁️
+</button>
+
+</div>
+
+</div>
+
+
+<!-- =========================================
+     LOGIN BUTTON
+========================================= -->
+
+<button
+type="submit"
+class="login-button"
+id="loginButton"
+>
+Log In
+</button>
+
+
+<!-- =========================================
+     FORGOT PASSWORD
+========================================= -->
+
+<a
+href="#"
+class="forgot"
+id="forgotPassword"
+>
+Forgot password?
+</a>
+
+
+</form>
+
+
+<p
+class="message"
+id="message"
+></p>
+
+
+<p class="signup">
+
+Don't have a Canvas account?
+
+<a href="signup.html">
+Create account
+</a>
+
+</p>
+
+</div>
+
+
+<script>
+
+/* =========================================
+   CANVAS BACKEND
+========================================= */
+
+const API =
+"https://canvas-kh9p.onrender.com";
+
+
+/* =========================================
+   SHOW / HIDE PASSWORD
+========================================= */
+
+function togglePassword(){
+
+const password =
+document.getElementById("password");
+
+if(password.type === "password"){
+
+password.type = "text";
+
+}else{
+
+password.type = "password";
+
+}
+
+}
+
+
+/* =========================================
+   LOGIN
+========================================= */
+
+document
+.getElementById("loginForm")
+.addEventListener(
+"submit",
+async function(e){
+
+e.preventDefault();
+
+
+const email =
+document
+.getElementById("email")
+.value
+.trim();
+
+
+const password =
+document
+.getElementById("password")
+.value;
+
+
+const message =
+document.getElementById("message");
+
+
+const loginButton =
+document.getElementById("loginButton");
+
+
+message.textContent =
+"";
+
+
+/* =========================================
+   BASIC VALIDATION
+========================================= */
+
+if(!email){
+
+message.textContent =
+"Please enter your email.";
+
+return;
+
+}
+
+
+if(!password){
+
+message.textContent =
+"Please enter your password.";
+
+return;
+
+}
+
+
+/* =========================================
+   DISABLE BUTTON
+========================================= */
+
+loginButton.disabled =
+true;
+
+loginButton.textContent =
+"Logging in...";
+
+
+try{
+
+
+/* =========================================
+   CONTACT CANVAS BACKEND
+========================================= */
+
+const response =
+await fetch(
+
+API +
+"/api/login",
+
+{
+
+method:"POST",
+
+headers:{
+"Content-Type":
+"application/json"
+},
+
+body:
+JSON.stringify({
+
+email:
+email,
+
+password:
+password
+
+})
+
+}
+
+);
+
+
+/* =========================================
+   READ SERVER RESPONSE
+========================================= */
+
+const data =
+await response
+.json()
+.catch(
+function(){
+
+return {};
+
+});
+
+
+/* =========================================
+   LOGIN FAILED
+========================================= */
+
+if(!response.ok){
+
+throw new Error(
+
+data.message ||
+"Email or password is incorrect."
+
+);
+
+}
+
+
+/* =========================================
+   LOGIN SUCCESS
+========================================= */
+
+const user =
+data.user ||
+{};
+
+
+/*
+Keep the account information locally
+for the profile page UI.
+
+IMPORTANT:
+We do NOT save the password here.
+*/
+
+const account = {
+
+id:
+user.id ||
+"",
+
+email:
+user.email ||
+email,
+
+username:
+user.username ||
+"",
+
+displayName:
+user.name ||
+""
+
+};
+
+
+/* =========================================
+   SAVE LOGIN STATE
+========================================= */
+
+localStorage.setItem(
+"canvasLoggedIn",
+"true"
+);
+
+
+localStorage.setItem(
+"canvasCurrentUser",
+JSON.stringify(account)
+);
+
+
+/*
+Keep canvasAccount only as basic
+non-password account information
+for compatibility with the existing
+Canvas profile page.
+*/
+
+localStorage.setItem(
+"canvasAccount",
+JSON.stringify({
+
+id:
+account.id,
+
+email:
+account.email,
+
+username:
+account.username,
+
+displayName:
+account.displayName
+
+})
+);
+
+
+/* =========================================
+   GO TO PROFILE
+========================================= */
+
+window.location.href =
+"profile.html";
+
+
+}catch(error){
+
+console.error(
+"Canvas login error:",
+error
+);
+
+
+message.textContent =
+error.message ||
+"Unable to connect to Canvas server.";
+
+
+}finally{
+
+loginButton.disabled =
+false;
+
+loginButton.textContent =
+"Log In";
+
+}
+
+});
+
+
+/* =========================================
+   FORGOT PASSWORD
+========================================= */
+
+document
+.getElementById("forgotPassword")
+.addEventListener(
+"click",
+function(e){
+
+e.preventDefault();
+
+
+alert(
+"Forgot password will be connected to Canvas email verification."
+);
+
+});
+
+</script>
+
+</body>
+
+  </html>
