@@ -1,0 +1,2002 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width,initial-scale=1.0">
+
+<title>Canvas Profile</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box
+}
+
+body{
+background:#fff;
+color:#4b3326;
+font-family:Arial,Helvetica,sans-serif;
+min-height:100vh;
+padding-bottom:90px
+}
+
+.navbar{
+height:72px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:0 22px;
+border-bottom:1px solid #eee
+}
+
+.logo{
+font-size:34px;
+font-weight:800;
+color:#6F4E37
+}
+
+.back{
+width:40px;
+height:40px;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:34px;
+color:#6F4E37;
+text-decoration:none
+}
+
+.header-space{
+width:40px
+}
+
+.profile-container{
+width:100%;
+max-width:650px;
+margin:auto;
+padding:30px 22px 110px
+}
+
+.profile-title{
+font-size:30px;
+font-weight:800;
+margin-bottom:8px
+}
+
+.profile-subtitle{
+color:#777;
+font-size:16px;
+line-height:1.5;
+margin-bottom:30px
+}
+
+
+/* =========================================
+   PROFILE AVATAR
+========================================= */
+
+.avatar-section{
+text-align:center;
+margin-bottom:30px
+}
+
+.avatar{
+width:110px;
+height:110px;
+margin:auto;
+display:flex;
+align-items:center;
+justify-content:center;
+border-radius:50%;
+overflow:hidden;
+background:#f1f1f1;
+border:3px solid #D4A017;
+color:#6F4E37;
+font-size:48px
+}
+
+.avatar img{
+width:100%;
+height:100%;
+object-fit:cover;
+display:block
+}
+
+
+/* =========================================
+   CREATE / EDIT PHOTO ACTIONS
+========================================= */
+
+.photo-actions{
+display:flex;
+justify-content:center;
+gap:18px;
+margin-top:12px
+}
+
+.photo-button{
+color:#6F4E37;
+font-size:15px;
+font-weight:700;
+cursor:pointer
+}
+
+.delete-photo-button{
+border:0;
+background:none;
+color:#b44a3c;
+font-size:15px;
+font-weight:700;
+cursor:pointer;
+display:none
+}
+
+#photoInput{
+display:none
+}
+
+
+/* =========================================
+   PROFILE VIEW PHOTO ACTIONS
+   SMALL SVG-STYLE ICONS
+========================================= */
+
+.profile-photo-actions{
+display:none;
+align-items:center;
+justify-content:center;
+gap:16px;
+margin-top:8px
+}
+
+.profile-photo-action{
+width:30px;
+height:30px;
+padding:0;
+border:0;
+background:none;
+display:flex;
+align-items:center;
+justify-content:center;
+cursor:pointer;
+opacity:.55;
+transition:opacity .15s ease,transform .15s ease
+}
+
+.profile-photo-action:active{
+transform:scale(.92)
+}
+
+.profile-photo-action:hover{
+opacity:.8
+}
+
+.profile-photo-action svg{
+width:18px;
+height:18px;
+display:block;
+fill:none;
+stroke:#6F4E37;
+stroke-width:1.8;
+stroke-linecap:round;
+stroke-linejoin:round
+}
+
+.profile-photo-delete svg{
+stroke:#8f3d32
+}
+
+
+/* =========================================
+   FORM
+========================================= */
+
+.form-group{
+margin-bottom:20px
+}
+
+.form-group label{
+display:block;
+margin-bottom:8px;
+font-size:15px;
+font-weight:700
+}
+
+.form-group input,
+.form-group textarea{
+width:100%;
+padding:14px;
+border:1px solid #ddd;
+border-radius:12px;
+background:#fafafa;
+font-size:16px;
+outline:none
+}
+
+.form-group textarea{
+height:100px;
+resize:none
+}
+
+.form-group input:focus,
+.form-group textarea:focus{
+border-color:#D4A017;
+background:#fff
+}
+
+.save-button{
+width:100%;
+padding:15px;
+border:0;
+border-radius:12px;
+background:#6F4E37;
+color:#fff;
+font-size:17px;
+font-weight:700;
+cursor:pointer
+}
+
+.save-button:disabled{
+opacity:.6;
+cursor:not-allowed
+}
+
+#createProfile{
+display:none
+}
+
+#profileView{
+display:none;
+text-align:center
+}
+
+
+/* =========================================
+   PROFILE INFORMATION
+========================================= */
+
+.profile-name{
+margin-top:18px;
+font-size:28px;
+font-weight:800
+}
+
+.profile-username{
+margin-top:5px;
+color:#777;
+font-size:18px
+}
+
+.profile-bio{
+max-width:400px;
+margin:18px auto;
+color:#555;
+font-size:17px;
+line-height:1.5
+}
+
+.stats{
+display:flex;
+justify-content:center;
+gap:60px;
+margin:25px 0;
+padding-bottom:25px;
+border-bottom:1px solid #eee
+}
+
+.stat strong{
+display:block;
+font-size:24px
+}
+
+.stat span{
+display:block;
+margin-top:5px;
+color:#777;
+font-size:15px
+}
+
+
+/* =========================================
+   ACCOUNT
+========================================= */
+
+.account-section{
+margin-top:25px;
+text-align:left
+}
+
+.account-title{
+margin-bottom:20px;
+font-size:28px;
+font-weight:800
+}
+
+.account-item{
+padding:16px 0;
+border-bottom:1px solid #eee
+}
+
+.account-label{
+margin-bottom:6px;
+color:#777;
+font-size:14px
+}
+
+.account-value{
+color:#333;
+font-size:17px;
+word-break:break-word
+}
+
+.edit-button,
+.password-button,
+.logout-button{
+width:100%;
+padding:14px;
+margin-top:12px;
+border-radius:10px;
+font-size:15px;
+font-weight:700;
+cursor:pointer
+}
+
+.edit-button{
+border:1px solid #6F4E37;
+background:#fff;
+color:#6F4E37
+}
+
+.password-button{
+border:1px solid #D4A017;
+background:#fff;
+color:#6F4E37
+}
+
+.logout-button{
+border:1px solid #ddd;
+background:#fff;
+color:#777
+}
+
+#passwordSection{
+display:none;
+margin-top:25px;
+padding-top:20px;
+border-top:1px solid #eee
+}
+
+.password-title{
+margin-bottom:18px;
+font-size:20px
+}
+
+
+/* =========================================
+   BOTTOM NAVIGATION
+========================================= */
+
+.bottom-nav{
+position:fixed;
+left:0;
+bottom:0;
+width:100%;
+height:75px;
+display:flex;
+background:#fff;
+border-top:2px solid #d4a62a;
+z-index:1000
+}
+
+.bottom-nav a{
+flex:1;
+height:100%;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+gap:4px;
+color:#8a6b58;
+font-size:23px;
+text-decoration:none
+}
+
+.bottom-nav a span{
+font-size:11px;
+font-weight:700
+}
+
+.bottom-nav a.active{
+color:#4b3326
+}
+
+
+/* =========================================
+   PROFILE ICON
+   SAME SIZE AS OTHER NAV ICONS
+========================================= */
+
+#bottomProfileIcon{
+width:23px;
+height:23px;
+display:flex;
+align-items:center;
+justify-content:center;
+overflow:hidden;
+border-radius:50%;
+font-size:23px;
+line-height:23px;
+font-weight:400;
+flex-shrink:0
+}
+
+#bottomProfileIcon img{
+width:23px;
+height:23px;
+object-fit:cover;
+border-radius:50%;
+display:block
+}
+
+#bottomProfileImage{
+width:23px;
+height:23px;
+object-fit:cover;
+border-radius:50%;
+border:1.5px solid #d4a62a;
+display:block
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media(max-width:600px){
+
+.navbar{
+height:68px;
+padding:0 16px
+}
+
+.logo{
+font-size:30px
+}
+
+.profile-container{
+padding:30px 22px 110px
+}
+
+.profile-title{
+font-size:28px
+}
+
+.stats{
+gap:55px
+}
+
+.bottom-nav{
+height:70px
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header class="navbar">
+
+<a
+href="stream.html"
+class="back">
+‹
+</a>
+
+<div class="logo">
+Canvas
+</div>
+
+<div class="header-space"></div>
+
+</header>
+
+<main class="profile-container">
+
+<section id="createProfile">
+
+<h1
+class="profile-title"
+id="formTitle">
+Create your profile
+</h1>
+
+<p
+class="profile-subtitle"
+id="formSubtitle">
+Set up your Canvas profile and let people know who you are.
+</p>
+
+<div class="avatar-section">
+
+<div
+class="avatar"
+id="avatarPreview">
+⬤
+</div>
+
+<div class="photo-actions">
+
+<label
+class="photo-button"
+for="photoInput">
+Choose profile picture
+</label>
+
+<button
+type="button"
+class="delete-photo-button"
+id="deletePhotoButton"
+onclick="deleteProfilePhoto()">
+Delete picture
+</button>
+
+</div>
+
+<input
+type="file"
+id="photoInput"
+accept="image/*">
+
+</div>
+
+<div class="form-group">
+
+<label for="displayName">
+Display name
+</label>
+
+<input
+type="text"
+id="displayName"
+placeholder="Your name"
+maxlength="30">
+
+</div>
+
+<div class="form-group">
+
+<label for="username">
+Username
+</label>
+
+<input
+type="text"
+id="username"
+placeholder="@username"
+maxlength="20">
+
+</div>
+
+<div class="form-group">
+
+<label for="bio">
+Bio
+</label>
+
+<textarea
+id="bio"
+placeholder="Tell people about yourself..."
+maxlength="150"></textarea>
+
+</div>
+
+<button
+type="button"
+class="save-button"
+id="saveProfileButton"
+onclick="saveProfile()">
+Save Profile
+</button>
+
+</section>
+
+<section id="profileView">
+
+<div
+class="avatar"
+id="profileAvatar">
+⬤
+</div>
+
+<!--
+     These are ONLY shown when a profile
+     picture exists.
+-->
+
+<div
+class="profile-photo-actions"
+id="profilePhotoActions">
+
+<button
+type="button"
+class="profile-photo-action profile-photo-edit"
+onclick="editProfile()"
+aria-label="Edit profile picture">
+
+<svg
+viewBox="0 0 24 24"
+aria-hidden="true">
+
+<path
+d="M4 20h4L19 9a2.2 2.2 0 0 0 0-3.1l-.9-.9a2.2 2.2 0 0 0-3.1 0L4 16v4z">
+</path>
+
+<path
+d="M13.5 6.5l4 4">
+</path>
+
+</svg>
+
+</button>
+
+<button
+type="button"
+class="profile-photo-action profile-photo-delete"
+onclick="deleteProfilePhotoFromView()"
+aria-label="Delete profile picture">
+
+<svg
+viewBox="0 0 24 24"
+aria-hidden="true">
+
+<path
+d="M5 7h14">
+</path>
+
+<path
+d="M9 7V4h6v3">
+</path>
+
+<path
+d="M7 7l1 13h8l1-13">
+</path>
+
+<path
+d="M10 11v5">
+</path>
+
+<path
+d="M14 11v5">
+</path>
+
+</svg>
+
+</button>
+
+</div>
+
+<h1
+class="profile-name"
+id="profileName">
+Canvas Creator
+</h1>
+
+<p
+class="profile-username"
+id="profileUsername">
+@username
+</p>
+
+<p
+class="profile-bio"
+id="profileBio">
+No bio yet.
+</p>
+
+<div class="stats">
+
+<div class="stat">
+
+<strong id="followersCount">
+0
+</strong>
+
+<span>
+Followers
+</span>
+
+</div>
+
+<div class="stat">
+
+<strong id="followingCount">
+0
+</strong>
+
+<span>
+Following
+</span>
+
+</div>
+
+</div>
+
+<section class="account-section">
+
+<h2 class="account-title">
+Account
+</h2>
+
+<div class="account-item">
+
+<div class="account-label">
+Email
+</div>
+
+<div
+class="account-value"
+id="accountEmail">
+Not available
+</div>
+
+</div>
+
+<div class="account-item">
+
+<div class="account-label">
+Password
+</div>
+
+<div class="account-value">
+••••••••
+</div>
+
+</div>
+
+<button
+class="edit-button"
+onclick="editProfile()">
+Edit Profile
+</button>
+
+<button
+class="password-button"
+onclick="togglePasswordSection()">
+Change Password
+</button>
+
+<button
+class="logout-button"
+onclick="logout()">
+Log Out
+</button>
+
+<div id="passwordSection">
+
+<h2 class="password-title">
+Change Password
+</h2>
+
+<div class="form-group">
+
+<label>
+Current password
+</label>
+
+<input
+type="password"
+id="currentPassword"
+autocomplete="current-password">
+
+</div>
+
+<div class="form-group">
+
+<label>
+New password
+</label>
+
+<input
+type="password"
+id="newPassword"
+autocomplete="new-password">
+
+</div>
+
+<div class="form-group">
+
+<label>
+Confirm password
+</label>
+
+<input
+type="password"
+id="confirmNewPassword"
+autocomplete="new-password">
+
+</div>
+
+<button
+class="save-button"
+onclick="changePassword()">
+Save New Password
+</button>
+
+</div>
+
+</section>
+
+</section>
+
+</main>
+
+<nav class="bottom-nav">
+
+<a href="stream.html">
+
+⌂
+
+<span>
+Home
+</span>
+
+</a>
+
+<a href="stream.html">
+
+▣
+
+<span>
+Stream
+</span>
+
+</a>
+
+<a href="golive.html">
+
+⊙
+
+<span>
+Go Live
+</span>
+
+</a>
+
+<a
+href="profile.html"
+class="active">
+
+<span id="bottomProfileIcon">
+⬤
+</span>
+
+<span>
+Profile
+</span>
+
+</a>
+
+</nav>
+
+<script>
+
+const API =
+"https://canvas-kh9p.onrender.com";
+
+let selectedPhoto = "";
+
+
+// =========================================
+// GET ACCOUNT
+// =========================================
+
+function getAccount(){
+
+const saved =
+localStorage.getItem(
+"canvasAccount"
+);
+
+if(!saved){
+
+return {};
+
+}
+
+try{
+
+return JSON.parse(saved);
+
+}catch(error){
+
+console.error(
+"Account data error:",
+error
+);
+
+return {};
+
+}
+
+}
+
+
+// =========================================
+// GET ACCOUNT EMAIL
+// =========================================
+
+function getAccountEmail(){
+
+const account =
+getAccount();
+
+if(
+account.email &&
+typeof account.email === "string"
+){
+
+return account.email.trim();
+
+}
+
+return "";
+
+}
+
+
+// =========================================
+// GET ACCOUNT USERNAME
+// =========================================
+
+function getUsername(){
+
+const account =
+getAccount();
+
+return String(
+account.username || ""
+).replace(
+/^@/,
+""
+);
+
+}
+
+
+// =========================================
+// GET DISPLAY NAME
+// =========================================
+
+function getDisplayName(){
+
+const account =
+getAccount();
+
+return String(
+account.displayName ||
+account.name ||
+""
+).trim();
+
+}
+
+
+// =========================================
+// SHOW CREATE PROFILE
+// =========================================
+
+function showCreateProfile(){
+
+document.getElementById(
+"profileView"
+).style.display =
+"none";
+
+document.getElementById(
+"createProfile"
+).style.display =
+"block";
+
+}
+
+
+// =========================================
+// SHOW PROFILE
+// =========================================
+
+function showProfile(profile){
+
+document.getElementById(
+"createProfile"
+).style.display =
+"none";
+
+document.getElementById(
+"profileView"
+).style.display =
+"block";
+
+
+document.getElementById(
+"profileName"
+).textContent =
+profile.name ||
+"Canvas Creator";
+
+
+document.getElementById(
+"profileUsername"
+).textContent =
+profile.username ||
+"@username";
+
+
+document.getElementById(
+"profileBio"
+).textContent =
+profile.bio ||
+"No bio yet";
+
+
+const email =
+profile.email ||
+getAccountEmail() ||
+"Not available";
+
+
+document.getElementById(
+"accountEmail"
+).textContent =
+email;
+
+
+// =========================================
+// PROFILE PHOTO
+// =========================================
+
+const avatar =
+document.getElementById(
+"profileAvatar"
+);
+
+avatar.innerHTML = "";
+
+
+if(profile.photo){
+
+const img =
+document.createElement("img");
+
+img.src =
+profile.photo;
+
+img.alt =
+"Profile picture";
+
+avatar.appendChild(img);
+
+}else{
+
+avatar.textContent =
+"⬤";
+
+}
+
+
+// =========================================
+// BOTTOM PROFILE ICON
+// =========================================
+
+updateBottomIcon(profile);
+
+
+// =========================================
+// PHOTO ACTION VISIBILITY
+// =========================================
+
+const photoActions =
+document.getElementById(
+"profilePhotoActions"
+);
+
+if(photoActions){
+
+photoActions.style.display =
+profile.photo
+? "flex"
+: "none";
+
+}
+
+}
+
+
+// =========================================
+// LOAD PROFILE
+// =========================================
+
+async function loadProfile(){
+
+const username =
+getUsername();
+
+const accountEmail =
+getAccountEmail();
+
+const saved =
+localStorage.getItem(
+"canvasProfile"
+);
+
+
+// =========================================
+// SHOW LOCAL PROFILE FIRST
+// =========================================
+
+if(saved){
+
+try{
+
+const localProfile =
+JSON.parse(saved);
+
+
+if(
+!localProfile.email &&
+accountEmail
+){
+
+localProfile.email =
+accountEmail;
+
+localStorage.setItem(
+"canvasProfile",
+JSON.stringify(localProfile)
+);
+
+}
+
+
+showProfile(
+localProfile
+);
+
+}catch(error){
+
+console.error(
+"Local profile error:",
+error
+);
+
+}
+
+}
+
+
+// =========================================
+// NO ACCOUNT
+// =========================================
+
+if(!username){
+
+if(!saved){
+
+showCreateProfile();
+
+}
+
+return;
+
+}
+ // =========================================
+// LOAD PROFILE FROM SERVER
+// =========================================
+
+try{
+
+const res =
+await fetch(
+
+API +
+"/api/profile/" +
+encodeURIComponent(username),
+
+{
+method:"GET",
+cache:"no-store"
+}
+
+);
+
+
+if(!res.ok){
+
+throw new Error(
+"Profile request failed"
+);
+
+}
+
+
+const data =
+await res.json();
+
+
+if(
+!data ||
+!data.profile
+){
+
+throw new Error(
+"Profile data missing"
+);
+
+}
+
+
+const p =
+data.profile;
+
+
+const cleanUsername =
+String(
+p.username ||
+username
+).replace(
+/^@/,
+""
+);
+
+
+const profileEmail =
+p.email ||
+accountEmail ||
+"";
+
+
+const profile = {
+
+name:
+p.name ||
+getDisplayName() ||
+"",
+
+username:
+"@" + cleanUsername,
+
+email:
+profileEmail,
+
+bio:
+p.bio || "",
+
+photo:
+p.profile_picture || ""
+
+};
+
+
+localStorage.setItem(
+"canvasProfile",
+JSON.stringify(profile)
+);
+
+
+showProfile(profile);
+
+
+}catch(error){
+
+console.error(
+"Profile loading failed:",
+error
+);
+
+
+if(!saved){
+
+showCreateProfile();
+
+}
+
+}
+
+}
+
+
+// =========================================
+// PAGE READY
+// =========================================
+
+window.addEventListener(
+"DOMContentLoaded",
+function(){
+
+loadProfile();
+
+});
+
+
+// =========================================
+// PHOTO SELECT
+// =========================================
+
+document.getElementById(
+"photoInput"
+).addEventListener(
+"change",
+function(){
+
+const file =
+this.files[0];
+
+if(!file){
+
+return;
+
+}
+
+
+if(
+!file.type.startsWith(
+"image/"
+)
+){
+
+alert(
+"Please choose an image."
+);
+
+this.value =
+"";
+
+return;
+
+}
+
+
+const reader =
+new FileReader();
+
+
+reader.onload =
+function(event){
+
+selectedPhoto =
+event.target.result;
+
+
+document.getElementById(
+"avatarPreview"
+).innerHTML =
+`<img
+src="${selectedPhoto}"
+alt="Profile picture">`;
+
+
+document.getElementById(
+"deletePhotoButton"
+).style.display =
+"inline-block";
+
+};
+
+
+reader.readAsDataURL(file);
+
+});
+
+
+// =========================================
+// DELETE PROFILE PHOTO FROM PROFILE VIEW
+// =========================================
+
+function deleteProfilePhotoFromView(){
+
+const saved =
+localStorage.getItem(
+"canvasProfile"
+);
+
+if(!saved){
+
+return;
+
+}
+
+
+try{
+
+const profile =
+JSON.parse(saved);
+
+
+// Remove the photo completely
+
+profile.photo = "";
+
+selectedPhoto = "";
+
+
+// Save the photo-less profile
+
+localStorage.setItem(
+"canvasProfile",
+JSON.stringify(profile)
+);
+
+
+// Immediately refresh the profile view
+
+showProfile(profile);
+
+
+// Immediately refresh bottom icon
+
+updateBottomIcon(profile);
+
+
+}catch(error){
+
+console.error(
+"Delete profile photo error:",
+error
+);
+
+}
+
+}
+
+
+// =========================================
+// DELETE PROFILE PHOTO FROM EDITOR
+// =========================================
+
+function deleteProfilePhoto(){
+
+selectedPhoto = "";
+
+
+// Clear file input
+
+document.getElementById(
+"photoInput"
+).value =
+"";
+
+
+// Reset editor avatar
+
+document.getElementById(
+"avatarPreview"
+).textContent =
+"⬤";
+
+
+// Hide editor delete button
+
+document.getElementById(
+"deletePhotoButton"
+).style.display =
+"none";
+
+
+const saved =
+localStorage.getItem(
+"canvasProfile"
+);
+
+if(saved){
+
+try{
+
+const profile =
+JSON.parse(saved);
+
+
+profile.photo = "";
+
+
+localStorage.setItem(
+"canvasProfile",
+JSON.stringify(profile)
+);
+
+
+// Keep bottom icon synchronized
+
+updateBottomIcon(profile);
+
+
+}catch(error){
+
+console.error(
+"Delete profile photo error:",
+error
+);
+
+}
+
+}
+
+}
+
+
+// =========================================
+// EDIT PROFILE
+// =========================================
+
+function editProfile(){
+
+const saved =
+localStorage.getItem(
+"canvasProfile"
+);
+
+if(!saved){
+
+showCreateProfile();
+
+return;
+
+}
+
+
+try{
+
+const p =
+JSON.parse(saved);
+
+
+document.getElementById(
+"profileView"
+).style.display =
+"none";
+
+
+document.getElementById(
+"createProfile"
+).style.display =
+"block";
+
+
+document.getElementById(
+"formTitle"
+).textContent =
+"Edit your profile";
+
+
+document.getElementById(
+"formSubtitle"
+).textContent =
+"Update your Canvas profile.";
+
+
+document.getElementById(
+"displayName"
+).value =
+p.name || "";
+
+
+document.getElementById(
+"username"
+).value =
+p.username || "";
+
+
+document.getElementById(
+"bio"
+).value =
+p.bio || "";
+
+
+selectedPhoto =
+p.photo || "";
+
+
+// =========================================
+// SHOW CURRENT PHOTO IN EDIT MODE
+// =========================================
+
+if(selectedPhoto){
+
+document.getElementById(
+"avatarPreview"
+).innerHTML =
+`<img
+src="${selectedPhoto}"
+alt="Profile picture">`;
+
+
+document.getElementById(
+"deletePhotoButton"
+).style.display =
+"inline-block";
+
+}else{
+
+document.getElementById(
+"avatarPreview"
+).textContent =
+"⬤";
+
+
+document.getElementById(
+"deletePhotoButton"
+).style.display =
+"none";
+
+}
+
+}catch(error){
+
+console.error(
+"Edit profile error:",
+error
+);
+
+showCreateProfile();
+
+}
+
+}
+
+
+// =========================================
+// PASSWORD SECTION
+// =========================================
+
+function togglePasswordSection(){
+
+const box =
+document.getElementById(
+"passwordSection"
+);
+
+box.style.display =
+box.style.display === "block"
+? "none"
+: "block";
+
+}
+
+
+// =========================================
+// CHANGE PASSWORD
+// =========================================
+
+function changePassword(){
+
+const current =
+document.getElementById(
+"currentPassword"
+).value;
+
+const newPass =
+document.getElementById(
+"newPassword"
+).value;
+
+const confirm =
+document.getElementById(
+"confirmNewPassword"
+).value;
+
+
+const saved =
+localStorage.getItem(
+"canvasAccount"
+);
+
+if(!saved){
+
+alert(
+"No account found."
+);
+
+return;
+
+}
+
+
+let account;
+
+try{
+
+account =
+JSON.parse(saved);
+
+}catch(error){
+
+alert(
+"Account data is invalid."
+);
+
+return;
+
+}
+
+
+if(
+current !==
+account.password
+){
+
+alert(
+"Current password is incorrect."
+);
+
+return;
+
+}
+
+
+if(
+newPass.length < 8
+){
+
+alert(
+"Password must be at least 8 characters."
+);
+
+return;
+
+}
+
+
+if(
+newPass !==
+confirm
+){
+
+alert(
+"Passwords do not match."
+);
+
+return;
+
+}
+
+
+account.password =
+newPass;
+
+
+localStorage.setItem(
+"canvasAccount",
+JSON.stringify(account)
+);
+
+
+alert(
+"Password changed successfully."
+);
+
+
+document.getElementById(
+"currentPassword"
+).value =
+"";
+
+
+document.getElementById(
+"newPassword"
+).value =
+"";
+
+
+document.getElementById(
+"confirmNewPassword"
+).value =
+"";
+
+
+document.getElementById(
+"passwordSection"
+).style.display =
+"none";
+
+}
+
+
+// =========================================
+// LOG OUT
+// =========================================
+
+function logout(){
+
+localStorage.removeItem(
+"canvasLoggedIn"
+);
+
+localStorage.removeItem(
+"canvasCurrentUser"
+);
+
+window.location.href =
+"login.html";
+
+}
+
+
+// =========================================
+// SAVE PROFILE
+// =========================================
+
+async function saveProfile(){
+
+const displayName =
+document.getElementById(
+"displayName"
+).value.trim();
+
+const username =
+document.getElementById(
+"username"
+).value.trim();
+
+const bio =
+document.getElementById(
+"bio"
+).value.trim();
+
+
+if(displayName === ""){
+
+alert(
+"Please enter your display name."
+);
+
+return;
+
+}
+
+
+if(username === ""){
+
+alert(
+"Please choose a username."
+);
+
+return;
+
+}
+
+
+let finalUsername =
+username;
+
+
+if(!finalUsername.startsWith("@")){
+
+finalUsername =
+"@" + finalUsername;
+
+}
+
+
+// =========================================
+// PROFILE DATA
+// =========================================
+
+const profile = {
+
+name:
+displayName,
+
+username:
+finalUsername,
+
+email:
+getAccountEmail(),
+
+bio:
+bio,
+
+photo:
+selectedPhoto
+
+};
+
+
+localStorage.setItem(
+"canvasProfile",
+JSON.stringify(profile)
+);
+
+
+// =========================================
+// SHOW UPDATED PROFILE
+// =========================================
+
+showProfile(profile);
+
+}
+
+
+// =========================================
+// UPDATE BOTTOM PROFILE ICON
+// =========================================
+
+function updateBottomIcon(profile){
+
+const icon =
+document.getElementById(
+"bottomProfileIcon"
+);
+
+if(!icon){
+
+return;
+
+}
+
+
+icon.innerHTML = "";
+
+
+if(
+profile &&
+profile.photo
+){
+
+const img =
+document.createElement("img");
+
+img.id =
+"bottomProfileImage";
+
+img.src =
+profile.photo;
+
+img.alt =
+"Profile";
+
+icon.appendChild(img);
+
+}else{
+
+icon.textContent =
+"⬤";
+
+}
+
+}
+
+
+// =========================================
+// PROFILE PAGE CLEANUP
+// =========================================
+
+window.addEventListener(
+"beforeunload",
+function(){
+
+const input =
+document.getElementById(
+"photoInput"
+);
+
+if(input){
+
+input.value =
+"";
+
+}
+
+});
+ </script>
+
+</body>
+
+</html> 
