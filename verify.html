@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0">
+
+<title>Canvas - Verify Email</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#ffffff;
+color:#4b3024;
+min-height:100vh;
+}
+
+.container{
+width:100%;
+max-width:450px;
+margin:auto;
+padding:45px 25px;
+}
+
+.logo{
+text-align:center;
+font-size:42px;
+font-weight:bold;
+color:#6F4E37;
+margin-bottom:10px;
+}
+
+.subtitle{
+text-align:center;
+color:#777;
+line-height:1.5;
+margin-bottom:30px;
+}
+
+.email{
+font-weight:bold;
+color:#6F4E37;
+word-break:break-word;
+}
+
+.form-group{
+margin-bottom:18px;
+}
+
+label{
+display:block;
+font-weight:bold;
+margin-bottom:7px;
+}
+
+input{
+width:100%;
+padding:16px;
+border:1px solid #ddd;
+border-radius:12px;
+font-size:24px;
+letter-spacing:8px;
+text-align:center;
+outline:none;
+background:#fafafa;
+}
+
+input:focus{
+border-color:#D4A017;
+background:#fff;
+}
+
+.button{
+width:100%;
+padding:15px;
+border:none;
+border-radius:12px;
+background:#6F4E37;
+color:white;
+font-size:17px;
+font-weight:bold;
+margin-top:8px;
+cursor:pointer;
+}
+
+.button:disabled{
+opacity:.65;
+cursor:not-allowed;
+}
+
+.resend{
+width:100%;
+padding:13px;
+border:1px solid #6F4E37;
+border-radius:12px;
+background:#fff;
+color:#6F4E37;
+font-size:16px;
+font-weight:bold;
+margin-top:12px;
+cursor:pointer;
+}
+
+.resend:disabled{
+opacity:.5;
+cursor:not-allowed;
+}
+
+.message{
+text-align:center;
+margin-top:15px;
+font-size:14px;
+min-height:22px;
+line-height:1.5;
+}
+
+.back{
+text-align:center;
+margin-top:22px;
+color:#777;
+}
+
+.back a{
+color:#6F4E37;
+font-weight:bold;
+text-decoration:none;
+}
+
+.note{
+margin-top:25px;
+font-size:12px;
+color:#999;
+text-align:center;
+line-height:1.5;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+
+<div class="logo">
+Canvas
+</div>
+
+
+<p class="subtitle">
+
+We sent a 6-digit verification code to
+
+<br>
+
+<span
+    class="email"
+    id="emailDisplay">
+    your email
+</span>
+
+</p>
+
+
+<form id="verifyForm">
+
+
+<div class="form-group">
+
+<label for="code">
+Verification code
+</label>
+
+<input
+    type="text"
+    id="code"
+    inputmode="numeric"
+    autocomplete="one-time-code"
+    maxlength="6"
+    placeholder="000000"
+    required
+>
+
+</div>
+
+
+<button
+    class="button"
+    id="verifyButton"
+    type="submit">
+
+    Verify Email
+
+</button>
+
+
+</form>
+
+
+<button
+    class="resend"
+    id="resendButton"
+    type="button">
+
+    Resend Code
+
+</button>
+
+
+<p
+    class="message"
+    id="message">
+</p>
+
+
+<p class="back">
+
+Want to use a different email?
+
+<a href="signup.html">
+Go back
+</a>
+
+</p>
+
+
+<p class="note">
+
+Your verification code expires after 10 minutes.
+
+</p>
+
+
+</div>
+
+
+<script>
+
+/* =========================================
+   CANVAS BACKEND
+========================================= */
+
+const API =
+    "https://canvas-kh9p.onrender.com";
+
+
+/* =========================================
+   ELEMENTS
+========================================= */
+
+const emailDisplay =
+    document.getElementById(
+        "emailDisplay"
+    );
+
+
+const codeInput =
+    document.getElementById(
+        "code"
+    );
+
+
+const verifyForm =
+    document.getElementById(
+        "verifyForm"
+    );
+
+
+const verifyButton =
+    document.getElementById(
+        "verifyButton"
+    );
+
+
+const resendButton =
+    document.getElementById(
+        "resendButton"
+    );
+
+
+const message =
+    document.getElementById(
+        "message"
+    );
+
+
+/* =========================================
+   GET SAVED EMAIL
+========================================= */
+
+const email =
+    localStorage.getItem(
+        "canvasVerificationEmail"
+    );
+
+
+/* =========================================
+   GET PENDING SIGNUP
+========================================= */
+
+const pendingSignup =
+    localStorage.getItem(
+        "canvasPendingSignup"
+    );
+
+
+/* =========================================
+   GET DEVELOPMENT CODE
+========================================= */
+
+const developmentCode =
+    localStorage.getItem(
+        "canvasDevelopmentCode"
+    );
+
+
+/* =========================================
+   CHECK SIGNUP DATA
+========================================= */
+
+if(
+    !email ||
+    !pendingSignup
+){
+
+    message.style.color =
+        "#b00020";
+
+    message.textContent =
+        "Your verification session is missing. Please start signup again.";
+
+    verifyButton.disabled =
+        true;
+
+    resendButton.disabled =
+        true;
+
+}else{
+
+    emailDisplay.textContent =
+        email;
+
+
+    /* =====================================
+       DEVELOPMENT MODE
+    ===================================== */
+
+    if(
+        developmentCode &&
+        /^\d{6}$/.test(
+            developmentCode
+        )
+    ){
+
+        codeInput.value =
+            developmentCode;
+
+
+        message.style.color =
+            "#4b3326";
+
+        message.textContent =
+            "Development verification code loaded. Tap Verify Email.";
+
+    }
+
+}
+
+
+/* =========================================
+   ONLY ALLOW NUMBERS
+========================================= */
+
+codeInput.addEventListener(
+    "input",
+    function(){
+
+        this.value =
+            this.value
+            .replace(
+                /\D/g,
+                ""
+            )
+            .slice(
+                0,
+                6
+            );
+
+    }
+);
+
+
+/* =========================================
+   VERIFY EMAIL
+========================================= */
+
+verifyForm.addEventListener(
+    "submit",
+    async function(e){
+
+        e.preventDefault();
+
+
+        const code =
+            codeInput.value.trim();
+
+
+        message.textContent =
+            "";
+
+        message.style.color =
+            "#b00020";
+
+
+        /* =====================================
+           VALIDATE CODE
+        ===================================== */
+
+        if(
+            !/^\d{6}$/.test(code)
+        ){
+
+            message.textContent =
+                "Please enter the 6-digit verification code.";
+
+            return;
+
+        }
+
+
+        /* =====================================
+           BUTTON STATE
+        ===================================== */
+
+        verifyButton.disabled =
+            true;
+
+        resendButton.disabled =
+            true;
+
+        verifyButton.textContent =
+            "Verifying...";
+
+
+        try{
+
+
+            /* =================================
+               SEND CODE TO BACKEND
+            ================================= */
+
+            const response =
+                await fetch(
+
+                    API +
+                    "/api/signup/verify-code",
+
+                    {
+
+                        method:"POST",
+
+                        headers:{
+
+                            "Content-Type":
+                                "application/json"
+
+                        },
+
+                        body:
+                        JSON.stringify({
+
+                            email:
+                                email,
+
+                            code:
+                                code
+
+                        })
+
+                    }
+
+                );
+
+
+            /* =================================
+               READ RESPONSE
+            ================================= */
+
+            const data =
+                await response
+                .json()
+                .catch(
+                    function(){
+
+                        return {};
+
+                    }
+                );
+
+
+            /* =================================
+               SERVER ERROR
+            ================================= */
+
+            if(
+                !response.ok
+            ){
+
+                throw new Error(
+                    data.message ||
+                    "Unable to verify your email."
+                );
+
+            }
+
+
+            /* =================================
+               ACCOUNT CREATED
+            ================================= */
+
+            const user =
+                data.user || {};
+
+
+            /* =================================
+               SAVE AUTH TOKEN
+            ================================= */
+
+            if(
+                data.token
+            ){
+
+                localStorage.setItem(
+                    "canvasAuthToken",
+                    data.token
+                );
+
+            }
+
+
+            /* =================================
+               SAVE CURRENT USER
+            ================================= */
+
+            const username =
+                String(
+                    user.username ||
+                    ""
+                ).replace(
+                    /^@/,
+                    ""
+                );
+
+
+            localStorage.setItem(
+
+                "canvasCurrentUser",
+
+                JSON.stringify({
+
+                    id:
+                        user.id ||
+                        null,
+
+                    name:
+                        user.name ||
+                        "",
+
+                    username:
+                        "@" +
+                        username,
+
+                    email:
+                        user.email ||
+                        email
+
+                })
+
+            );
+
+
+            /* =================================
+               SAVE LOGIN STATE
+            ================================= */
+
+            localStorage.setItem(
+                "canvasLoggedIn",
+                "true"
+            );
+
+
+            /* =================================
+               SAVE ACCOUNT
+            ================================= */
+
+            localStorage.setItem(
+
+                "canvasAccount",
+
+                JSON.stringify({
+
+                    id:
+                        user.id ||
+                        null,
+
+                    email:
+                        user.email ||
+                        email,
+
+                    username:
+                        "@" +
+                        username,
+
+                    displayName:
+                        user.name ||
+                        ""
+
+                })
+
+            );
+
+
+            /* =================================
+               REMOVE PENDING SIGNUP
+            ================================= */
+
+            localStorage.removeItem(
+                "canvasPendingSignup"
+            );
+
+
+            localStorage.removeItem(
+                "canvasVerificationEmail"
+            );
+
+
+            localStorage.removeItem(
+                "canvasDevelopmentCode"
+            );
+
+
+            /* =================================
+               SUCCESS
+            ================================= */
+
+            message.style.color =
+                "#4b3326";
+
+            message.textContent =
+                "Email verified! Your Canvas account has been created.";
+
+
+            verifyButton.textContent =
+                "Verified";
+
+
+            /* =================================
+               REDIRECT TO LOGIN
+            ================================= */
+
+            setTimeout(
+                function(){
+
+                    window.location.href =
+                        "login.html";
+
+                },
+                900
+            );
+
+
+        }catch(error){
+
+            console.error(
+                "Canvas verification error:",
+                error
+            );
+
+
+            message.style.color =
+                "#b00020";
+
+            message.textContent =
+                error.message ||
+                "Could not verify your email.";
+
+
+            verifyButton.disabled =
+                false;
+
+            resendButton.disabled =
+                false;
+
+            verifyButton.textContent =
+                "Verify Email";
+
+        }
+
+    }
+);
+
+
+/* =========================================
+   RESEND CODE
+========================================= */
+
+let resendTimer =
+    null;
+
+
+let resendSeconds =
+    0;
+
+
+resendButton.addEventListener(
+    "click",
+    async function(){
+
+        if(
+            resendSeconds > 0
+        ){
+
+            return;
+
+        }
+
+
+        if(
+            !email
+        ){
+
+            message.style.color =
+                "#b00020";
+
+            message.textContent =
+                "Email information is missing.";
+
+            return;
+
+        }
+
+
+        resendButton.disabled =
+            true;
+
+        resendButton.textContent =
+            "Sending...";
+
+
+        message.textContent =
+            "";
+
+        message.style.color =
+            "#b00020";
+
+
+        try{
+
+
+            /* =================================
+               REQUEST NEW CODE
+            ================================= */
+
+            const response =
+                await fetch(
+
+                    API +
+                    "/api/signup/resend-code",
+
+                    {
+
+                        method:"POST",
+
+                        headers:{
+
+                            "Content-Type":
+                                "application/json"
+
+                        },
+
+                        body:
+                        JSON.stringify({
+
+                            email:
+                                email
+
+                        })
+
+                    }
+
+                );
+
+
+            const data =
+                await response
+                .json()
+                .catch(
+                    function(){
+
+                        return {};
+
+                    }
+                );
+
+
+            if(
+                !response.ok
+            ){
+
+                throw new Error(
+                    data.message ||
+                    "Unable to resend verification code."
+                );
+
+            }
+
+
+            /* =================================
+               SAVE DEVELOPMENT CODE
+            ================================= */
+
+            if(
+                data.developmentCode
+            ){
+
+                localStorage.setItem(
+
+                    "canvasDevelopmentCode",
+
+                    data.developmentCode
+
+                );
+
+
+                codeInput.value =
+                    data.developmentCode;
+
+
+                message.style.color =
+                    "#4b3326";
+
+                message.textContent =
+                    "New development verification code loaded.";
+
+            }else{
+
+                message.style.color =
+                    "#4b3326";
+
+                message.textContent =
+                    "A new verification code has been sent to your email.";
+
+            }
+
+
+            startResendTimer();
+
+
+        }catch(error){
+
+            console.error(
+                "Canvas resend code error:",
+                error
+            );
+
+
+            message.style.color =
+                "#b00020";
+
+            message.textContent =
+                error.message ||
+                "Could not resend verification code.";
+
+
+            resendButton.disabled =
+                false;
+
+            resendButton.textContent =
+                "Resend Code";
+
+        }
+
+    }
+);
+
+
+/* =========================================
+   RESEND COUNTDOWN
+========================================= */
+
+function startResendTimer(){
+
+    resendSeconds =
+        60;
+
+
+    resendButton.disabled =
+        true;
+
+
+    resendButton.textContent =
+        "Resend Code (" +
+        resendSeconds +
+        "s)";
+
+
+    clearInterval(
+        resendTimer
+    );
+
+
+    resendTimer =
+        setInterval(
+            function(){
+
+                resendSeconds--;
+
+
+                if(
+                    resendSeconds <= 0
+                ){
+
+                    clearInterval(
+                        resendTimer
+                    );
+
+
+                    resendTimer =
+                        null;
+
+
+                    resendButton.disabled =
+                        false;
+
+
+                    resendButton.textContent =
+                        "Resend Code";
+
+
+                    return;
+
+                }
+
+
+                resendButton.textContent =
+                    "Resend Code (" +
+                    resendSeconds +
+                    "s)";
+
+
+            },
+            1000
+        );
+
+}
+
+
+/* =========================================
+   AUTO FOCUS CODE
+========================================= */
+
+if(
+    email &&
+    pendingSignup
+){
+
+    setTimeout(
+        function(){
+
+            /*
+             * If a development code exists,
+             * keep it loaded.
+             */
+
+            if(
+                developmentCode
+            ){
+
+                codeInput.value =
+                    developmentCode;
+
+            }else{
+
+                codeInput.focus();
+
+            }
+
+        },
+        300
+    );
+
+}
+
+</script>
+
+</body>
+
+  </html>
