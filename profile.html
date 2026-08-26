@@ -1094,7 +1094,264 @@ function showProfile(profile){
     updateBottomIcon(profile);
 }
 
+/* =========================================
+   LOAD PROFILE — FAST VERSION
+========================================= */
+
 async function loadProfile(){
+
+    if(!requireLogin())
+        return;
+
+
+    /*
+     * SHOW LOCAL USER IMMEDIATELY
+     * Do not wait for Render.
+     */
+
+    let localUser = null;
+
+    try{
+
+        const storedUser =
+            localStorage.getItem(
+                "canvasCurrentUser"
+            );
+
+        if(storedUser){
+
+            localUser =
+                JSON.parse(storedUser);
+
+        }
+
+    }catch(error){
+
+        console.log(
+            "Local user data unavailable."
+        );
+
+    }
+
+
+    /*
+     * If we already have local account data,
+     * show the profile screen immediately.
+     */
+
+    if(localUser){
+
+        const quickProfile = {
+
+            id:
+                localUser.id || "",
+
+            name:
+                localUser.name || "",
+
+            username:
+                localUser.username || "",
+
+            email:
+                localUser.email || "",
+
+            bio:
+                localUser.bio || "",
+
+            photo:
+                localUser.profile_picture ||
+                localUser.photo ||
+                ""
+
+        };
+
+
+        currentProfile =
+            quickProfile;
+
+
+        showProfile(
+            quickProfile
+        );
+
+    }
+
+
+    /*
+     * BACKGROUND SYNC
+     *
+     * The profile is already visible.
+     * Now contact Render without making
+     * the user wait for it.
+     */
+
+    try{
+
+        const token =
+            getAuthToken();
+
+
+        const profileResponse =
+            await fetch(
+                API + "/api/profile",
+                {
+                    method:"GET",
+
+                    headers:{
+                        "Accept":
+                            "application/json",
+
+                        "Authorization":
+                            "Bearer " + token
+                    }
+                }
+            );
+
+
+        if(
+            profileResponse.status === 401
+        ){
+
+            logout();
+            return;
+
+        }
+
+
+        if(
+            profileResponse.status === 404
+        ){
+
+            /*
+             * Only show create profile
+             * if we had no local profile.
+             */
+
+            if(!localUser){
+
+                showCreateProfile();
+
+            }
+
+            return;
+
+        }
+
+
+        const profileData =
+            await profileResponse.json();
+
+
+        if(!profileResponse.ok){
+
+            throw new Error(
+                profileData.message ||
+                "Unable to load profile."
+            );
+
+        }
+
+
+        const p =
+            profileData.profile;
+
+
+        const profile = {
+
+            id:
+                p.id,
+
+            name:
+                p.name || "",
+
+            username:
+                p.username || "",
+
+            email:
+                p.email || "",
+
+            bio:
+                p.bio || "",
+
+            photo:
+                p.profile_picture || ""
+
+        };
+
+
+        /*
+         * Update the screen with the
+         * latest backend information.
+         */
+
+        showProfile(
+            profile
+        );
+
+
+        /*
+         * Keep local storage synchronized.
+         */
+
+        try{
+
+            const existingUser =
+                localUser || {};
+
+
+            localStorage.setItem(
+                "canvasCurrentUser",
+                JSON.stringify({
+
+                    ...existingUser,
+
+                    id:
+                        profile.id,
+
+                    name:
+                        profile.name,
+
+                    username:
+                        profile.username,
+
+                    email:
+                        profile.email,
+
+                    bio:
+                        profile.bio,
+
+                    profile_picture:
+                        profile.photo
+
+                })
+            );
+
+        }catch(error){
+
+            console.log(
+                "Unable to update local profile cache."
+            );
+
+        }
+
+
+    }catch(error){
+
+        /*
+         * IMPORTANT:
+         *
+         * Do NOT remove the already displayed
+         * profile just because Render is slow.
+         */
+
+        console.error(
+            "Background profile sync failed:",
+            error
+        );
+
+    }
+
+   }
 
     if(!requireLogin())
         return;
@@ -1894,23 +2151,34 @@ function setupPhotoInput(){
 
 
 /* =========================================
-   INITIALIZE
+   INITIALIZE — FAST
 ========================================= */
 
 function initializeProfilePage(){
 
     setupPhotoInput();
 
+
     const deleteButton =
         document.getElementById(
             "deletePhotoButton"
         );
 
+
     if(deleteButton)
         deleteButton.style.display = "none";
 
 
+    /*
+     * Do not block page rendering.
+     *
+     * loadProfile() immediately uses
+     * localStorage and then syncs with
+     * the backend in the background.
+     */
+
     loadProfile();
+
 }
 
 
