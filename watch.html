@@ -1,0 +1,2586 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Canvas - Watch Live</title>
+
+<link
+    rel="stylesheet"
+    href="style.css"
+>
+
+<style>
+
+/* =========================================
+   WATCH PAGE
+========================================= */
+
+.watch-page {
+    width: 100%;
+    max-width: 900px;
+
+    margin: 0 auto;
+
+    padding: 25px 15px 100px;
+}
+
+
+/* =========================================
+   VIDEO CONTAINER
+========================================= */
+
+.watch-video-box {
+
+    width: 100%;
+
+    aspect-ratio: 16 / 9;
+
+    background: #251b17;
+
+    border-radius: 20px;
+
+    overflow: hidden;
+
+    position: relative;
+
+    border: 1px solid #eaded6;
+
+    box-shadow:
+        0 8px 25px rgba(75,51,38,0.12);
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+}
+
+
+#liveVideo {
+
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: contain;
+
+    background: #000;
+}
+
+
+/* =========================================
+   VIDEO LOADING
+========================================= */
+
+.video-message {
+
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    transform: translate(-50%,-50%);
+
+    width: 90%;
+
+    text-align: center;
+
+    color: #ffffff;
+
+    font-size: 16px;
+
+    font-weight: 700;
+
+    z-index: 2;
+}
+
+
+.video-message.hidden {
+    display: none;
+}
+
+
+/* =========================================
+   LIVE BADGE
+========================================= */
+
+.watch-live-badge {
+
+    position: absolute;
+
+    top: 12px;
+    left: 12px;
+
+    padding: 6px 11px;
+
+    border-radius: 8px;
+
+    background: #d93025;
+
+    color: #ffffff;
+
+    font-size: 12px;
+
+    font-weight: 800;
+
+    z-index: 5;
+}
+
+
+/* =========================================
+   WATCH INFORMATION
+========================================= */
+
+.watch-info {
+
+    margin-top: 16px;
+
+    padding: 18px;
+
+    background: #ffffff;
+
+    border: 1px solid #eaded6;
+
+    border-radius: 18px;
+
+    box-shadow:
+        0 5px 18px rgba(75,51,38,0.06);
+}
+
+
+.watch-title {
+
+    color: #4b3326;
+
+    font-size: 24px;
+
+    font-weight: 800;
+
+    line-height: 1.3;
+
+    margin-bottom: 10px;
+
+    word-break: break-word;
+}
+
+
+.creator-row {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+}
+
+
+.creator-picture {
+
+    width: 40px;
+    height: 40px;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    object-fit: cover;
+
+    border: 2px solid #d4a62a;
+
+    background: #f1f1f1;
+}
+
+
+.creator-details {
+
+    min-width: 0;
+
+    flex: 1;
+}
+
+
+.creator-name {
+
+    color: #4b3326;
+
+    font-size: 16px;
+
+    font-weight: 800;
+}
+
+
+.creator-username {
+
+    color: #806c60;
+
+    font-size: 13px;
+
+    margin-top: 3px;
+}
+
+
+.viewer-count {
+
+    margin-top: 12px;
+
+    color: #75645b;
+
+    font-size: 14px;
+}
+
+
+/* =========================================
+   FOLLOW BUTTON
+========================================= */
+
+.follow-button {
+
+    margin-top: 15px;
+
+    padding: 12px 20px;
+
+    border: none;
+
+    border-radius: 12px;
+
+    background: #4b3326;
+
+    color: #ffffff;
+
+    font-size: 15px;
+
+    font-weight: 800;
+
+    cursor: pointer;
+}
+
+
+.follow-button:active {
+
+    transform: scale(0.97);
+}
+
+
+/* =========================================
+   WATCH ERROR
+========================================= */
+
+.watch-error {
+
+    padding: 40px 20px;
+
+    text-align: center;
+
+    background: #fff8f6;
+
+    border: 1px solid #f0d8d3;
+
+    border-radius: 18px;
+
+    color: #8a3028;
+}
+
+
+.watch-error h2 {
+
+    margin-bottom: 10px;
+
+    color: #6f2d26;
+}
+
+
+.watch-error p {
+
+    color: #806c60;
+
+    font-size: 14px;
+
+    line-height: 1.5;
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width:600px) {
+
+    .watch-page {
+
+        padding:
+            20px 15px 95px;
+    }
+
+
+    .watch-video-box {
+
+        border-radius: 16px;
+    }
+
+
+    .watch-info {
+
+        padding: 15px;
+
+        border-radius: 16px;
+    }
+
+
+    .watch-title {
+
+        font-size: 21px;
+    }
+
+
+    .creator-picture {
+
+        width: 37px;
+        height: 37px;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================
+     TOP NAVBAR
+========================================= -->
+
+<header class="navbar">
+
+    <div class="logo">
+        Canvas
+    </div>
+
+
+    <div class="top-icons">
+
+        <button
+            class="search-button"
+            id="searchButton"
+            type="button"
+            onclick="openSearch()"
+            aria-label="Search"
+        >
+
+            <svg
+                width="25"
+                height="25"
+                viewBox="0 0 24 24"
+                fill="none"
+            >
+
+                <circle
+                    cx="11"
+                    cy="11"
+                    r="7"
+                    stroke="currentColor"
+                    stroke-width="2.8"
+                />
+
+                <path
+                    d="M16.5 16.5L21 21"
+                    stroke="currentColor"
+                    stroke-width="2.8"
+                    stroke-linecap="round"
+                />
+
+            </svg>
+
+        </button>
+
+
+        <a
+            href="profile.html"
+            id="topProfileIcon"
+        >
+            ⬤
+        </a>
+
+    </div>
+
+</header>
+
+
+<!-- =========================================
+     WATCH PAGE
+========================================= -->
+
+<main class="watch-page">
+
+
+    <!-- =====================================
+         VIDEO
+    ====================================== -->
+
+    <div class="watch-video-box">
+
+        <div
+            class="watch-live-badge"
+            id="liveBadge"
+        >
+            🔴 LIVE
+        </div>
+
+
+        <video
+            id="liveVideo"
+            autoplay
+            playsinline
+            controls
+        ></video>
+
+
+        <div
+            class="video-message"
+            id="videoMessage"
+        >
+            Connecting to live stream...
+        </div>
+
+    </div>
+
+
+    <!-- =====================================
+         STREAM INFORMATION
+    ====================================== -->
+
+    <section class="watch-info">
+
+        <h1
+            class="watch-title"
+            id="streamTitle"
+        >
+            Loading stream...
+        </h1>
+
+
+        <div class="creator-row">
+
+
+            <div
+                id="creatorPictureContainer"
+            >
+
+                <div class="creator-picture">
+                    ⬤
+                </div>
+
+            </div>
+
+
+            <div class="creator-details">
+
+                <div
+                    class="creator-name"
+                    id="creatorName"
+                >
+                    Canvas Creator
+                </div>
+
+
+                <div
+                    class="creator-username"
+                    id="creatorUsername"
+                >
+                    @creator
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div
+            class="viewer-count"
+            id="viewerCount"
+        >
+            👀 0 Watching
+        </div>
+
+
+        <button
+            class="follow-button"
+            id="followButton"
+            type="button"
+        >
+            ❤️ Follow
+        </button>
+
+    </section>
+
+
+    <!-- =====================================
+         CHAT WILL BE PART 2
+    ====================================== -->
+
+    <section
+        id="chatSection"
+    ></section>
+
+
+</main>
+
+
+<!-- =========================================
+     BOTTOM NAVIGATION
+========================================= -->
+
+<nav class="bottom-nav">
+
+
+    <a href="stream.html">
+
+        ⌂
+
+        <span>
+            Home
+        </span>
+
+    </a>
+
+
+    <a
+        href="stream.html"
+        class="active"
+    >
+
+        ▣
+
+        <span>
+            Stream
+        </span>
+
+    </a>
+
+
+    <a href="golive.html">
+
+        ⊙
+
+        <span>
+            Go Live
+        </span>
+
+    </a>
+
+
+    <a href="#">
+
+        ♡
+
+        <span>
+            Support
+        </span>
+
+    </a>
+
+
+    <a
+        href="profile.html"
+        id="bottomProfileIcon"
+    >
+
+        ⬤
+
+        <span>
+            Profile
+        </span>
+
+    </a>
+
+
+</nav>
+
+
+<!-- =========================================
+     PART 2 WILL CONTINUE SCRIPT
+========================================= -->
+  <!-- =========================================
+     PART 2/3 — CANVAS WATCH JAVASCRIPT
+========================================= -->
+
+<script>
+
+/* =========================================
+   CANVAS BACKEND
+========================================= */
+
+const API_BASE =
+    "https://canvas-kh9p.onrender.com";
+
+
+/* =========================================
+   STREAM STATE
+========================================= */
+
+let currentStream = null;
+
+let selectedSupport = 0;
+
+let selectedGift = null;
+
+
+/* =========================================
+   GET STREAM ID
+========================================= */
+
+function getStreamId(){
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+    return params.get("stream");
+
+}
+
+
+/* =========================================
+   LOAD STREAM
+========================================= */
+
+async function loadStream(){
+
+    const streamId =
+        getStreamId();
+
+
+    if(!streamId){
+
+        showStreamError(
+            "No stream was selected."
+        );
+
+        return;
+
+    }
+
+
+    try{
+
+        const response =
+            await fetch(
+                API_BASE +
+                "/api/streams/" +
+                encodeURIComponent(
+                    streamId
+                )
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if(!response.ok){
+
+            throw new Error(
+                data.message ||
+                "Unable to load Canvas stream."
+            );
+
+        }
+
+
+        currentStream =
+            data.stream ||
+            data;
+
+
+        renderStream(
+            currentStream
+        );
+
+
+    }
+
+    catch(error){
+
+        console.error(
+            "Unable to load Canvas stream:",
+            error
+        );
+
+
+        showStreamError(
+            "Unable to load Canvas stream."
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   RENDER STREAM
+========================================= */
+
+function renderStream(stream){
+
+    if(!stream) return;
+
+
+    /* =====================================
+       STREAM TITLE
+    ===================================== */
+
+    const title =
+        document.getElementById(
+            "streamTitle"
+        );
+
+
+    if(title){
+
+        title.textContent =
+            stream.title ||
+            "Canvas Live Stream";
+
+    }
+
+
+    /* =====================================
+       CREATOR NAME
+    ===================================== */
+
+    const creator =
+        document.getElementById(
+            "streamCreator"
+        );
+
+
+    if(creator){
+
+        creator.textContent =
+            stream.name ||
+            stream.username ||
+            "Canvas Creator";
+
+    }
+
+
+    /* =====================================
+       USERNAME
+    ===================================== */
+
+    const username =
+        document.getElementById(
+            "streamUsername"
+        );
+
+
+    if(username){
+
+        username.textContent =
+            stream.username
+                ? "@" +
+                  stream.username
+                : "";
+
+    }
+
+
+    /* =====================================
+       VIEWERS
+    ===================================== */
+
+    const viewers =
+        document.getElementById(
+            "streamViewers"
+        );
+
+
+    if(viewers){
+
+        const count =
+            Number(
+                stream.viewer_count ||
+                stream.viewers ||
+                0
+            );
+
+
+        viewers.textContent =
+            count.toLocaleString() +
+            " Watching";
+
+    }
+
+
+    /* =====================================
+       DESCRIPTION
+    ===================================== */
+
+    const description =
+        document.getElementById(
+            "streamDescription"
+        );
+
+
+    if(description){
+
+        description.textContent =
+            stream.description ||
+            "";
+
+    }
+
+
+    /* =====================================
+       CATEGORY
+    ===================================== */
+
+    const category =
+        document.getElementById(
+            "streamCategory"
+        );
+
+
+    if(category){
+
+        category.textContent =
+            stream.category ||
+            "Entertainment";
+
+    }
+
+
+    /* =====================================
+       CREATOR PROFILE
+    ===================================== */
+
+    const profileImage =
+        document.getElementById(
+            "streamProfileImage"
+        );
+
+
+    if(
+        profileImage &&
+        stream.profile_picture
+    ){
+
+        profileImage.src =
+            stream.profile_picture;
+
+        profileImage.style.display =
+            "block";
+
+    }
+
+
+    /* =====================================
+       STREAM THUMBNAIL
+    ===================================== */
+
+    const video =
+        document.getElementById(
+            "liveVideo"
+        );
+
+
+    if(video){
+
+        const thumbnail =
+            stream.thumbnail ||
+            stream.thumbnail_url ||
+            "";
+
+
+        if(thumbnail){
+
+            video.poster =
+                thumbnail;
+
+        }
+
+    }
+
+
+    /* =====================================
+       VIDEO SOURCE
+    ===================================== */
+
+    setupVideo(
+        stream
+    );
+
+
+    /* =====================================
+       SUPPORT CREATOR
+    ===================================== */
+
+    const supportName =
+        document.getElementById(
+            "supportCreatorName"
+        );
+
+
+    if(supportName){
+
+        supportName.textContent =
+            stream.name ||
+            stream.username ||
+            "Canvas Creator";
+
+    }
+
+}
+
+
+/* =========================================
+   VIDEO SETUP
+========================================= */
+
+function setupVideo(stream){
+
+    const video =
+        document.getElementById(
+            "liveVideo"
+        );
+
+
+    if(!video) return;
+
+
+    /*
+     * Canvas can use a direct video URL
+     * when the backend provides one.
+     */
+
+    const videoUrl =
+        stream.video_url ||
+        stream.videoUrl ||
+        stream.playback_url ||
+        stream.playbackUrl ||
+        stream.stream_url ||
+        stream.streamUrl ||
+        "";
+
+
+    if(videoUrl){
+
+        video.src =
+            videoUrl;
+
+        video.load();
+
+    }
+
+}
+
+
+/* =========================================
+   STREAM ERROR
+========================================= */
+
+function showStreamError(message){
+
+    const errorBox =
+        document.getElementById(
+            "streamError"
+        );
+
+
+    if(errorBox){
+
+        errorBox.textContent =
+            message;
+
+        errorBox.style.display =
+            "block";
+
+    }
+
+
+    const video =
+        document.getElementById(
+            "liveVideo"
+        );
+
+
+    if(video){
+
+        video.style.display =
+            "none";
+
+    }
+
+}
+
+
+/* =========================================
+   FOLLOW CREATOR
+========================================= */
+
+async function followCreator(){
+
+    if(!currentStream){
+
+        alert(
+            "Stream information is not available."
+        );
+
+        return;
+
+    }
+
+
+    const creatorId =
+        currentStream.user_id ||
+        currentStream.userId ||
+        currentStream.creator_id ||
+        currentStream.creatorId;
+
+
+    if(!creatorId){
+
+        alert(
+            "Creator information is unavailable."
+        );
+
+        return;
+
+    }
+
+
+    const token =
+        localStorage.getItem(
+            "canvasAuthToken"
+        );
+
+
+    if(!token){
+
+        alert(
+            "Please log in to follow this creator."
+        );
+
+        return;
+
+    }
+
+
+    try{
+
+        const response =
+            await fetch(
+                API_BASE +
+                "/api/follow",
+                {
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json",
+
+                        "Authorization":
+                            "Bearer " +
+                            token
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            userId:
+                                creatorId
+
+                        })
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if(!response.ok){
+
+            throw new Error(
+                data.message ||
+                "Unable to follow creator."
+            );
+
+        }
+
+
+        updateFollowButton(
+            true
+        );
+
+
+    }
+
+    catch(error){
+
+        console.error(
+            "Follow failed:",
+            error
+        );
+
+
+        alert(
+            error.message ||
+            "Unable to follow creator."
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   FOLLOW BUTTON UI
+========================================= */
+
+function updateFollowButton(isFollowing){
+
+    const button =
+        document.getElementById(
+            "followButton"
+        );
+
+
+    if(!button) return;
+
+
+    if(isFollowing){
+
+        button.textContent =
+            "✓ Following";
+
+        button.classList.add(
+            "following"
+        );
+
+    }
+
+    else{
+
+        button.textContent =
+            "❤️ Follow";
+
+        button.classList.remove(
+            "following"
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   OPEN GIFT PANEL
+========================================= */
+
+function toggleGiftPanel(){
+
+    const panel =
+        document.getElementById(
+            "giftPanel"
+        );
+
+
+    if(!panel) return;
+
+
+    const isOpen =
+        panel.classList.contains(
+            "active"
+        );
+
+
+    if(isOpen){
+
+        panel.classList.remove(
+            "active"
+        );
+
+    }
+
+    else{
+
+        panel.classList.add(
+            "active"
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   MONEY TAB
+========================================= */
+
+function showMoney(){
+
+    const money =
+        document.getElementById(
+            "moneyOptions"
+        );
+
+
+    const gifts =
+        document.getElementById(
+            "giftOptions"
+        );
+
+
+    if(money){
+
+        money.style.display =
+            "flex";
+
+    }
+
+
+    if(gifts){
+
+        gifts.style.display =
+            "none";
+
+    }
+
+
+    selectedGift =
+        null;
+
+}
+
+
+/* =========================================
+   GIFTS TAB
+========================================= */
+
+function showGifts(){
+
+    const money =
+        document.getElementById(
+            "moneyOptions"
+        );
+
+
+    const gifts =
+        document.getElementById(
+            "giftOptions"
+        );
+
+
+    if(money){
+
+        money.style.display =
+            "none";
+
+    }
+
+
+    if(gifts){
+
+        gifts.style.display =
+            "flex";
+
+    }
+
+
+    selectedSupport =
+        0;
+
+}
+
+
+/* =========================================
+   SELECT MONEY
+========================================= */
+
+function selectSupport(amount){
+
+    selectedSupport =
+        Number(amount) || 0;
+
+
+    selectedGift =
+        null;
+
+
+    updateSelectedSupport();
+
+}
+
+
+/* =========================================
+   SELECT GIFT
+========================================= */
+
+function selectGift(
+    emoji,
+    name,
+    amount
+){
+
+    selectedGift = {
+
+        emoji:
+            emoji,
+
+        name:
+            name,
+
+        amount:
+            Number(amount) || 0
+
+    };
+
+
+    selectedSupport =
+        selectedGift.amount;
+
+
+    updateSelectedSupport();
+
+}
+
+
+/* =========================================
+   SUPPORT STATUS
+========================================= */
+
+function updateSelectedSupport(){
+
+    const status =
+        document.getElementById(
+            "supportStatus"
+        );
+
+
+    if(!status) return;
+
+
+    if(selectedGift){
+
+        status.textContent =
+            "Selected: " +
+            selectedGift.emoji +
+            " " +
+            selectedGift.name +
+            " ($" +
+            selectedGift.amount +
+            ")";
+
+        return;
+
+    }
+
+
+    if(selectedSupport > 0){
+
+        status.textContent =
+            "Selected support: $" +
+            selectedSupport;
+
+        return;
+
+    }
+
+
+    status.textContent =
+        "Select an amount or gift.";
+
+}
+
+
+/* =========================================
+   SEND SUPPORT
+========================================= */
+
+async function sendGift(){
+
+    if(selectedSupport <= 0){
+
+        alert(
+            "Please select a gift or amount first."
+        );
+
+        return;
+
+    }
+
+
+    if(!currentStream){
+
+        alert(
+            "Stream information is unavailable."
+        );
+
+        return;
+
+    }
+
+
+    const token =
+        localStorage.getItem(
+            "canvasAuthToken"
+        );
+
+
+    if(!token){
+
+        alert(
+            "Please log in to support a creator."
+        );
+
+        return;
+
+    }
+
+
+    const creatorId =
+        currentStream.user_id ||
+        currentStream.userId ||
+        currentStream.creator_id ||
+        currentStream.creatorId;
+
+
+    if(!creatorId){
+
+        alert(
+            "Creator information is unavailable."
+        );
+
+        return;
+
+    }
+
+
+    const payload = {
+
+        creatorId:
+            creatorId,
+
+        streamId:
+            currentStream.id,
+
+        amount:
+            selectedSupport,
+
+        type:
+            selectedGift
+                ? "gift"
+                : "money"
+
+    };
+
+
+    if(selectedGift){
+
+        payload.gift =
+            selectedGift.name;
+
+        payload.emoji =
+            selectedGift.emoji;
+
+    }
+
+
+    try{
+
+        const response =
+            await fetch(
+                API_BASE +
+                "/api/support",
+                {
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json",
+
+                        "Authorization":
+                            "Bearer " +
+                            token
+
+                    },
+
+                    body:
+                        JSON.stringify(
+                            payload
+                        )
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if(!response.ok){
+
+            throw new Error(
+                data.message ||
+                "Support could not be sent."
+            );
+
+        }
+
+
+        if(selectedGift){
+
+            alert(
+                "You sent " +
+                selectedGift.emoji +
+                " " +
+                selectedGift.name +
+                " to " +
+                (
+                    currentStream.name ||
+                    currentStream.username ||
+                    "the creator"
+                ) +
+                "! ❤️"
+            );
+
+        }
+
+        else{
+
+            alert(
+                "You supported " +
+                (
+                    currentStream.name ||
+                    currentStream.username ||
+                    "the creator"
+                ) +
+                " with $" +
+                selectedSupport +
+                "! ❤️"
+            );
+
+        }
+
+
+        selectedSupport =
+            0;
+
+        selectedGift =
+            null;
+
+
+        updateSelectedSupport();
+
+
+        toggleGiftPanel();
+
+
+    }
+
+    catch(error){
+
+        console.error(
+            "Support failed:",
+            error
+        );
+
+
+        alert(
+            error.message ||
+            "Unable to send support."
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   SEND CHAT MESSAGE
+========================================= */
+
+async function sendChatMessage(){
+
+    const input =
+        document.getElementById(
+            "chatInput"
+        );
+
+
+    if(!input) return;
+
+
+    const message =
+        input.value.trim();
+
+
+    if(!message) return;
+
+
+    const token =
+        localStorage.getItem(
+            "canvasAuthToken"
+        );
+
+
+    if(!token){
+
+        alert(
+            "Please log in to chat."
+        );
+
+        return;
+
+    }
+
+
+    if(!currentStream){
+
+        return;
+
+    }
+
+
+    try{
+
+        const response =
+            await fetch(
+                API_BASE +
+                "/api/streams/" +
+                encodeURIComponent(
+                    currentStream.id
+                ) +
+                "/chat",
+                {
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json",
+
+                        "Authorization":
+                            "Bearer " +
+                            token
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            message:
+                                message
+
+                        })
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if(!response.ok){
+
+            throw new Error(
+                data.message ||
+                "Unable to send message."
+            );
+
+        }
+
+
+        input.value =
+            "";
+
+
+        if(data.message){
+
+            addChatMessage(
+                data.message
+            );
+
+        }
+
+
+    }
+
+    catch(error){
+
+        console.error(
+            "Chat message failed:",
+            error
+        );
+
+
+        alert(
+            error.message ||
+            "Unable to send message."
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   ADD CHAT MESSAGE
+========================================= */
+
+function addChatMessage(message){
+
+    const chat =
+        document.getElementById(
+            "chatMessages"
+        );
+
+
+    if(!chat) return;
+
+
+    const row =
+        document.createElement(
+            "div"
+        );
+
+
+    row.className =
+        "message";
+
+
+    const username =
+        message.name ||
+        message.username ||
+        "User";
+
+
+    row.innerHTML =
+
+        "<strong>" +
+
+        escapeHTML(
+            username
+        ) +
+
+        ":</strong> " +
+
+        escapeHTML(
+            message.message ||
+            ""
+        );
+
+
+    chat.appendChild(
+        row
+    );
+
+
+    chat.scrollTop =
+        chat.scrollHeight;
+
+}
+
+
+/* =========================================
+   ESCAPE HTML
+========================================= */
+
+function escapeHTML(value){
+
+    return String(
+        value || ""
+    )
+
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+
+    .replace(
+        /</g,
+        "&lt;"
+    )
+
+    .replace(
+        />/g,
+        "&gt;"
+    )
+
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+
+    .replace(
+        /'/g,
+        "&#039;"
+    );
+
+}
+
+
+/* =========================================
+   CHAT ENTER KEY
+========================================= */
+
+document.addEventListener(
+    "keydown",
+    function(event){
+
+        const input =
+            document.getElementById(
+                "chatInput"
+            );
+
+
+        if(
+            event.key === "Enter" &&
+            document.activeElement === input
+        ){
+
+            event.preventDefault();
+
+            sendChatMessage();
+
+        }
+
+    }
+);
+
+
+/* =========================================
+   INITIAL LOAD
+========================================= */
+
+window.addEventListener(
+    "DOMContentLoaded",
+    function(){
+
+        loadStream();
+
+        updateSelectedSupport();
+
+    }
+);
+
+  </script>
+  <!-- =========================================
+     PART 3/3 — REAL-TIME WATCH SYSTEM
+========================================= -->
+
+<script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+
+<script>
+
+/* =========================================
+   CANVAS SOCKET
+========================================= */
+
+let canvasSocket = null;
+
+
+/* =========================================
+   CONNECT TO CANVAS SERVER
+========================================= */
+
+function connectCanvasSocket(){
+
+    if(
+        typeof io === "undefined"
+    ){
+
+        console.error(
+            "Socket.IO client not loaded."
+        );
+
+        return;
+
+    }
+
+
+    try{
+
+        canvasSocket =
+            io(
+                API_BASE,
+                {
+                    transports: [
+                        "websocket",
+                        "polling"
+                    ]
+                }
+            );
+
+
+        /* ================================
+           CONNECTED
+        ================================= */
+
+        canvasSocket.on(
+            "connect",
+            function(){
+
+                console.log(
+                    "Canvas watch connected:",
+                    canvasSocket.id
+                );
+
+
+                const streamId =
+                    getStreamId();
+
+
+                if(streamId){
+
+                    canvasSocket.emit(
+                        "join-stream",
+                        {
+                            streamId:
+                                streamId
+                        }
+                    );
+
+                }
+
+            }
+        );
+
+
+        /* ================================
+           STREAM UPDATED
+        ================================= */
+
+        canvasSocket.on(
+            "stream-updated",
+            function(stream){
+
+                if(!stream) return;
+
+
+                const currentId =
+                    getStreamId();
+
+
+                if(
+                    String(
+                        stream.id
+                    ) !==
+                    String(
+                        currentId
+                    )
+                ){
+
+                    return;
+
+                }
+
+
+                currentStream =
+                    {
+                        ...currentStream,
+                        ...stream
+                    };
+
+
+                renderStream(
+                    currentStream
+                );
+
+            }
+        );
+
+
+        /* ================================
+           VIEWER COUNT
+        ================================= */
+
+        canvasSocket.on(
+            "viewer-count",
+            function(data){
+
+                if(!data) return;
+
+
+                const currentId =
+                    getStreamId();
+
+
+                if(
+                    data.streamId &&
+                    String(
+                        data.streamId
+                    ) !==
+                    String(
+                        currentId
+                    )
+                ){
+
+                    return;
+
+                }
+
+
+                const viewers =
+                    document.getElementById(
+                        "streamViewers"
+                    );
+
+
+                if(
+                    viewers &&
+                    data.count !== undefined
+                ){
+
+                    viewers.textContent =
+                        Number(
+                            data.count
+                        ).toLocaleString() +
+                        " Watching";
+
+                }
+
+            }
+        );
+
+
+        /* ================================
+           NEW CHAT MESSAGE
+        ================================= */
+
+        canvasSocket.on(
+            "chat-message",
+            function(message){
+
+                if(!message) return;
+
+
+                const currentId =
+                    getStreamId();
+
+
+                if(
+                    message.streamId &&
+                    String(
+                        message.streamId
+                    ) !==
+                    String(
+                        currentId
+                    )
+                ){
+
+                    return;
+
+                }
+
+
+                addChatMessage(
+                    message
+                );
+
+            }
+        );
+
+
+        /* ================================
+           STREAM ENDED
+        ================================= */
+
+        canvasSocket.on(
+            "stream-ended",
+            function(stream){
+
+                const currentId =
+                    getStreamId();
+
+
+                if(
+                    stream &&
+                    stream.id &&
+                    String(
+                        stream.id
+                    ) !==
+                    String(
+                        currentId
+                    )
+                ){
+
+                    return;
+
+                }
+
+
+                showStreamEnded();
+
+            }
+        );
+
+
+        /* ================================
+           DISCONNECTED
+        ================================= */
+
+        canvasSocket.on(
+            "disconnect",
+            function(){
+
+                console.log(
+                    "Canvas watch disconnected."
+                );
+
+            }
+        );
+
+
+        /* ================================
+           CONNECTION ERROR
+        ================================= */
+
+        canvasSocket.on(
+            "connect_error",
+            function(error){
+
+                console.error(
+                    "Canvas Socket error:",
+                    error.message
+                );
+
+            }
+        );
+
+    }
+
+    catch(error){
+
+        console.error(
+            "Canvas socket setup failed:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   STREAM ENDED SCREEN
+========================================= */
+
+function showStreamEnded(){
+
+    const video =
+        document.getElementById(
+            "liveVideo"
+        );
+
+
+    if(video){
+
+        try{
+
+            video.pause();
+
+        }
+
+        catch(error){
+
+            console.log(
+                "Video pause failed."
+            );
+
+        }
+
+
+        video.removeAttribute(
+            "src"
+        );
+
+        video.load();
+
+        video.style.display =
+            "none";
+
+    }
+
+
+    const errorBox =
+        document.getElementById(
+            "streamError"
+        );
+
+
+    if(errorBox){
+
+        errorBox.textContent =
+            "This live stream has ended.";
+
+        errorBox.style.display =
+            "block";
+
+    }
+
+
+    const followButton =
+        document.getElementById(
+            "followButton"
+        );
+
+
+    if(followButton){
+
+        followButton.disabled =
+            true;
+
+    }
+
+
+    const giftPanel =
+        document.getElementById(
+            "giftPanel"
+        );
+
+
+    if(giftPanel){
+
+        giftPanel.classList.remove(
+            "active"
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   PROFILE PICTURE SYNC
+========================================= */
+
+function loadProfilePicture(){
+
+    const savedProfile =
+        localStorage.getItem(
+            "canvasProfile"
+        );
+
+
+    if(!savedProfile) return;
+
+
+    try{
+
+        const profile =
+            JSON.parse(
+                savedProfile
+            );
+
+
+        if(!profile.photo) return;
+
+
+        const topProfile =
+            document.getElementById(
+                "topProfileIcon"
+            );
+
+
+        if(topProfile){
+
+            topProfile.innerHTML =
+                '<img src="' +
+                escapeHTML(
+                    profile.photo
+                ) +
+                '" alt="Profile">';
+
+        }
+
+
+        const bottomProfile =
+            document.getElementById(
+                "bottomProfileIcon"
+            );
+
+
+        if(bottomProfile){
+
+            bottomProfile.innerHTML =
+                '<img src="' +
+                escapeHTML(
+                    profile.photo
+                ) +
+                '" alt="Profile">' +
+                '<span>Profile</span>';
+
+        }
+
+    }
+
+    catch(error){
+
+        console.error(
+            "Profile picture sync failed:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   REFRESH STREAM
+========================================= */
+
+let streamRefreshTimer =
+    null;
+
+
+function startStreamRefresh(){
+
+    streamRefreshTimer =
+        setInterval(
+            async function(){
+
+                /*
+                 * Only refresh when the socket
+                 * is not currently connected.
+                 */
+
+                if(
+                    canvasSocket &&
+                    canvasSocket.connected
+                ){
+
+                    return;
+
+                }
+
+
+                const streamId =
+                    getStreamId();
+
+
+                if(!streamId) return;
+
+
+                try{
+
+                    const response =
+                        await fetch(
+                            API_BASE +
+                            "/api/streams/" +
+                            encodeURIComponent(
+                                streamId
+                            )
+                        );
+
+
+                    if(
+                        response.status ===
+                        404
+                    ){
+
+                        showStreamEnded();
+
+                        return;
+
+                    }
+
+
+                    if(!response.ok){
+
+                        return;
+
+                    }
+
+
+                    const data =
+                        await response.json();
+
+
+                    const stream =
+                        data.stream ||
+                        data;
+
+
+                    if(stream){
+
+                        currentStream =
+                            stream;
+
+                        renderStream(
+                            stream
+                        );
+
+                    }
+
+                }
+
+                catch(error){
+
+                    console.error(
+                        "Watch refresh failed:",
+                        error
+                    );
+
+                }
+
+            },
+            10000
+        );
+
+}
+
+
+/* =========================================
+   STOP REFRESH
+========================================= */
+
+function stopStreamRefresh(){
+
+    if(
+        streamRefreshTimer
+    ){
+
+        clearInterval(
+            streamRefreshTimer
+        );
+
+        streamRefreshTimer =
+            null;
+
+    }
+
+}
+
+
+/* =========================================
+   INITIAL WATCH PAGE
+========================================= */
+
+window.addEventListener(
+    "DOMContentLoaded",
+    function(){
+
+        loadProfilePicture();
+
+        connectCanvasSocket();
+
+        startStreamRefresh();
+
+    }
+);
+
+
+/* =========================================
+   CLOSE WATCH PAGE
+========================================= */
+
+window.addEventListener(
+    "beforeunload",
+    function(){
+
+        stopStreamRefresh();
+
+
+        if(canvasSocket){
+
+            const streamId =
+                getStreamId();
+
+
+            if(streamId){
+
+                canvasSocket.emit(
+                    "leave-stream",
+                    {
+                        streamId:
+                            streamId
+                    }
+                );
+
+            }
+
+
+            canvasSocket.disconnect();
+
+            canvasSocket =
+                null;
+
+        }
+
+    }
+);
+
+
+/* =========================================
+   PAGE VISIBILITY
+========================================= */
+
+document.addEventListener(
+    "visibilitychange",
+    function(){
+
+        if(
+            document.hidden
+        ){
+
+            return;
+
+        }
+
+
+        /*
+         * When the user comes back to
+         * the watch page, refresh the
+         * stream information.
+         */
+
+        if(
+            !canvasSocket ||
+            !canvasSocket.connected
+        ){
+
+            loadStream();
+
+        }
+
+    }
+);
+
+</script>
+
+
+<!-- =========================================
+     CANVAS COMMON SCRIPT
+========================================= -->
+
+<script src="js/script.js"></script>
+
+
+<!-- =========================================
+     CLOSE DOCUMENT
+========================================= -->
+
+</body>
+
+</html>
+  
