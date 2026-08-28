@@ -1,0 +1,1941 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Canvas - Stream</title>
+
+<link rel="stylesheet" href="style.css">
+
+<style>
+
+/* =========================================
+   STREAM PAGE
+========================================= */
+
+.live-streams{
+    width:100%;
+    max-width:900px;
+    margin:0 auto;
+    padding:10px 15px 100px;
+}
+
+.live-stream-card{
+    width:100%;
+    background:#fff;
+    border:1px solid rgba(75,51,38,.12);
+    border-radius:20px;
+    overflow:hidden;
+    margin-bottom:18px;
+    box-shadow:0 6px 22px rgba(75,51,38,.08);
+    cursor:pointer;
+    transition:.2s ease;
+}
+
+.live-stream-card:active{
+    transform:scale(.985);
+}
+
+.stream-preview{
+    width:100%;
+    aspect-ratio:16 / 9;
+    background:#1d1d1d;
+    position:relative;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.stream-preview-symbol{
+    color:#fff;
+    font-size:55px;
+    opacity:.7;
+}
+
+.live-badge{
+    position:absolute;
+    top:12px;
+    left:12px;
+    z-index:2;
+
+    padding:5px 10px;
+
+    border-radius:8px;
+
+    background:#d93025;
+    color:#fff;
+
+    font-size:12px;
+    font-weight:bold;
+}
+
+.stream-info{
+    padding:14px 16px 16px;
+}
+
+.stream-title{
+    color:#4b3326;
+    font-size:18px;
+    font-weight:bold;
+
+    margin-bottom:8px;
+
+    word-break:break-word;
+}
+
+.stream-creator-row{
+    display:flex;
+    align-items:center;
+    gap:9px;
+}
+
+.stream-creator-picture{
+    width:34px;
+    height:34px;
+
+    flex-shrink:0;
+
+    border-radius:50%;
+    object-fit:cover;
+
+    border:1.5px solid #d4a62a;
+
+    background:#f1f1f1;
+}
+
+.stream-creator{
+    color:#75645b;
+    font-size:14px;
+    line-height:1.4;
+}
+
+.stream-creator strong{
+    color:#4b3326;
+}
+
+.stream-loading{
+    padding:45px 20px;
+    text-align:center;
+    color:#6a574c;
+    font-size:15px;
+}
+
+.empty-stream{
+    width:100%;
+    max-width:650px;
+
+    margin:0 auto;
+
+    padding:55px 20px;
+
+    text-align:center;
+
+    background:#fffaf6;
+
+    border:1px solid #eaded6;
+    border-radius:22px;
+
+    box-shadow:0 8px 25px rgba(75,51,38,.08);
+}
+
+.stream-symbol{
+    width:75px;
+    height:75px;
+
+    margin:0 auto 20px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:50%;
+
+    background:#4b3326;
+    color:#fff;
+
+    font-size:34px;
+}
+
+.empty-stream h2{
+    color:#4b3326;
+    font-size:24px;
+    margin-bottom:10px;
+}
+
+.empty-stream p{
+    max-width:450px;
+
+    margin:0 auto;
+
+    color:#806c60;
+
+    font-size:15px;
+    line-height:1.6;
+}
+
+.go-live-button{
+    display:inline-flex;
+
+    align-items:center;
+    justify-content:center;
+
+    margin-top:25px;
+
+    padding:13px 24px;
+
+    border-radius:12px;
+
+    background:#4b3326;
+    color:#fff;
+
+    text-decoration:none;
+
+    font-size:15px;
+    font-weight:700;
+}
+
+.stream-error{
+    text-align:center;
+
+    padding:40px 20px;
+
+    color:#8a3028;
+
+    line-height:1.5;
+}
+
+
+/* =========================================
+   SEARCH
+========================================= */
+
+.search-button{
+    width:40px;
+    height:40px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border:1px solid rgba(75,51,38,.18);
+    border-radius:14px;
+
+    background:rgba(255,255,255,.65);
+
+    color:#4b3326;
+
+    cursor:pointer;
+
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
+
+    box-shadow:
+        0 4px 12px rgba(75,51,38,.08);
+}
+
+.search-button:active{
+    transform:scale(.94);
+}
+
+.search-panel{
+    display:none;
+
+    position:fixed;
+
+    top:82px;
+    left:50%;
+
+    transform:translateX(-50%);
+
+    width:calc(100% - 30px);
+    max-width:600px;
+
+    padding:18px;
+
+    background:rgba(255,255,255,.96);
+
+    border:1px solid rgba(75,51,38,.15);
+
+    border-radius:20px;
+
+    box-shadow:
+        0 12px 35px rgba(75,51,38,.14);
+
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+
+    z-index:2000;
+}
+
+.search-panel.active{
+    display:block;
+}
+
+.search-row{
+    display:flex;
+    gap:10px;
+}
+
+.search-input{
+    flex:1;
+    min-width:0;
+
+    padding:13px 15px;
+
+    border:2px solid #d8c7bb;
+    border-radius:13px;
+
+    background:#fff;
+    color:#4b3326;
+
+    font-size:16px;
+
+    outline:none;
+}
+
+.search-input:focus{
+    border-color:#d4a62a;
+}
+
+.search-submit{
+    width:48px;
+
+    border:none;
+    border-radius:13px;
+
+    background:#4b3326;
+    color:#fff;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    cursor:pointer;
+}
+
+.search-result{
+    margin-top:14px;
+
+    color:#6a574c;
+
+    font-size:14px;
+    line-height:1.5;
+}
+
+
+/* =========================================
+   PROFILE ICONS
+========================================= */
+
+.top-icons a#topProfileIcon{
+    width:40px;
+    height:40px;
+
+    padding:0;
+
+    overflow:hidden;
+
+    border-radius:50%;
+
+    background:#f1f1f1;
+
+    border:2px solid #d4a62a;
+
+    font-size:0;
+}
+
+.top-icons a#topProfileIcon img{
+    width:100%;
+    height:100%;
+
+    display:block;
+
+    object-fit:cover;
+
+    border-radius:50%;
+}
+
+.bottom-nav a#bottomProfileIcon{
+    position:relative;
+}
+
+.bottom-nav a#bottomProfileIcon img{
+    width:25px;
+    height:25px;
+
+    display:block;
+
+    object-fit:cover;
+
+    border-radius:50%;
+
+    border:1.5px solid #d4a62a;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================
+     TOP NAVBAR
+========================================= -->
+
+<header class="navbar">
+
+    <div class="logo">
+        Canvas
+    </div>
+
+
+    <div class="top-icons">
+
+        <button
+            class="search-button"
+            id="searchButton"
+            type="button"
+            onclick="openSearch()"
+            aria-label="Search"
+        >
+
+            <svg
+                width="25"
+                height="25"
+                viewBox="0 0 24 24"
+                fill="none"
+            >
+
+                <circle
+                    cx="11"
+                    cy="11"
+                    r="7"
+                    stroke="currentColor"
+                    stroke-width="2.8"
+                />
+
+                <path
+                    d="M16.5 16.5L21 21"
+                    stroke="currentColor"
+                    stroke-width="2.8"
+                    stroke-linecap="round"
+                />
+
+            </svg>
+
+        </button>
+
+
+        <a
+            href="profile.html"
+            class="icon"
+            id="topProfileIcon"
+        >
+            ⬤
+        </a>
+
+    </div>
+
+</header>
+
+
+<!-- =========================================
+     SEARCH PANEL
+========================================= -->
+
+<div
+    class="search-panel"
+    id="searchPanel"
+>
+
+    <div class="search-row">
+
+        <input
+            type="search"
+            id="searchInput"
+            class="search-input"
+            placeholder="Search Canvas..."
+            autocomplete="off"
+        >
+
+
+        <button
+            class="search-submit"
+            type="button"
+            onclick="performSearch()"
+            aria-label="Search"
+        >
+
+            <svg
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+            >
+
+                <circle
+                    cx="11"
+                    cy="11"
+                    r="7"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                />
+
+                <path
+                    d="M16.5 16.5L21 21"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                />
+
+            </svg>
+
+        </button>
+
+    </div>
+
+
+    <div
+        class="search-result"
+        id="searchResult"
+    >
+        Search for streams or creators.
+    </div>
+
+</div>
+
+
+<!-- =========================================
+     STREAM PAGE
+========================================= -->
+
+<main class="stream-page">
+
+    <section class="stream-header">
+
+        <h1>
+            Stream
+        </h1>
+
+        <p>
+            Watch live streams on Canvas
+        </p>
+
+    </section>
+
+
+    <section
+        class="live-streams"
+        id="liveStreams"
+    >
+
+        <div class="stream-loading">
+            Loading live streams...
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- =========================================
+     BOTTOM NAVIGATION
+========================================= -->
+
+<nav class="bottom-nav">
+
+    <a href="stream.html">
+
+        ⌂
+
+        <span>
+            Home
+        </span>
+
+    </a>
+
+
+    <a
+        href="stream.html"
+        class="active"
+    >
+
+        ▣
+
+        <span>
+            Stream
+        </span>
+
+    </a>
+
+
+    <a href="golive.html">
+
+        ⊙
+
+        <span>
+            Go Live
+        </span>
+
+    </a>
+
+
+    <a
+        href="profile.html"
+        id="bottomProfileIcon"
+    >
+
+        ⬤
+
+        <span>
+            Profile
+        </span>
+
+    </a>
+
+</nav>
+
+
+<!-- =========================================
+     BACKEND JAVASCRIPT
+========================================= -->
+
+<script>
+
+const API_BASE =
+    "https://canvas-kh9p.onrender.com";
+
+
+/* =========================================
+   SAFE HTML
+========================================= */
+
+function escapeHTML(value){
+
+    return String(value || "")
+
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+
+}
+
+
+/* =========================================
+   PROFILE PICTURE
+========================================= */
+
+function loadProfilePicture(){
+
+    const saved =
+        localStorage.getItem(
+            "canvasProfile"
+        );
+
+    if(!saved) return;
+
+
+    try{
+
+        const profile =
+            JSON.parse(saved);
+
+
+        const photo =
+            profile.photo ||
+            profile.profile_picture ||
+            "";
+
+
+        if(!photo) return;
+
+
+        const top =
+            document.getElementById(
+                "topProfileIcon"
+            );
+
+
+        if(top){
+
+            top.innerHTML =
+                '<img src="' +
+                escapeHTML(photo) +
+                '" alt="Profile">';
+
+        }
+
+
+        const bottom =
+            document.getElementById(
+                "bottomProfileIcon"
+            );
+
+
+        if(bottom){
+
+            bottom.innerHTML =
+                '<img src="' +
+                escapeHTML(photo) +
+                '" alt="Profile">' +
+                '<span>Profile</span>';
+
+        }
+
+    }
+
+    catch(error){
+
+        console.error(
+            "Profile picture error:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   LOAD LIVE STREAMS
+========================================= */
+
+async function loadLiveStreams(){
+
+    const container =
+        document.getElementById(
+            "liveStreams"
+        );
+
+
+    if(!container) return;
+
+
+    container.innerHTML = `
+        <div class="stream-loading">
+            Loading live streams...
+        </div>
+    `;
+
+
+    try{
+
+        const response =
+            await fetch(
+                API_BASE +
+                "/api/streams/live",
+                {
+                    method:"GET",
+                    headers:{
+                        "Accept":
+                            "application/json"
+                    }
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if(!response.ok){
+
+            throw new Error(
+                data.message ||
+                "Unable to load live streams."
+            );
+
+        }
+
+
+        const streams =
+            Array.isArray(data.streams)
+                ? data.streams
+                : [];
+
+
+        renderLiveStreams(
+            streams
+        );
+
+    }
+
+    catch(error){
+
+        console.error(
+            "Live stream loading failed:",
+            error
+        );
+
+
+        container.innerHTML = `
+
+            <div class="stream-error">
+
+                <h2>
+                    Unable to load live streams
+                </h2>
+
+                <p>
+                    Please check your connection
+                    and try again.
+                </p>
+
+                <button
+                    type="button"
+                    onclick="loadLiveStreams()"
+                    style="
+                        margin-top:18px;
+                        padding:11px 18px;
+                        border:none;
+                        border-radius:12px;
+                        background:#4b3326;
+                        color:#fff;
+                        font-weight:bold;
+                    "
+                >
+                    Try Again
+                </button>
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+/* =========================================
+   RENDER STREAMS
+========================================= */
+
+function renderLiveStreams(streams){
+
+    const container =
+        document.getElementById(
+            "liveStreams"
+        );
+
+
+    if(!container) return;
+
+
+    if(streams.length === 0){
+
+        container.innerHTML = `
+
+            <div class="empty-stream">
+
+                <div class="stream-symbol">
+                    ▣
+                </div>
+
+                <h2>
+                    No live streams yet
+                </h2>
+
+                <p>
+                    When someone goes live,
+                    their stream will appear here.
+                </p>
+
+                <a
+                    href="golive.html"
+                    class="go-live-button"
+                >
+                    🔴 Start Streaming
+                </a>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    container.innerHTML = "";
+
+
+    streams.forEach(function(stream){
+
+        const card =
+            document.createElement("div");
+
+
+        card.className =
+            "live-stream-card";
+
+
+        card.dataset.streamId =
+            stream.id;
+
+
+        card.onclick =
+            function(){
+
+                openLiveStream(
+                    stream.id
+                );
+
+            };
+
+
+        const picture =
+            stream.profile_picture ||
+            "";
+
+
+        let profileHTML;
+
+
+        if(picture){
+
+            profileHTML = `
+                <img
+                    class="stream-creator-picture"
+                    src="${escapeHTML(picture)}"
+                    alt="Profile"
+                >
+            `;
+
+        }
+
+        else{
+
+            profileHTML = `
+                <div
+                    class="stream-creator-picture"
+                    style="
+                        display:flex;
+                        align-items:center;
+                        justify-content:center;
+                        color:#4b3326;
+                        font-size:18px;
+                    "
+                >
+                    ⬤
+                </div>
+            `;
+
+        }
+
+
+        card.innerHTML = `
+
+            <div class="stream-preview">
+
+                <div class="stream-preview-symbol">
+                    ▣
+                </div>
+
+                <div class="live-badge">
+                    🔴 LIVE
+                </div>
+
+            </div>
+
+
+            <div class="stream-info">
+
+                <div class="stream-title">
+
+                    ${escapeHTML(
+                        stream.title ||
+                        "Canvas Live Stream"
+                    )}
+
+                </div>
+
+
+                <div class="stream-creator-row">
+
+                    ${profileHTML}
+
+                    <div class="stream-creator">
+
+                        <strong>
+                            ${escapeHTML(
+                                stream.name ||
+                                "Canvas Creator"
+                            )}
+                        </strong>
+
+                        <br>
+
+                        @${escapeHTML(
+                            stream.username ||
+                            ""
+                        )}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        `;
+
+
+        container.appendChild(card);
+
+    });
+
+}
+
+
+/* =========================================
+   OPEN STREAM
+========================================= */
+
+function openLiveStream(streamId){
+
+    if(!streamId) return;
+
+
+    window.location.href =
+        "watch.html?stream=" +
+        encodeURIComponent(
+            streamId
+        );
+
+}
+
+
+/* =========================================
+   SEARCH OPEN/CLOSE
+========================================= */
+
+function openSearch(){
+
+    const panel =
+        document.getElementById(
+            "searchPanel"
+        );
+
+
+    const input =
+        document.getElementById(
+            "searchInput"
+        );
+
+
+    if(!panel) return;
+
+
+    panel.classList.toggle(
+        "active"
+    );
+
+
+    if(
+        panel.classList.contains(
+            "active"
+        )
+    ){
+
+        setTimeout(function(){
+
+            if(input){
+                input.focus();
+            }
+
+        },100);
+
+    }
+
+}
+  /* =========================================
+   PERFORM SEARCH
+========================================= */
+
+async function performSearch(){
+
+    const input =
+        document.getElementById(
+            "searchInput"
+        );
+
+
+    const result =
+        document.getElementById(
+            "searchResult"
+        );
+
+
+    if(!input || !result) return;
+
+
+    const term =
+        input.value
+            .trim()
+            .toLowerCase();
+
+
+    if(!term){
+
+        result.textContent =
+            "Please enter something to search.";
+
+        input.focus();
+
+        return;
+
+    }
+
+
+    result.textContent =
+        "Searching live streams...";
+
+
+    try{
+
+        const response =
+            await fetch(
+                API_BASE +
+                "/api/streams/live"
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if(!response.ok){
+
+            throw new Error(
+                data.message ||
+                "Search failed."
+            );
+
+        }
+
+
+        const streams =
+            Array.isArray(data.streams)
+                ? data.streams
+                : [];
+
+
+        const matches =
+            streams.filter(
+                function(stream){
+
+                    const text = (
+
+                        stream.title ||
+                        ""
+                    ) + " " + (
+
+                        stream.name ||
+                        ""
+                    ) + " " + (
+
+                        stream.username ||
+                        ""
+                    );
+
+
+                    return text
+                        .toLowerCase()
+                        .includes(term);
+
+                }
+            );
+
+
+        if(matches.length === 0){
+
+            result.textContent =
+                'No live streams found for "' +
+                input.value.trim() +
+                '".';
+
+            return;
+
+        }
+
+
+        result.innerHTML =
+            "<strong>" +
+            matches.length +
+            " live stream" +
+            (
+                matches.length === 1
+                    ? ""
+                    : "s"
+            ) +
+            " found.</strong>";
+
+
+        matches.forEach(
+            function(stream){
+
+                const item =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                item.style.cssText = `
+                    cursor:pointer;
+                    padding:12px 0;
+                    border-bottom:1px solid #eee;
+                `;
+
+
+                item.innerHTML = `
+
+                    🔴
+
+                    <strong>
+                        ${escapeHTML(
+                            stream.title ||
+                            "Canvas Live Stream"
+                        )}
+                    </strong>
+
+                    <br>
+
+                    <small>
+                        by
+                        ${escapeHTML(
+                            stream.name ||
+                            "Canvas Creator"
+                        )}
+                    </small>
+
+                `;
+
+
+                item.onclick =
+                    function(){
+
+                        openLiveStream(
+                            stream.id
+                        );
+
+                    };
+
+
+                result.appendChild(
+                    item
+                );
+
+            }
+        );
+
+    }
+
+    catch(error){
+
+        console.error(
+            "Search failed:",
+            error
+        );
+
+
+        result.textContent =
+            "Unable to search live streams.";
+
+    }
+
+}
+
+
+/* =========================================
+   KEYBOARD CONTROLS
+========================================= */
+
+document.addEventListener(
+    "keydown",
+    function(event){
+
+        const input =
+            document.getElementById(
+                "searchInput"
+            );
+
+
+        const panel =
+            document.getElementById(
+                "searchPanel"
+            );
+
+
+        if(
+            event.key === "Enter" &&
+            document.activeElement === input
+        ){
+
+            event.preventDefault();
+
+            performSearch();
+
+        }
+
+
+        if(event.key === "Escape"){
+
+            if(panel){
+
+                panel.classList.remove(
+                    "active"
+                );
+
+            }
+
+        }
+
+    }
+);
+
+
+/* =========================================
+   CLOSE SEARCH WHEN CLICKING OUTSIDE
+========================================= */
+
+document.addEventListener(
+    "click",
+    function(event){
+
+        const panel =
+            document.getElementById(
+                "searchPanel"
+            );
+
+
+        const button =
+            document.getElementById(
+                "searchButton"
+            );
+
+
+        if(!panel) return;
+
+
+        if(
+            panel.classList.contains(
+                "active"
+            ) &&
+            !panel.contains(event.target) &&
+            !button.contains(event.target)
+        ){
+
+            panel.classList.remove(
+                "active"
+            );
+
+        }
+
+    }
+);
+
+
+/* =========================================
+   LOAD PROFILE FROM SERVER
+========================================= */
+
+async function loadServerProfile(){
+
+    const token =
+        localStorage.getItem(
+            "canvasAuthToken"
+        );
+
+
+    if(!token) return;
+
+
+    try{
+
+        const response =
+            await fetch(
+                API_BASE +
+                "/api/profile",
+                {
+                    method:"GET",
+
+                    headers:{
+                        "Authorization":
+                            "Bearer " + token,
+
+                        "Accept":
+                            "application/json"
+                    }
+                }
+            );
+
+
+        if(!response.ok) return;
+
+
+        const data =
+            await response.json();
+
+
+        if(
+            !data.success ||
+            !data.profile
+        ){
+
+            return;
+
+        }
+
+
+        const profile =
+            data.profile;
+
+
+        const photo =
+            profile.profile_picture ||
+            "";
+
+
+        if(!photo) return;
+
+
+        const top =
+            document.getElementById(
+                "topProfileIcon"
+            );
+
+
+        if(top){
+
+            top.innerHTML =
+                '<img src="' +
+                escapeHTML(photo) +
+                '" alt="Profile">';
+
+        }
+
+
+        const bottom =
+            document.getElementById(
+                "bottomProfileIcon"
+            );
+
+
+        if(bottom){
+
+            bottom.innerHTML =
+                '<img src="' +
+                escapeHTML(photo) +
+                '" alt="Profile">' +
+                '<span>Profile</span>';
+
+        }
+
+
+        /*
+         * Keep local profile data
+         * synchronized with server.
+         */
+
+        const oldProfile = {
+
+            name:
+                profile.name || "",
+
+            username:
+                profile.username || "",
+
+            photo:
+                photo,
+
+            bio:
+                profile.bio || ""
+
+        };
+
+
+        localStorage.setItem(
+            "canvasProfile",
+            JSON.stringify(
+                oldProfile
+            )
+        );
+
+    }
+
+    catch(error){
+
+        console.error(
+            "Server profile loading failed:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   SOCKET.IO
+========================================= */
+
+let canvasSocket = null;
+
+
+function connectCanvasSocket(){
+
+    if(
+        typeof io !==
+        "function"
+    ){
+
+        console.warn(
+            "Socket.IO client not available."
+        );
+
+        return;
+
+    }
+
+
+    try{
+
+        canvasSocket =
+            io(
+                API_BASE,
+                {
+                    transports:[
+                        "websocket",
+                        "polling"
+                    ]
+                }
+            );
+
+
+        canvasSocket.on(
+            "connect",
+            function(){
+
+                console.log(
+                    "Canvas real-time connected:",
+                    canvasSocket.id
+                );
+
+            }
+        );
+
+
+        canvasSocket.on(
+            "stream-started",
+            function(stream){
+
+                console.log(
+                    "Canvas stream started:",
+                    stream
+                );
+
+
+                loadLiveStreams();
+
+            }
+        );
+
+
+        canvasSocket.on(
+            "stream-ended",
+            function(stream){
+
+                console.log(
+                    "Canvas stream ended:",
+                    stream
+                );
+
+
+                loadLiveStreams();
+
+            }
+        );
+
+
+        canvasSocket.on(
+            "stream-updated",
+            function(stream){
+
+                console.log(
+                    "Canvas stream updated:",
+                    stream
+                );
+
+
+                loadLiveStreams();
+
+            }
+        );
+
+
+        canvasSocket.on(
+            "disconnect",
+            function(){
+
+                console.log(
+                    "Canvas real-time disconnected."
+                );
+
+            }
+        );
+
+
+        canvasSocket.on(
+            "connect_error",
+            function(error){
+
+                console.warn(
+                    "Canvas Socket.IO error:",
+                    error.message
+                );
+
+            }
+        );
+
+    }
+
+    catch(error){
+
+        console.error(
+            "Socket connection failed:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   BACKUP REFRESH
+========================================= */
+
+let refreshTimer = null;
+
+
+function startStreamRefresh(){
+
+    if(refreshTimer){
+
+        clearInterval(
+            refreshTimer
+        );
+
+    }
+
+
+    refreshTimer =
+        setInterval(
+            function(){
+
+                loadLiveStreams();
+
+            },
+            15000
+        );
+
+}
+
+
+/* =========================================
+   INITIALIZE CANVAS STREAM PAGE
+========================================= */
+
+window.addEventListener(
+    "DOMContentLoaded",
+    async function(){
+
+        /*
+         * First load local profile
+         * so the icon appears immediately.
+         */
+
+        loadProfilePicture();
+
+
+        /*
+         * Then get the newest profile
+         * from PostgreSQL.
+         */
+
+        await loadServerProfile();
+
+
+        /*
+         * Load live streams.
+         */
+
+        await loadLiveStreams();
+
+
+        /*
+         * Connect real-time updates.
+         */
+
+        connectCanvasSocket();
+
+
+        /*
+         * Backup refresh.
+         */
+
+        startStreamRefresh();
+
+    }
+);
+
+
+/* =========================================
+   CLEANUP
+========================================= */
+
+window.addEventListener(
+    "beforeunload",
+    function(){
+
+        if(canvasSocket){
+
+            canvasSocket.disconnect();
+
+            canvasSocket = null;
+
+        }
+
+
+        if(refreshTimer){
+
+            clearInterval(
+                refreshTimer
+            );
+
+            refreshTimer = null;
+
+        }
+
+    }
+);
+
+</script>
+<!-- =========================================
+     PART 3/3 — REAL-TIME STREAM UPDATES
+========================================= -->
+
+<script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+
+<script>
+
+let canvasSocket = null;
+
+
+/* =========================================
+   CONNECT SOCKET
+========================================= */
+
+function connectCanvasSocket() {
+
+    try {
+
+        canvasSocket = io(
+            API_BASE,
+            {
+                transports: [
+                    "websocket",
+                    "polling"
+                ]
+            }
+        );
+
+
+        canvasSocket.on(
+            "connect",
+            function () {
+
+                console.log(
+                    "Canvas real-time connection connected."
+                );
+
+            }
+        );
+
+
+        /* =====================================
+           NEW STREAM
+        ===================================== */
+
+        canvasSocket.on(
+            "stream-started",
+            function (stream) {
+
+                console.log(
+                    "Canvas stream started:",
+                    stream
+                );
+
+                loadLiveStreams();
+
+            }
+        );
+
+
+        /* =====================================
+           STREAM ENDED
+        ===================================== */
+
+        canvasSocket.on(
+            "stream-ended",
+            function (stream) {
+
+                console.log(
+                    "Canvas stream ended:",
+                    stream
+                );
+
+                loadLiveStreams();
+
+            }
+        );
+
+
+        /* =====================================
+           STREAM UPDATED
+        ===================================== */
+
+        canvasSocket.on(
+            "stream-updated",
+            function (stream) {
+
+                console.log(
+                    "Canvas stream updated:",
+                    stream
+                );
+
+                loadLiveStreams();
+
+            }
+        );
+
+
+        /* =====================================
+           DISCONNECTED
+        ===================================== */
+
+        canvasSocket.on(
+            "disconnect",
+            function () {
+
+                console.log(
+                    "Canvas real-time connection disconnected."
+                );
+
+            }
+        );
+
+
+        /* =====================================
+           ERROR
+        ===================================== */
+
+        canvasSocket.on(
+            "connect_error",
+            function (error) {
+
+                console.error(
+                    "Canvas Socket.IO error:",
+                    error.message
+                );
+
+            }
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Socket setup failed:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   BACKUP REFRESH
+========================================= */
+
+const streamRefreshTimer =
+    setInterval(
+        function () {
+
+            loadLiveStreams();
+
+        },
+        10000
+    );
+
+
+/* =========================================
+   START REAL-TIME SYSTEM
+========================================= */
+
+window.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        connectCanvasSocket();
+
+    }
+);
+
+
+/* =========================================
+   CLEANUP
+========================================= */
+
+window.addEventListener(
+    "beforeunload",
+    function () {
+
+        if (canvasSocket) {
+
+            canvasSocket.disconnect();
+
+            canvasSocket = null;
+
+        }
+
+        clearInterval(
+            streamRefreshTimer
+        );
+
+    }
+);
+
+
+/* =========================================
+   CLOSE DOCUMENT
+========================================= */
+
+</script>
+
+</body>
+
+</html>
