@@ -1,0 +1,2483 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Canvas - Explore</title>
+
+<link
+    rel="stylesheet"
+    href="style.css"
+>
+
+<style>
+
+/* =========================================
+   CANVAS EXPLORE
+========================================= */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html,
+body{
+    width:100%;
+    min-height:100%;
+}
+
+body{
+    background:#ffffff;
+    color:#4b3326;
+    font-family:Arial,Helvetica,sans-serif;
+    padding-bottom:82px;
+}
+
+
+/* =========================================
+   TOP NAVIGATION
+========================================= */
+
+.navbar{
+    width:100%;
+    height:70px;
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    padding:0 20px;
+
+    background:#ffffff;
+
+    border-bottom:2px solid #d4a62a;
+
+    position:sticky;
+    top:0;
+
+    z-index:1500;
+}
+
+.logo{
+    font-size:32px;
+    font-weight:800;
+    color:#4b3326;
+}
+
+
+/* =========================================
+   PROFILE
+========================================= */
+
+#topProfileIcon{
+    width:40px;
+    height:40px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    overflow:hidden;
+
+    border-radius:50%;
+    border:2px solid #d4a62a;
+
+    background:#f3f3f3;
+
+    color:#4b3326;
+
+    font-size:20px;
+
+    text-decoration:none;
+}
+
+#topProfileIcon img{
+    width:100%;
+    height:100%;
+
+    object-fit:cover;
+
+    display:block;
+}
+
+
+/* =========================================
+   MAIN CONTAINER
+========================================= */
+
+.explore-container{
+    width:100%;
+    max-width:900px;
+
+    margin:0 auto;
+
+    padding:25px 18px 35px;
+}
+
+
+/* =========================================
+   EXPLORE HEADER
+========================================= */
+
+.explore-header{
+    text-align:center;
+
+    margin-bottom:22px;
+}
+
+.explore-header h1{
+    margin:0 0 7px;
+
+    font-size:34px;
+
+    font-weight:800;
+
+    color:#4b3326;
+}
+
+.explore-header p{
+    margin:0;
+
+    color:#6a574c;
+
+    font-size:15px;
+
+    line-height:1.5;
+}
+
+
+/* =========================================
+   SEARCH
+========================================= */
+
+.explore-search{
+    width:100%;
+
+    margin-bottom:20px;
+}
+
+.explore-search-row{
+    width:100%;
+
+    display:flex;
+    align-items:center;
+
+    gap:9px;
+}
+
+#exploreSearchInput{
+    flex:1;
+    min-width:0;
+
+    height:52px;
+
+    padding:0 15px;
+
+    border:2px solid #d8c7bb;
+
+    border-radius:14px;
+
+    outline:none;
+
+    background:#ffffff;
+
+    color:#4b3326;
+
+    font-size:15px;
+}
+
+#exploreSearchInput:focus{
+    border-color:#d4a62a;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(212,166,42,.10);
+}
+
+#exploreSearchButton{
+    width:52px;
+    height:52px;
+
+    flex-shrink:0;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border:0;
+
+    border-radius:14px;
+
+    background:#4b3326;
+
+    color:#ffffff;
+
+    cursor:pointer;
+
+    transition:.2s ease;
+}
+
+#exploreSearchButton:active{
+    transform:scale(.95);
+}
+
+
+/* =========================================
+   CATEGORY SECTION
+========================================= */
+
+.category-section{
+    width:100%;
+
+    margin-bottom:25px;
+}
+
+.section-title{
+    margin-bottom:10px;
+
+    color:#4b3326;
+
+    font-size:17px;
+
+    font-weight:800;
+}
+
+.category-list{
+    width:100%;
+
+    display:flex;
+
+    gap:8px;
+
+    overflow-x:auto;
+
+    padding-bottom:4px;
+
+    scrollbar-width:none;
+}
+
+.category-list::-webkit-scrollbar{
+    display:none;
+}
+
+.category-btn{
+    flex-shrink:0;
+
+    padding:10px 15px;
+
+    border:1.5px solid #d8c7bb;
+
+    border-radius:20px;
+
+    background:#ffffff;
+
+    color:#4b3326;
+
+    font-size:13px;
+
+    font-weight:700;
+
+    cursor:pointer;
+
+    transition:.2s ease;
+}
+
+.category-btn.active{
+    background:#4b3326;
+
+    color:#ffffff;
+
+    border-color:#4b3326;
+}
+
+.category-btn:active{
+    transform:scale(.96);
+}
+
+
+/* =========================================
+   STATUS
+========================================= */
+
+.explore-status{
+    min-height:20px;
+
+    margin-bottom:14px;
+
+    color:#6a574c;
+
+    font-size:13px;
+
+    font-weight:600;
+}
+
+
+/* =========================================
+   LIVE SECTION
+========================================= */
+
+.section-heading{
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    margin-bottom:13px;
+}
+
+.section-heading h2{
+    margin:0;
+
+    color:#4b3326;
+
+    font-size:22px;
+
+    font-weight:800;
+}
+
+#liveCount{
+    color:#6a574c;
+
+    font-size:13px;
+
+    font-weight:700;
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+<!-- =========================================
+     TOP NAVIGATION
+========================================= -->
+
+<header class="navbar">
+
+    <div class="logo">
+        Canvas
+    </div>
+
+    <a
+        href="profile.html"
+        id="topProfileIcon"
+    >
+        ⬤
+    </a>
+
+</header>
+
+
+<!-- =========================================
+     MAIN EXPLORE CONTENT
+========================================= -->
+
+<main class="explore-container">
+
+    <section class="explore-header">
+
+        <h1>
+            Explore
+        </h1>
+
+        <p>
+            Discover live streams and creators
+        </p>
+
+    </section>
+
+
+    <!-- SEARCH -->
+
+    <section class="explore-search">
+
+        <div class="explore-search-row">
+
+            <input
+                type="search"
+                id="exploreSearchInput"
+                placeholder="Search streams or creators..."
+                autocomplete="off"
+            >
+
+            <button
+                type="button"
+                id="exploreSearchButton"
+                aria-label="Search"
+            >
+
+                <svg
+                    width="22"
+                    height="22"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                >
+
+                    <circle
+                        cx="11"
+                        cy="11"
+                        r="7"
+                        stroke="currentColor"
+                        stroke-width="2.5"
+                    />
+
+                    <path
+                        d="M16.5 16.5L21 21"
+                        stroke="currentColor"
+                        stroke-width="2.5"
+                        stroke-linecap="round"
+                    />
+
+                </svg>
+
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- CATEGORIES -->
+
+    <section class="category-section">
+
+        <div class="section-title">
+            Categories
+        </div>
+
+        <div
+            class="category-list"
+            id="categoryList"
+        >
+
+            <button
+                type="button"
+                class="category-btn active"
+                data-category="All"
+            >
+                All
+            </button>
+
+            <button
+                type="button"
+                class="category-btn"
+                data-category="Gaming"
+            >
+                Gaming
+            </button>
+
+            <button
+                type="button"
+                class="category-btn"
+                data-category="Entertainment"
+            >
+                Entertainment
+            </button>
+
+            <button
+                type="button"
+                class="category-btn"
+                data-category="Music"
+            >
+                Music
+            </button>
+
+            <button
+                type="button"
+                class="category-btn"
+                data-category="Education"
+            >
+                Education
+            </button>
+
+            <button
+                type="button"
+                class="category-btn"
+                data-category="Sports"
+            >
+                Sports
+            </button>
+
+            <button
+                type="button"
+                class="category-btn"
+                data-category="Technology"
+            >
+                Technology
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <div
+        id="exploreStatus"
+        class="explore-status"
+    >
+        Loading live streams...
+    </div>
+
+
+    <section class="live-section">
+
+        <div class="section-heading">
+
+            <h2>
+                Live Now
+            </h2>
+
+            <span id="liveCount">
+                0 live
+            </span>
+
+        </div>
+
+        <div id="liveStreams"></div>
+
+    </section>
+
+</main>
+<style>
+
+/* =========================================
+   LIVE STREAM LIST
+========================================= */
+
+#liveStreams{
+    width:100%;
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(2,minmax(0,1fr));
+
+    gap:16px;
+}
+
+
+/* =========================================
+   STREAM CARD
+========================================= */
+
+.stream-card{
+    width:100%;
+
+    background:#ffffff;
+
+    border:1px solid #eadfd8;
+
+    border-radius:18px;
+
+    overflow:hidden;
+
+    box-shadow:
+        0 5px 18px
+        rgba(75,51,38,.07);
+
+    transition:.2s ease;
+}
+
+.stream-card:active{
+    transform:scale(.985);
+}
+
+
+/* =========================================
+   STREAM BUTTON
+========================================= */
+
+.stream-card-button{
+    width:100%;
+
+    display:block;
+
+    padding:0;
+
+    border:0;
+
+    background:#ffffff;
+
+    color:#4b3326;
+
+    text-align:left;
+
+    cursor:pointer;
+
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+
+/* =========================================
+   THUMBNAIL
+========================================= */
+
+.stream-thumbnail{
+    width:100%;
+
+    aspect-ratio:16 / 9;
+
+    position:relative;
+
+    overflow:hidden;
+
+    background:#251b17;
+}
+
+.stream-image{
+    width:100%;
+    height:100%;
+
+    display:block;
+
+    object-fit:cover;
+}
+
+.stream-image-placeholder{
+    width:100%;
+    height:100%;
+
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+
+    background:#f3e8d3;
+
+    color:#4b3326;
+
+    font-size:25px;
+
+    font-weight:800;
+}
+
+
+/* =========================================
+   LIVE BADGE
+========================================= */
+
+.live-badge{
+    position:absolute;
+
+    top:9px;
+    left:9px;
+
+    padding:5px 8px;
+
+    border-radius:7px;
+
+    background:#a33a2b;
+
+    color:#ffffff;
+
+    font-size:11px;
+
+    font-weight:800;
+}
+
+
+/* =========================================
+   STREAM INFO
+========================================= */
+
+.stream-info{
+    width:100%;
+
+    padding:12px 13px 14px;
+}
+
+.stream-title{
+    margin:0 0 5px;
+
+    color:#4b3326;
+
+    font-size:16px;
+
+    font-weight:800;
+
+    line-height:1.3;
+
+    display:-webkit-box;
+
+    -webkit-line-clamp:2;
+
+    -webkit-box-orient:vertical;
+
+    overflow:hidden;
+}
+
+.stream-creator{
+    margin:0 0 9px;
+
+    color:#6a574c;
+
+    font-size:13px;
+
+    font-weight:600;
+
+    white-space:nowrap;
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
+}
+
+.stream-meta{
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:8px;
+}
+
+.stream-category{
+    max-width:65%;
+
+    padding:4px 8px;
+
+    border-radius:10px;
+
+    background:#f3e8d3;
+
+    color:#4b3326;
+
+    font-size:10px;
+
+    font-weight:800;
+
+    white-space:nowrap;
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
+}
+
+.stream-viewers{
+    color:#6a574c;
+
+    font-size:11px;
+
+    font-weight:700;
+
+    white-space:nowrap;
+}
+
+
+/* =========================================
+   EMPTY STATE
+========================================= */
+
+.empty-explore{
+    width:100%;
+
+    padding:40px 20px;
+
+    text-align:center;
+}
+
+.empty-explore.hidden{
+    display:none;
+}
+
+.empty-icon{
+    margin-bottom:10px;
+
+    font-size:35px;
+}
+
+.empty-explore h3{
+    margin:0 0 6px;
+
+    color:#4b3326;
+
+    font-size:18px;
+}
+
+.empty-explore p{
+    margin:0;
+
+    color:#6a574c;
+
+    font-size:13px;
+}
+
+
+/* =========================================
+   LOADING
+========================================= */
+
+.explore-loading{
+    width:100%;
+
+    padding:35px 15px;
+
+    text-align:center;
+
+    color:#6a574c;
+
+    font-size:14px;
+
+    font-weight:700;
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media(max-width:600px){
+
+    .navbar{
+        height:66px;
+
+        padding:0 15px;
+    }
+
+    .logo{
+        font-size:29px;
+    }
+
+    #topProfileIcon{
+        width:40px;
+        height:40px;
+    }
+
+    .explore-container{
+        padding:
+            20px 14px 28px;
+    }
+
+    .explore-header{
+        margin-bottom:18px;
+    }
+
+    .explore-header h1{
+        font-size:30px;
+    }
+
+    .explore-search-row{
+        gap:7px;
+    }
+
+    #exploreSearchInput{
+        height:50px;
+
+        font-size:14px;
+    }
+
+    #exploreSearchButton{
+        width:50px;
+        height:50px;
+    }
+
+    #liveStreams{
+        grid-template-columns:
+            1fr;
+
+        gap:14px;
+    }
+
+}
+
+
+/* =========================================
+   VERY SMALL DEVICES
+========================================= */
+
+@media(max-width:360px){
+
+    .explore-container{
+        padding-left:12px;
+        padding-right:12px;
+    }
+
+    .explore-header h1{
+        font-size:28px;
+    }
+
+    .stream-info{
+        padding:11px 12px 13px;
+    }
+
+}
+
+</style>
+
+
+<!-- =========================================
+     EMPTY STATE
+========================================= -->
+
+<div
+    id="emptyExplore"
+    class="empty-explore hidden"
+>
+
+    <div class="empty-icon">
+        🔎
+    </div>
+
+    <h3>
+        No live streams found
+    </h3>
+
+    <p>
+        Try another search or category.
+    </p>
+
+</div>
+<!-- =========================================
+     EXPLORE CONTENT
+========================================= -->
+
+<section class="explore-content">
+
+    <div class="section-heading">
+
+        <h2>Live Now</h2>
+
+        <button
+            type="button"
+            id="refreshButton"
+            class="refresh-btn"
+        >
+            ↻
+        </button>
+
+    </div>
+
+
+    <!-- CATEGORY FILTER -->
+
+    <div
+        class="category-filter"
+        id="categoryFilter"
+    >
+
+        <button
+            type="button"
+            class="category-btn active"
+            data-category="All"
+        >
+            All
+        </button>
+
+        <button
+            type="button"
+            class="category-btn"
+            data-category="Gaming"
+        >
+            Gaming
+        </button>
+
+        <button
+            type="button"
+            class="category-btn"
+            data-category="Entertainment"
+        >
+            Entertainment
+        </button>
+
+        <button
+            type="button"
+            class="category-btn"
+            data-category="Music"
+        >
+            Music
+        </button>
+
+        <button
+            type="button"
+            class="category-btn"
+            data-category="Education"
+        >
+            Education
+        </button>
+
+        <button
+            type="button"
+            class="category-btn"
+            data-category="Sports"
+        >
+            Sports
+        </button>
+
+        <button
+            type="button"
+            class="category-btn"
+            data-category="Technology"
+        >
+            Technology
+        </button>
+
+        <button
+            type="button"
+            class="category-btn"
+            data-category="Other"
+        >
+            Other
+        </button>
+
+    </div>
+
+
+    <!-- STREAM GRID -->
+
+    <div
+        id="streamGrid"
+        class="stream-grid"
+    >
+
+        <div
+            id="loadingMessage"
+            class="explore-message"
+        >
+            Loading live streams...
+        </div>
+
+    </div>
+
+
+    <!-- EMPTY STATE -->
+
+    <div
+        id="emptyMessage"
+        class="explore-message hidden"
+    >
+
+        <div class="empty-icon">
+            ◉
+        </div>
+
+        <h3>
+            No live streams
+        </h3>
+
+        <p>
+            There are no live streams available right now.
+        </p>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================
+     STREAM CARD TEMPLATE
+========================================= -->
+
+<template id="streamCardTemplate">
+
+    <article class="stream-card">
+
+        <div class="stream-thumbnail">
+
+            <img
+                class="stream-thumbnail-image"
+                src=""
+                alt="Stream thumbnail"
+            >
+
+            <div class="live-badge">
+                🔴 LIVE
+            </div>
+
+        </div>
+
+
+        <div class="stream-card-body">
+
+            <h3 class="stream-card-title">
+                Untitled Stream
+            </h3>
+
+            <div class="stream-creator">
+
+                <div class="creator-avatar">
+                    ⬤
+                </div>
+
+                <div class="creator-info">
+
+                    <strong class="creator-name">
+                        Canvas Creator
+                    </strong>
+
+                    <span class="creator-category">
+                        Gaming
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <p class="stream-card-description">
+            </p>
+
+
+            <button
+                type="button"
+                class="watch-button"
+            >
+                Watch Live
+            </button>
+
+        </div>
+
+    </article>
+
+</template>
+
+
+<script>
+
+/* =========================================
+   EXPLORE STATE
+========================================= */
+
+const EXPLORE_API =
+    "https://canvas-kh9p.onrender.com";
+
+
+let exploreStreams = [];
+
+let selectedCategory = "All";
+
+let searchTerm = "";
+
+
+/* =========================================
+   EXPLORE ELEMENTS
+========================================= */
+
+const streamGrid =
+    document.getElementById(
+        "streamGrid"
+    );
+
+
+const loadingMessage =
+    document.getElementById(
+        "loadingMessage"
+    );
+
+
+const emptyMessage =
+    document.getElementById(
+        "emptyMessage"
+    );
+
+
+const refreshButton =
+    document.getElementById(
+        "refreshButton"
+    );
+
+
+const categoryButtons =
+    document.querySelectorAll(
+        ".category-btn"
+    );
+
+
+const streamCardTemplate =
+    document.getElementById(
+        "streamCardTemplate"
+    );
+
+
+/* =========================================
+   FORMAT STREAM DATA
+========================================= */
+
+function normalizeStream(stream){
+
+    if(!stream){
+
+        return null;
+
+    }
+
+
+    return {
+
+        id:
+            stream.id ||
+            stream.streamId ||
+            "",
+
+        title:
+            stream.title ||
+            "Untitled Stream",
+
+        category:
+            stream.category ||
+            "Other",
+
+        description:
+            stream.description ||
+            "",
+
+        username:
+            stream.username ||
+            "",
+
+        name:
+            stream.name ||
+            stream.creator ||
+            stream.username ||
+            "Canvas Creator",
+
+        thumbnail:
+            stream.thumbnail ||
+            stream.thumbnailUrl ||
+            stream.image ||
+            ""
+
+    };
+
+}
+
+
+/* =========================================
+   ESCAPE TEXT
+========================================= */
+
+function safeText(value){
+
+    return String(
+        value || ""
+    );
+
+}
+
+
+/* =========================================
+   THUMBNAIL FALLBACK
+========================================= */
+
+function applyThumbnail(
+    image,
+    thumbnail,
+    title
+){
+
+    if(!image){
+
+        return;
+
+    }
+
+
+    if(thumbnail){
+
+        image.src =
+            thumbnail;
+
+        image.alt =
+            title || "Live stream";
+
+
+        image.onerror =
+            function(){
+
+                image.onerror =
+                    null;
+
+                image.removeAttribute(
+                    "src"
+                );
+
+                image.classList.add(
+                    "no-image"
+                );
+
+            };
+
+    }else{
+
+        image.removeAttribute(
+            "src"
+        );
+
+        image.classList.add(
+            "no-image"
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   CREATE STREAM CARD
+========================================= */
+
+function createStreamCard(
+    stream
+){
+
+    if(
+        !streamCardTemplate ||
+        !streamGrid
+    ){
+
+        return null;
+
+    }
+
+
+    const normalized =
+        normalizeStream(
+            stream
+        );
+
+
+    if(!normalized){
+
+        return null;
+
+    }
+
+
+    const card =
+        streamCardTemplate
+        .content
+        .firstElementChild
+        .cloneNode(true);
+
+
+    const thumbnail =
+        card.querySelector(
+            ".stream-thumbnail-image"
+        );
+
+
+    const title =
+        card.querySelector(
+            ".stream-card-title"
+        );
+
+
+    const creatorName =
+        card.querySelector(
+            ".creator-name"
+        );
+
+
+    const category =
+        card.querySelector(
+            ".creator-category"
+        );
+
+
+    const description =
+        card.querySelector(
+            ".stream-card-description"
+        );
+
+
+    const watchButton =
+        card.querySelector(
+            ".watch-button"
+        );
+
+
+    const avatar =
+        card.querySelector(
+            ".creator-avatar"
+        );
+
+
+    if(title){
+
+        title.textContent =
+            safeText(
+                normalized.title
+            );
+
+    }
+
+
+    if(creatorName){
+
+        creatorName.textContent =
+            safeText(
+                normalized.name
+            );
+
+    }
+
+
+    if(category){
+
+        category.textContent =
+            safeText(
+                normalized.category
+            );
+
+    }
+
+
+    if(description){
+
+        description.textContent =
+            safeText(
+                normalized.description
+            );
+
+        if(!normalized.description){
+
+            description.style.display =
+                "none";
+
+        }
+
+    }
+
+
+    applyThumbnail(
+        thumbnail,
+        normalized.thumbnail,
+        normalized.title
+    );
+
+
+    if(
+        avatar &&
+        normalized.profileImage
+    ){
+
+        avatar.innerHTML =
+            '<img src="' +
+            safeText(
+                normalized.profileImage
+            ) +
+            '" alt="Profile">';
+
+    }
+
+
+    if(watchButton){
+
+        watchButton.addEventListener(
+            "click",
+            function(){
+
+                openStream(
+                    normalized
+                );
+
+            }
+        );
+
+    }
+
+
+    card.dataset.streamId =
+        normalized.id;
+
+    card.dataset.category =
+        normalized.category;
+
+
+    return card;
+
+}
+
+
+/* =========================================
+   OPEN STREAM
+========================================= */
+
+function openStream(
+    stream
+){
+
+    if(!stream){
+
+        return;
+
+    }
+
+
+    const streamId =
+        stream.id;
+
+
+    if(!streamId){
+
+        alert(
+            "This stream is not available right now."
+        );
+
+        return;
+
+    }
+
+
+    localStorage.setItem(
+        "canvasViewingStream",
+        JSON.stringify(
+            stream
+        )
+    );
+
+
+    localStorage.setItem(
+        "canvasCurrentStreamId",
+        String(
+            streamId
+        )
+    );
+
+
+    /*
+     * Use the existing Canvas
+     * stream viewing page.
+     */
+
+    window.location.href =
+        "stream.html?stream=" +
+        encodeURIComponent(
+            streamId
+        );
+
+}
+
+
+/* =========================================
+   FILTER STREAMS
+========================================= */
+
+function getFilteredStreams(){
+
+    const term =
+        searchTerm
+        .trim()
+        .toLowerCase();
+
+
+    return exploreStreams.filter(
+        function(stream){
+
+            const normalized =
+                normalizeStream(
+                    stream
+                );
+
+
+            if(!normalized){
+
+                return false;
+
+            }
+
+
+            const categoryMatch =
+                selectedCategory === "All" ||
+                normalized.category
+                    .toLowerCase() ===
+                    selectedCategory
+                    .toLowerCase();
+
+
+            if(!categoryMatch){
+
+                return false;
+
+            }
+
+
+            if(!term){
+
+                return true;
+
+            }
+
+
+            const text =
+                [
+                    normalized.title,
+                    normalized.name,
+                    normalized.username,
+                    normalized.category,
+                    normalized.description
+                ]
+                .join(" ")
+                .toLowerCase();
+
+
+            return text.includes(
+                term
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================
+   RENDER STREAMS
+========================================= */
+
+function renderStreams(){
+
+    if(!streamGrid){
+
+        return;
+
+    }
+
+
+    const oldCards =
+        streamGrid.querySelectorAll(
+            ".stream-card"
+        );
+
+
+    oldCards.forEach(
+        function(card){
+
+            card.remove();
+
+        }
+    );
+
+
+    const filtered =
+        getFilteredStreams();
+
+
+    if(loadingMessage){
+
+        loadingMessage.style.display =
+            "none";
+
+    }
+
+
+    if(emptyMessage){
+
+        emptyMessage.classList.toggle(
+            "hidden",
+            filtered.length !== 0
+        );
+
+    }
+
+
+    filtered.forEach(
+        function(stream){
+
+            const card =
+                createStreamCard(
+                    stream
+                );
+
+
+            if(card){
+
+                streamGrid.appendChild(
+                    card
+                );
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =========================================
+   LOAD LIVE STREAMS
+========================================= */
+
+async function loadLiveStreams(){
+
+    if(loadingMessage){
+
+        loadingMessage.style.display =
+            "block";
+
+        loadingMessage.textContent =
+            "Loading live streams...";
+
+    }
+
+
+    try{
+
+        const response =
+            await fetch(
+                EXPLORE_API +
+                "/api/streams/live",
+                {
+
+                    method:
+                        "GET",
+
+                    headers:{
+                        "Accept":
+                            "application/json"
+                    },
+
+                    cache:
+                        "no-store"
+
+                }
+            );
+
+
+        let data = {};
+
+
+        try{
+
+            data =
+                await response.json();
+
+        }catch(error){
+
+            data = {};
+
+        }
+
+
+        if(!response.ok){
+
+            throw new Error(
+                data.message ||
+                data.error ||
+                "Unable to load live streams."
+            );
+
+        }
+
+
+        if(
+            Array.isArray(
+                data.streams
+            )
+        ){
+
+            exploreStreams =
+                data.streams;
+
+        }else if(
+            Array.isArray(data)
+        ){
+
+            exploreStreams =
+                data;
+
+        }else{
+
+            exploreStreams =
+                [];
+
+        }
+
+
+        renderStreams();
+
+
+    }catch(error){
+
+        console.error(
+            "Explore loading error:",
+            error
+        );
+
+
+        exploreStreams = [];
+
+
+        if(loadingMessage){
+
+            loadingMessage.style.display =
+                "block";
+
+            loadingMessage.textContent =
+                "Unable to load live streams right now.";
+
+        }
+
+
+        if(emptyMessage){
+
+            emptyMessage.classList.add(
+                "hidden"
+            );
+
+        }
+
+    }
+
+}
+
+
+/* =========================================
+   CATEGORY BUTTONS
+========================================= */
+
+categoryButtons.forEach(
+    function(button){
+
+        button.addEventListener(
+            "click",
+            function(){
+
+                categoryButtons.forEach(
+                    function(item){
+
+                        item.classList.remove(
+                            "active"
+                        );
+
+                    }
+                );
+
+
+                button.classList.add(
+                    "active"
+                );
+
+
+                selectedCategory =
+                    button.dataset.category ||
+                    "All";
+
+
+                renderStreams();
+
+            }
+        );
+
+    }
+);
+
+
+/* =========================================
+   REFRESH
+========================================= */
+
+if(refreshButton){
+
+    refreshButton.addEventListener(
+        "click",
+        async function(){
+
+            refreshButton.disabled =
+                true;
+
+            refreshButton.classList.add(
+                "spinning"
+            );
+
+
+            await loadLiveStreams();
+
+
+            refreshButton.disabled =
+                false;
+
+            refreshButton.classList.remove(
+                "spinning"
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================
+   EXTERNAL SEARCH SUPPORT
+========================================= */
+
+function applyExploreSearch(
+    value
+){
+
+    searchTerm =
+        String(
+            value || ""
+        );
+
+
+    renderStreams();
+
+}
+
+
+/* =========================================
+   INITIAL LOAD
+========================================= */
+
+loadLiveStreams();
+
+  </script>
+  <!-- =========================================
+     EXPLORE FINAL STYLES
+========================================= -->
+
+<style>
+
+.stream-grid{
+    width:100%;
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:16px;
+}
+
+.stream-card{
+    width:100%;
+    overflow:hidden;
+    background:#ffffff;
+    border:1px solid #eadfd8;
+    border-radius:18px;
+    box-shadow:0 5px 18px rgba(75,51,38,.07);
+}
+
+.stream-thumbnail{
+    width:100%;
+    aspect-ratio:16 / 9;
+    position:relative;
+    overflow:hidden;
+    background:#251b17;
+}
+
+.stream-thumbnail-image{
+    width:100%;
+    height:100%;
+    display:block;
+    object-fit:cover;
+}
+
+.stream-thumbnail-image.no-image{
+    opacity:0;
+}
+
+.live-badge{
+    position:absolute;
+    top:10px;
+    left:10px;
+    padding:6px 9px;
+    border-radius:8px;
+    background:#a33a2b;
+    color:#ffffff;
+    font-size:11px;
+    font-weight:800;
+}
+
+.stream-card-body{
+    padding:14px;
+}
+
+.stream-card-title{
+    margin:0 0 12px;
+    color:#4b3326;
+    font-size:17px;
+    line-height:1.3;
+    font-weight:800;
+}
+
+.stream-creator{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    margin-bottom:10px;
+}
+
+.creator-avatar{
+    width:34px;
+    height:34px;
+    min-width:34px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    border-radius:50%;
+    border:1.5px solid #d4a62a;
+    background:#f3f3f3;
+    color:#4b3326;
+    font-size:16px;
+}
+
+.creator-avatar img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.creator-info{
+    min-width:0;
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+}
+
+.creator-name{
+    overflow:hidden;
+    color:#4b3326;
+    font-size:13px;
+    font-weight:800;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+}
+
+.creator-category{
+    color:#806d61;
+    font-size:11px;
+    font-weight:600;
+}
+
+.stream-card-description{
+    margin:0 0 12px;
+    color:#6a574c;
+    font-size:12px;
+    line-height:1.4;
+}
+
+.watch-button{
+    width:100%;
+    min-height:42px;
+    border:0;
+    border-radius:11px;
+    background:#4b3326;
+    color:#ffffff;
+    font-size:13px;
+    font-weight:800;
+    cursor:pointer;
+}
+
+.watch-button:active{
+    transform:scale(.98);
+}
+
+
+/* =========================================
+   REFRESH BUTTON
+========================================= */
+
+.refresh-btn{
+    width:40px;
+    height:40px;
+    border:1px solid #d8c7bb;
+    border-radius:12px;
+    background:#ffffff;
+    color:#4b3326;
+    font-size:23px;
+    cursor:pointer;
+}
+
+.refresh-btn:active{
+    transform:scale(.94);
+}
+
+.refresh-btn.spinning{
+    animation:canvasSpin .7s linear infinite;
+}
+
+@keyframes canvasSpin{
+
+    from{
+        transform:rotate(0deg);
+    }
+
+    to{
+        transform:rotate(360deg);
+    }
+
+}
+
+
+/* =========================================
+   CATEGORY FILTER
+========================================= */
+
+.category-filter{
+    width:100%;
+    display:flex;
+    gap:8px;
+    margin-bottom:18px;
+    overflow-x:auto;
+    padding-bottom:3px;
+    scrollbar-width:none;
+}
+
+.category-filter::-webkit-scrollbar{
+    display:none;
+}
+
+.category-btn{
+    flex:0 0 auto;
+    min-height:38px;
+    padding:8px 13px;
+    border:1px solid #d8c7bb;
+    border-radius:20px;
+    background:#ffffff;
+    color:#4b3326;
+    font-size:12px;
+    font-weight:700;
+    cursor:pointer;
+}
+
+.category-btn.active{
+    background:#4b3326;
+    color:#ffffff;
+    border-color:#4b3326;
+}
+
+
+/* =========================================
+   EXPLORE MESSAGES
+========================================= */
+
+.explore-message{
+    width:100%;
+    padding:30px 15px;
+    text-align:center;
+    color:#6a574c;
+    font-size:14px;
+    line-height:1.5;
+}
+
+.explore-message h3{
+    margin:8px 0 5px;
+    color:#4b3326;
+    font-size:18px;
+}
+
+.empty-icon{
+    font-size:34px;
+    color:#d4a62a;
+}
+
+.hidden{
+    display:none !important;
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media(max-width:600px){
+
+    .stream-grid{
+        grid-template-columns:1fr;
+        gap:14px;
+    }
+
+    .stream-card{
+        border-radius:17px;
+    }
+
+    .stream-card-body{
+        padding:13px;
+    }
+
+    .stream-card-title{
+        font-size:16px;
+    }
+
+}
+
+
+/* =========================================
+   SMALL DEVICES
+========================================= */
+
+@media(max-width:360px){
+
+    .category-btn{
+        min-height:36px;
+        padding:7px 11px;
+        font-size:11px;
+    }
+
+    .stream-card-title{
+        font-size:15px;
+    }
+
+}
+
+</style>
+
+
+<script>
+
+/* =========================================
+   EXPLORE SEARCH
+========================================= */
+
+const exploreSearchInput =
+    document.getElementById(
+        "searchInput"
+    );
+
+const exploreSearchSubmit =
+    document.getElementById(
+        "searchSubmit"
+    );
+
+
+function runExploreSearch(){
+
+    if(!exploreSearchInput){
+
+        return;
+
+    }
+
+    applyExploreSearch(
+        exploreSearchInput.value
+    );
+
+}
+
+
+/* =========================================
+   SEARCH SUBMIT
+========================================= */
+
+if(exploreSearchSubmit){
+
+    exploreSearchSubmit.addEventListener(
+        "click",
+        function(event){
+
+            event.preventDefault();
+
+            runExploreSearch();
+
+        }
+    );
+
+}
+
+
+/* =========================================
+   SEARCH ENTER
+========================================= */
+
+if(exploreSearchInput){
+
+    exploreSearchInput.addEventListener(
+        "keydown",
+        function(event){
+
+            if(
+                event.key ===
+                "Enter"
+            ){
+
+                event.preventDefault();
+
+                runExploreSearch();
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =========================================
+   PROFILE ICON
+========================================= */
+
+function loadExploreProfile(){
+
+    let profile = {};
+
+    try{
+
+        const raw =
+            localStorage.getItem(
+                "canvasProfile"
+            );
+
+        profile =
+            raw
+                ? JSON.parse(raw) || {}
+                : {};
+
+    }catch(error){
+
+        profile = {};
+
+    }
+
+
+    const photo =
+        profile.photo ||
+        profile.profileImage ||
+        profile.profilePhoto ||
+        profile.image ||
+        profile.profile_picture ||
+        "";
+
+
+    const topProfile =
+        document.getElementById(
+            "topProfileIcon"
+        );
+
+
+    if(
+        topProfile &&
+        photo
+    ){
+
+        topProfile.innerHTML =
+            '<img src="' +
+            escapeHtml(photo) +
+            '" alt="Profile">';
+
+    }
+
+
+    const bottomProfile =
+        document.getElementById(
+            "bottomProfileIcon"
+        );
+
+
+    if(
+        bottomProfile &&
+        photo
+    ){
+
+        bottomProfile.innerHTML =
+            '<img src="' +
+            escapeHtml(photo) +
+            '" alt="Profile">' +
+            '<span>Profile</span>';
+
+    }
+
+}
+
+
+loadExploreProfile();
+
+
+/* =========================================
+   PROFILE UPDATE
+========================================= */
+
+window.addEventListener(
+    "storage",
+    function(event){
+
+        if(
+            event.key ===
+            "canvasProfile"
+        ){
+
+            loadExploreProfile();
+
+        }
+
+    }
+);
+
+
+/* =========================================
+   PAGE READY
+========================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function(){
+
+        loadExploreProfile();
+
+    }
+);
+
+</script>
+
+
+<!-- =========================================
+     BOTTOM NAVIGATION
+========================================= -->
+
+<nav class="bottom-nav">
+
+    <a href="stream.html">
+
+        ⌂
+
+        <span>
+            Home
+        </span>
+
+    </a>
+
+
+    <a
+        href="explore.html"
+        class="active"
+    >
+
+        ⌕
+
+        <span>
+            Explore
+        </span>
+
+    </a>
+
+
+    <a href="golive.html">
+
+        ⊙
+
+        <span>
+            Go Live
+        </span>
+
+    </a>
+
+
+    <a
+        href="profile.html"
+        id="bottomProfileIcon"
+    >
+
+        ⬤
+
+        <span>
+            Profile
+        </span>
+
+    </a>
+
+</nav>
+
+
+</body>
+
+</html>
