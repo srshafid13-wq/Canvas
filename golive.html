@@ -1,0 +1,3117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Canvas - Go Live</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+html,
+body{
+    margin:0;
+    padding:0;
+    width:100%;
+    min-height:100%;
+}
+
+body{
+    background:#fff;
+    color:#222;
+    font-family:Arial,Helvetica,sans-serif;
+    padding-bottom:90px;
+}
+
+button,
+input,
+textarea,
+select{
+    font:inherit;
+}
+
+button{
+    cursor:pointer;
+}
+
+
+/* =========================================
+   HEADER
+========================================= */
+
+.top-bar{
+    width:100%;
+    height:64px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 18px;
+    border-bottom:1px solid #eee;
+    background:#fff;
+}
+
+.canvas-logo{
+    font-size:24px;
+    font-weight:800;
+    color:#76513b;
+}
+
+.top-profile{
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    overflow:hidden;
+    background:#eee;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.top-profile img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+
+/* =========================================
+   MAIN
+========================================= */
+
+.golive-container{
+    width:100%;
+    max-width:900px;
+    margin:0 auto;
+    padding:20px 16px 30px;
+}
+
+.page-title{
+    margin:0 0 18px;
+    font-size:25px;
+    font-weight:800;
+}
+
+
+/* =========================================
+   CAMERA
+========================================= */
+
+.camera-box{
+    width:100%;
+    aspect-ratio:16 / 9;
+    max-height:520px;
+    background:#111;
+    border-radius:18px;
+    overflow:hidden;
+    position:relative;
+}
+
+#cameraPreview{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:none;
+    background:#111;
+}
+
+.camera-message{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    color:#fff;
+    padding:20px;
+}
+
+#cameraMessage{
+    display:block;
+}
+
+
+/* =========================================
+   STATUS
+========================================= */
+
+#permissionMessage,
+#webrtcStatus,
+#streamStatus{
+    margin-top:10px;
+    font-size:14px;
+    color:#806b5d;
+}
+
+#permissionMessage:empty,
+#webrtcStatus:empty,
+#streamStatus:empty{
+    display:none;
+}
+
+
+/* =========================================
+   MEDIA CONTROLS
+========================================= */
+
+.media-controls{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin:15px 0;
+}
+
+.media-controls button{
+    border:1px solid #ddd;
+    background:#fff;
+    color:#333;
+    border-radius:12px;
+    padding:11px 14px;
+    font-weight:700;
+}
+
+
+/* =========================================
+   FORM
+========================================= */
+
+.form-group{
+    margin-top:16px;
+}
+
+.form-group label{
+    display:block;
+    margin-bottom:7px;
+    font-size:14px;
+    font-weight:700;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select{
+    width:100%;
+    border:1px solid #ddd;
+    border-radius:12px;
+    padding:13px;
+    outline:none;
+    background:#fff;
+}
+
+.form-group textarea{
+    min-height:100px;
+    resize:vertical;
+}
+
+
+/* =========================================
+   THUMBNAIL
+========================================= */
+
+.thumbnail-area{
+    margin-top:18px;
+}
+
+.thumbnail-preview{
+    width:100%;
+    max-width:360px;
+    aspect-ratio:16 / 9;
+    border-radius:14px;
+    overflow:hidden;
+    background:#f2f2f2;
+    margin-top:10px;
+    display:none;
+}
+
+.thumbnail-preview img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.choose-photo{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    padding:13px 18px;
+    border:1px solid #ddd;
+    border-radius:12px;
+    background:#fff;
+    font-weight:800;
+}
+
+
+/* =========================================
+   STREAM BUTTONS
+========================================= */
+
+.stream-actions{
+    margin-top:22px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+#startStreamingButton,
+#stopStreamingButton{
+    width:100%;
+    border:0;
+    border-radius:14px;
+    padding:15px;
+    font-size:16px;
+    font-weight:800;
+}
+
+#startStreamingButton{
+    background:#76513b;
+    color:#fff;
+}
+
+#stopStreamingButton{
+    background:#222;
+    color:#fff;
+    display:none;
+}
+
+
+/* =========================================
+   BOTTOM NAV
+========================================= */
+
+.bottom-nav{
+    position:fixed;
+    left:0;
+    right:0;
+    bottom:0;
+    height:72px;
+    background:#fff;
+    border-top:1px solid #eee;
+    display:flex;
+    align-items:center;
+    justify-content:space-around;
+    z-index:9999;
+}
+
+.bottom-nav a{
+    width:25%;
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:4px;
+    text-decoration:none;
+    color:#777;
+    font-size:11px;
+    font-weight:700;
+    position:relative;
+}
+
+.bottom-nav a.active{
+    color:#76513b;
+}
+
+.bottom-nav a.active::before,
+.bottom-nav a.active::after{
+    content:none !important;
+    display:none !important;
+}
+
+.nav-icon{
+    width:25px;
+    height:25px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:24px;
+    line-height:1;
+}
+
+.explore-icon svg{
+    width:22px;
+    height:22px;
+}
+
+.profile-nav-icon{
+    border-radius:50%;
+    overflow:hidden;
+}
+
+.profile-nav-icon img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header class="top-bar">
+
+    <div class="canvas-logo">
+        Canvas
+    </div>
+
+    <a
+        href="profile.html"
+        class="top-profile"
+    >
+
+        <img
+            id="topProfileImage"
+            alt="Profile"
+        >
+
+    </a>
+
+</header>
+
+
+<main class="golive-container">
+
+    <h1 class="page-title">
+        Go Live
+    </h1>
+
+
+    <section class="camera-box">
+
+        <video
+            id="cameraPreview"
+            autoplay
+            muted
+            playsinline
+        ></video>
+
+        <div
+            id="cameraMessage"
+            class="camera-message"
+        >
+            Camera is off
+        </div>
+
+    </section>
+
+
+    <div
+        id="permissionMessage"
+    ></div>
+
+
+    <div
+        id="webrtcStatus"
+    ></div>
+
+
+    <div
+        id="streamStatus"
+    ></div>
+
+
+    <div class="media-controls">
+
+        <button
+            type="button"
+            id="cameraButton"
+        >
+            📷 Camera Off
+        </button>
+
+        <button
+            type="button"
+            id="micButton"
+        >
+            🎙️ Microphone Off
+        </button>
+
+        <button
+            type="button"
+            id="switchCameraButton"
+        >
+            🔄 Switch Camera
+        </button>
+
+    </div>
+
+
+    <div class="thumbnail-area">
+
+        <input
+            type="file"
+            id="thumbnailInput"
+            accept="image/*"
+            hidden
+        >
+
+        <button
+            type="button"
+            class="choose-photo"
+            id="choosePhotoButton"
+        >
+            Choose Photo
+        </button>
+
+        <div
+            class="thumbnail-preview"
+            id="thumbnailPreview"
+        >
+
+            <img
+                id="thumbnailImage"
+                alt="Stream thumbnail"
+            >
+
+        </div>
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label for="streamTitle">
+            Stream Title
+        </label>
+
+        <input
+            id="streamTitle"
+            type="text"
+            placeholder="What are you streaming?"
+            maxlength="120"
+        >
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label for="category">
+            Category
+        </label>
+
+        <select id="category">
+
+            <option value="">
+                Select category
+            </option>
+
+            <option value="Entertainment">
+                Entertainment
+            </option>
+
+            <option value="Gaming">
+                Gaming
+            </option>
+
+            <option value="Music">
+                Music
+            </option>
+
+            <option value="Education">
+                Education
+            </option>
+
+            <option value="Sports">
+                Sports
+            </option>
+
+            <option value="Talk">
+                Talk
+            </option>
+
+            <option value="Other">
+                Other
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label for="description">
+            Description
+        </label>
+
+        <textarea
+            id="description"
+            placeholder="Tell viewers about your stream..."
+            maxlength="500"
+        ></textarea>
+
+    </div>
+
+
+    <div class="stream-actions">
+
+        <button
+            type="button"
+            id="startStreamingButton"
+        >
+            🔴 Start Streaming
+        </button>
+
+        <button
+            type="button"
+            id="stopStreamingButton"
+        >
+            ⏹ End Streaming
+        </button>
+
+    </div>
+
+</main>
+
+
+<nav class="bottom-nav">
+
+    <a href="stream.html">
+
+        <span class="nav-icon">
+            ⌂
+        </span>
+
+        <span>
+            Home
+        </span>
+
+    </a>
+
+
+    <a href="explore.html">
+
+        <span
+            class="nav-icon explore-icon"
+        >
+
+            <svg
+                viewBox="0 0 24 24"
+                fill="none"
+            >
+
+                <circle
+                    cx="10.8"
+                    cy="10.8"
+                    r="6.8"
+                    stroke="currentColor"
+                    stroke-width="2"
+                />
+
+                <line
+                    x1="16"
+                    y1="16"
+                    x2="21"
+                    y2="21"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                />
+
+            </svg>
+
+        </span>
+
+        <span>
+            Explore
+        </span>
+
+    </a>
+
+
+    <a
+        href="golive.html"
+        class="active"
+    >
+
+        <span class="nav-icon">
+            ⊙
+        </span>
+
+        <span>
+            Go Live
+        </span>
+
+    </a>
+
+
+    <a href="profile.html">
+
+        <span
+            class="nav-icon profile-nav-icon"
+        >
+
+            <img
+                id="bottomProfileImage"
+                alt="Profile"
+            >
+
+        </span>
+
+        <span>
+            Profile
+        </span>
+
+    </a>
+
+      </nav>
+     <script>
+
+const API_BASE =
+    "https://canvas-kh9p.onrender.com";
+
+const SOCKET_URL =
+    API_BASE;
+
+
+/* =========================================
+   STREAM STATE
+========================================= */
+
+let canvasStream = null;
+
+let cameraEnabled = false;
+let microphoneEnabled = false;
+
+let currentFacingMode = "user";
+
+let isStreaming = false;
+let currentStreamId = null;
+
+let selectedThumbnail = "";
+
+let socket = null;
+
+let streamHeartbeat = null;
+
+let startStreamBusy = false;
+let endStreamBusy = false;
+
+
+/* =========================================
+   DOM
+========================================= */
+
+const cameraPreview =
+    document.getElementById(
+        "cameraPreview"
+    );
+
+const cameraMessage =
+    document.getElementById(
+        "cameraMessage"
+    );
+
+const permissionMessage =
+    document.getElementById(
+        "permissionMessage"
+    );
+
+const webrtcStatus =
+    document.getElementById(
+        "webrtcStatus"
+    );
+
+const streamStatus =
+    document.getElementById(
+        "streamStatus"
+    );
+
+const streamTitle =
+    document.getElementById(
+        "streamTitle"
+    );
+
+const category =
+    document.getElementById(
+        "category"
+    );
+
+const description =
+    document.getElementById(
+        "description"
+    );
+
+const thumbnailInput =
+    document.getElementById(
+        "thumbnailInput"
+    );
+
+const thumbnailPreview =
+    document.getElementById(
+        "thumbnailPreview"
+    );
+
+const thumbnailImage =
+    document.getElementById(
+        "thumbnailImage"
+    );
+
+const choosePhotoButton =
+    document.getElementById(
+        "choosePhotoButton"
+    );
+
+const cameraButton =
+    document.getElementById(
+        "cameraButton"
+    );
+
+const micButton =
+    document.getElementById(
+        "micButton"
+    );
+
+const switchCameraButton =
+    document.getElementById(
+        "switchCameraButton"
+    );
+
+const startStreamingButton =
+    document.getElementById(
+        "startStreamingButton"
+    );
+
+const stopStreamingButton =
+    document.getElementById(
+        "stopStreamingButton"
+    );
+
+const topProfileImage =
+    document.getElementById(
+        "topProfileImage"
+    );
+
+const bottomProfileImage =
+    document.getElementById(
+        "bottomProfileImage"
+    );
+
+
+/* =========================================
+   DEFAULT PROFILE PICTURE
+========================================= */
+
+const DEFAULT_PROFILE_IMAGE =
+    "data:image/svg+xml;charset=UTF-8," +
+    encodeURIComponent(`
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 100 100"
+        >
+            <rect
+                width="100"
+                height="100"
+                rx="50"
+                fill="#eeeeee"
+            />
+            <circle
+                cx="50"
+                cy="38"
+                r="18"
+                fill="#777777"
+            />
+            <path
+                d="M20 86c3-19 15-29 30-29s27 10 30 29"
+                fill="#777777"
+            />
+        </svg>
+    `);
+
+
+/* =========================================
+   AUTH
+========================================= */
+
+function getAuthToken(){
+
+    return (
+        localStorage.getItem(
+            "canvasAuthToken"
+        ) ||
+
+        localStorage.getItem(
+            "canvasToken"
+        ) ||
+
+        localStorage.getItem(
+            "authToken"
+        ) ||
+
+        localStorage.getItem(
+            "token"
+        ) ||
+
+        ""
+    );
+
+}
+
+
+function authHeaders(){
+
+    const token =
+        getAuthToken();
+
+    const headers = {
+        "Accept":
+            "application/json"
+    };
+
+    if(token){
+
+        headers.Authorization =
+            "Bearer " + token;
+
+    }
+
+    return headers;
+
+}
+
+
+function jsonAuthHeaders(){
+
+    const headers =
+        authHeaders();
+
+    headers["Content-Type"] =
+        "application/json";
+
+    return headers;
+
+}
+
+
+/* =========================================
+   PROFILE IMAGE HELPERS
+========================================= */
+
+function getSavedProfile(){
+
+    try{
+
+        return JSON.parse(
+            localStorage.getItem(
+                "canvasProfile"
+            ) || "null"
+        );
+
+    }catch(error){
+
+        return null;
+
+    }
+
+}
+
+
+function getProfileImage(profile){
+
+    if(!profile){
+        return DEFAULT_PROFILE_IMAGE;
+    }
+
+
+    const possibleImage =
+        profile.profilePicture ||
+        profile.profile_picture ||
+        profile.photo ||
+        profile.photoUrl ||
+        profile.avatar ||
+        profile.avatarUrl ||
+        profile.image ||
+        profile.imageUrl;
+
+
+    if(
+        typeof possibleImage === "string" &&
+        possibleImage.trim()
+    ){
+
+        return possibleImage;
+
+    }
+
+
+    return DEFAULT_PROFILE_IMAGE;
+
+}
+
+
+/* =========================================
+   APPLY PROFILE IMAGE
+========================================= */
+
+function applyProfileImage(profile){
+
+    const image =
+        getProfileImage(profile);
+
+
+    if(topProfileImage){
+
+        topProfileImage.src =
+            image;
+
+    }
+
+
+    if(bottomProfileImage){
+
+        bottomProfileImage.src =
+            image;
+
+    }
+
+}
+
+
+/* =========================================
+   LOAD PROFILE
+========================================= */
+
+async function loadGoLiveProfile(){
+
+    const cachedProfile =
+        getSavedProfile();
+
+
+    if(cachedProfile){
+
+        applyProfileImage(
+            cachedProfile
+        );
+
+    }else{
+
+        applyProfileImage(null);
+
+    }
+
+
+    const token =
+        getAuthToken();
+
+    if(!token){
+        return;
+    }
+
+
+    try{
+
+        const response =
+            await fetch(
+                API_BASE +
+                "/api/profile",
+                {
+                    method: "GET",
+                    headers:
+                        authHeaders()
+                }
+            );
+
+
+        if(!response.ok){
+            return;
+        }
+
+
+        const data =
+            await response.json();
+
+
+        const profile =
+            data.profile ||
+            data.user ||
+            data;
+
+
+        if(profile){
+
+            localStorage.setItem(
+                "canvasProfile",
+                JSON.stringify(profile)
+            );
+
+
+            applyProfileImage(
+                profile
+            );
+
+        }
+
+    }catch(error){
+
+        console.log(
+            "Profile load failed:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   BEST QUALITY MEDIA
+========================================= */
+
+async function startCameraAndMicrophone(
+    wantCamera = true,
+    wantMicrophone = true
+){
+
+    try{
+
+        if(!navigator.mediaDevices ||
+           !navigator.mediaDevices.getUserMedia){
+
+            throw new Error(
+                "Camera API unavailable"
+            );
+
+        }
+
+
+        if(canvasStream){
+
+            canvasStream
+                .getTracks()
+                .forEach(track => {
+                    track.stop();
+                });
+
+            canvasStream = null;
+
+        }
+
+
+        /*
+         * First request the best practical
+         * camera configuration.
+         *
+         * 1920x1080 is the target.
+         * The browser will negotiate the
+         * highest mode the phone supports.
+         */
+
+        const constraints = {
+
+            video: wantCamera ? {
+
+                facingMode: {
+                    ideal:
+                        currentFacingMode
+                },
+
+                width: {
+                    ideal: 1920,
+                    min: 1280
+                },
+
+                height: {
+                    ideal: 1080,
+                    min: 720
+                },
+
+                frameRate: {
+                    ideal: 30,
+                    min: 24
+                }
+
+            } : false,
+
+
+            audio: wantMicrophone ? {
+
+                sampleRate: {
+                    ideal: 48000
+                },
+
+                sampleSize: {
+                    ideal: 16
+                },
+
+                channelCount: {
+                    ideal: 2
+                },
+
+                echoCancellation: {
+                    ideal: true
+                },
+
+                noiseSuppression: {
+                    ideal: true
+                },
+
+                autoGainControl: {
+                    ideal: true
+                }
+
+            } : false
+
+        };
+
+
+        canvasStream =
+            await navigator.mediaDevices
+                .getUserMedia(
+                    constraints
+                );
+
+
+        cameraEnabled =
+            wantCamera &&
+            canvasStream
+                .getVideoTracks()
+                .length > 0;
+
+
+        microphoneEnabled =
+            wantMicrophone &&
+            canvasStream
+                .getAudioTracks()
+                .length > 0;
+
+
+        if(cameraPreview){
+
+            cameraPreview.srcObject =
+                canvasStream;
+
+            cameraPreview.muted =
+                true;
+
+            cameraPreview.playsInline =
+                true;
+
+            cameraPreview.style.display =
+                "block";
+
+            await cameraPreview
+                .play()
+                .catch(() => {});
+
+        }
+
+
+        if(cameraMessage){
+
+            cameraMessage.style.display =
+                "none";
+
+        }
+
+
+        /*
+         * Read the REAL settings supplied
+         * by the phone/browser.
+         */
+
+        const videoTrack =
+            canvasStream
+                .getVideoTracks()[0];
+
+
+        const audioTrack =
+            canvasStream
+                .getAudioTracks()[0];
+
+
+        let videoInfo = "";
+
+
+        if(videoTrack){
+
+            const settings =
+                videoTrack.getSettings();
+
+
+            videoInfo =
+                settings.width +
+                "×" +
+                settings.height +
+                " • " +
+                (settings.frameRate || 30) +
+                " FPS";
+
+        }
+
+
+        let audioInfo = "";
+
+
+        if(audioTrack){
+
+            const settings =
+                audioTrack.getSettings();
+
+
+            audioInfo =
+                (settings.sampleRate
+                    ? settings.sampleRate +
+                      " Hz"
+                    : "High quality audio") +
+
+                (
+                    settings.channelCount
+                        ? " • " +
+                          settings.channelCount +
+                          " channel"
+                        : ""
+                );
+
+        }
+
+
+        if(videoInfo && audioInfo){
+
+            setWebRTCStatus(
+                videoInfo +
+                " • " +
+                audioInfo
+            );
+
+        }else if(videoInfo){
+
+            setWebRTCStatus(
+                videoInfo
+            );
+
+        }else{
+
+            setWebRTCStatus(
+                "Camera and microphone ready"
+            );
+
+        }
+
+
+        updateMediaButtons();
+
+        return true;
+
+    }catch(error){
+
+        console.error(
+            "Media error:",
+            error
+        );
+
+
+        /*
+         * If the phone rejects the advanced
+         * request, retry with a safe Full HD
+         * configuration.
+         */
+
+        try{
+
+            canvasStream =
+                await navigator.mediaDevices
+                    .getUserMedia({
+
+                        video: wantCamera ? {
+
+                            facingMode:
+                                currentFacingMode,
+
+                            width: {
+                                ideal: 1920
+                            },
+
+                            height: {
+                                ideal: 1080
+                            },
+
+                            frameRate: {
+                                ideal: 30
+                            }
+
+                        } : false,
+
+                        audio: wantMicrophone
+
+                            ? true
+
+                            : false
+
+                    });
+
+
+            cameraEnabled =
+                wantCamera;
+
+            microphoneEnabled =
+                wantMicrophone;
+
+
+            if(cameraPreview){
+
+                cameraPreview.srcObject =
+                    canvasStream;
+
+                cameraPreview.style.display =
+                    "block";
+
+                cameraPreview.play()
+                    .catch(() => {});
+
+            }
+
+
+            if(cameraMessage){
+
+                cameraMessage.style.display =
+                    "none";
+
+            }
+
+
+            updateMediaButtons();
+
+            setWebRTCStatus(
+                "Best supported camera and microphone mode active"
+            );
+
+            return true;
+
+        }catch(fallbackError){
+
+            console.error(
+                "Fallback media error:",
+                fallbackError
+            );
+
+
+            cameraEnabled = false;
+            microphoneEnabled = false;
+
+            setWebRTCStatus(
+                "Camera or microphone could not be started."
+            );
+
+            if(permissionMessage){
+
+                permissionMessage.textContent =
+                    "Please allow camera and microphone access."
+            }
+
+
+            updateMediaButtons();
+
+            return false;
+
+        }
+
+    }
+
+}
+
+
+loadGoLiveProfile();
+
+     </script>
+  <script>
+
+/* =========================================
+   MEDIA BUTTON UI
+========================================= */
+
+function updateMediaButtons(){
+
+    if(cameraButton){
+
+        cameraButton.textContent =
+            cameraEnabled
+                ? "📷 Camera On"
+                : "📷 Camera Off";
+
+    }
+
+
+    if(micButton){
+
+        micButton.textContent =
+            microphoneEnabled
+                ? "🎙️ Microphone On"
+                : "🎙️ Microphone Off";
+
+    }
+
+}
+
+
+/* =========================================
+   CAMERA TOGGLE
+========================================= */
+
+async function toggleCamera(){
+
+    if(cameraEnabled){
+
+        if(canvasStream){
+
+            canvasStream
+                .getVideoTracks()
+                .forEach(track => {
+
+                    track.stop();
+
+                });
+
+        }
+
+        cameraEnabled = false;
+
+        if(cameraPreview){
+
+            cameraPreview.style.display =
+                "none";
+
+        }
+
+        if(cameraMessage){
+
+            cameraMessage.style.display =
+                "flex";
+
+            cameraMessage.textContent =
+                "Camera is off";
+
+        }
+
+        updateMediaButtons();
+
+        return;
+    }
+
+
+    const microphoneState =
+        microphoneEnabled;
+
+
+    await startCameraAndMicrophone(
+        true,
+        microphoneState
+    );
+
+}
+
+
+/* =========================================
+   MICROPHONE TOGGLE
+========================================= */
+
+async function toggleMicrophone(){
+
+    if(microphoneEnabled){
+
+        if(canvasStream){
+
+            canvasStream
+                .getAudioTracks()
+                .forEach(track => {
+
+                    track.stop();
+
+                });
+
+        }
+
+        microphoneEnabled = false;
+
+        updateMediaButtons();
+
+        return;
+    }
+
+
+    const cameraState =
+        cameraEnabled;
+
+
+    await startCameraAndMicrophone(
+        cameraState,
+        true
+    );
+
+}
+
+
+/* =========================================
+   SWITCH CAMERA
+========================================= */
+
+async function switchCamera(){
+
+    if(!navigator.mediaDevices){
+        return;
+    }
+
+
+    currentFacingMode =
+        currentFacingMode === "user"
+            ? "environment"
+            : "user";
+
+
+    await startCameraAndMicrophone(
+        true,
+        microphoneEnabled
+    );
+
+}
+
+
+/* =========================================
+   BUTTON EVENTS
+========================================= */
+
+if(cameraButton){
+
+    cameraButton.addEventListener(
+        "click",
+        toggleCamera
+    );
+
+}
+
+
+if(micButton){
+
+    micButton.addEventListener(
+        "click",
+        toggleMicrophone
+    );
+
+}
+
+
+if(switchCameraButton){
+
+    switchCameraButton.addEventListener(
+        "click",
+        switchCamera
+    );
+
+}
+
+
+/* =========================================
+   THUMBNAIL SELECT
+========================================= */
+
+if(choosePhotoButton){
+
+    choosePhotoButton.addEventListener(
+        "click",
+        () => {
+
+            if(thumbnailInput){
+
+                thumbnailInput.click();
+
+            }
+
+        }
+    );
+
+}
+
+
+if(thumbnailInput){
+
+    thumbnailInput.addEventListener(
+        "change",
+        event => {
+
+            const file =
+                event.target.files &&
+                event.target.files[0];
+
+
+            if(!file){
+                return;
+            }
+
+
+            if(!file.type.startsWith("image/")){
+
+                setStatus(
+                    "Please choose an image.",
+                    true
+                );
+
+                thumbnailInput.value =
+                    "";
+
+                return;
+
+            }
+
+
+            const reader =
+                new FileReader();
+
+
+            reader.onload = () => {
+
+                selectedThumbnail =
+                    reader.result;
+
+
+                if(thumbnailImage){
+
+                    thumbnailImage.src =
+                        selectedThumbnail;
+
+                }
+
+
+                if(thumbnailPreview){
+
+                    thumbnailPreview.style.display =
+                        "block";
+
+                }
+
+            };
+
+
+            reader.onerror = () => {
+
+                setStatus(
+                    "Could not load that photo.",
+                    true
+                );
+
+            };
+
+
+            reader.readAsDataURL(file);
+
+        }
+    );
+
+}
+
+
+/* =========================================
+   STATUS HELPERS
+========================================= */
+
+function setStatus(
+    message,
+    error = false
+){
+
+    if(!streamStatus){
+        return;
+    }
+
+
+    streamStatus.textContent =
+        message || "";
+
+
+    streamStatus.style.color =
+        error
+            ? "#9a3026"
+            : "#806b5d";
+
+}
+
+
+function setWebRTCStatus(message){
+
+    if(!webrtcStatus){
+        return;
+    }
+
+
+    webrtcStatus.textContent =
+        message || "";
+
+}
+
+
+function setPermissionMessage(message){
+
+    if(!permissionMessage){
+        return;
+    }
+
+
+    permissionMessage.textContent =
+        message || "";
+
+}
+
+
+/* =========================================
+   INITIAL STATE
+========================================= */
+
+updateMediaButtons();
+
+
+if(startStreamingButton){
+
+    startStreamingButton.style.display =
+        "block";
+
+}
+
+
+if(stopStreamingButton){
+
+    stopStreamingButton.style.display =
+        "none";
+
+}
+
+  </script>
+  <script>
+
+/* =========================================
+   LOCAL STREAM CACHE
+========================================= */
+
+function getSavedStream(){
+
+    try{
+
+        return JSON.parse(
+            localStorage.getItem(
+                "canvasActiveStream"
+            ) || "null"
+        );
+
+    }catch(error){
+
+        return null;
+
+    }
+
+}
+
+
+function saveStream(stream){
+
+    try{
+
+        localStorage.setItem(
+            "canvasActiveStream",
+            JSON.stringify(stream)
+        );
+
+    }catch(error){
+
+        console.log(
+            "Stream cache error:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   STREAM UI
+========================================= */
+
+function showStreamingUI(){
+
+    if(startStreamingButton){
+
+        startStreamingButton.style.display =
+            "none";
+
+    }
+
+
+    if(stopStreamingButton){
+
+        stopStreamingButton.style.display =
+            "block";
+
+    }
+
+}
+
+
+function showStartUI(){
+
+    if(startStreamingButton){
+
+        startStreamingButton.style.display =
+            "block";
+
+    }
+
+
+    if(stopStreamingButton){
+
+        stopStreamingButton.style.display =
+            "none";
+
+    }
+
+}
+
+
+/* =========================================
+   RESTORE EXISTING LIVE STREAM
+========================================= */
+
+async function restoreExistingStream(){
+
+    const token =
+        getAuthToken();
+
+    if(!token){
+        return false;
+    }
+
+
+    try{
+
+        const response =
+            await fetch(
+                API_BASE +
+                "/api/streams/my",
+                {
+                    method:"GET",
+                    headers:
+                        authHeaders()
+                }
+            );
+
+
+        if(response.status === 401){
+
+            setStatus(
+                "Please log in again.",
+                true
+            );
+
+            return false;
+
+        }
+
+
+        if(!response.ok){
+
+            return false;
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        const streams =
+            Array.isArray(data)
+                ? data
+                : (
+                    Array.isArray(
+                        data.streams
+                    )
+                    ? data.streams
+                    : []
+                );
+
+
+        const liveStreams =
+            streams.filter(
+                stream =>
+                    stream.status === "live"
+            );
+
+
+        if(!liveStreams.length){
+
+            currentStreamId = null;
+            isStreaming = false;
+
+            showStartUI();
+
+            return false;
+
+        }
+
+
+        /*
+         * Use the newest live stream.
+         */
+
+        liveStreams.sort(
+            (a,b) =>
+                new Date(b.created_at) -
+                new Date(a.created_at)
+        );
+
+
+        const liveStream =
+            liveStreams[0];
+
+
+        currentStreamId =
+            liveStream.id;
+
+        isStreaming = true;
+
+
+        if(streamTitle &&
+           liveStream.title){
+
+            streamTitle.value =
+                liveStream.title;
+
+        }
+
+
+        /*
+         * Restore extra GoLive information
+         * from the local cache when available.
+         */
+
+        const saved =
+            getSavedStream();
+
+
+        if(
+            saved &&
+            String(saved.id) ===
+            String(liveStream.id)
+        ){
+
+            if(
+                category &&
+                saved.category
+            ){
+
+                category.value =
+                    saved.category;
+
+            }
+
+
+            if(
+                description &&
+                saved.description
+            ){
+
+                description.value =
+                    saved.description;
+
+            }
+
+
+            if(
+                saved.thumbnail
+            ){
+
+                selectedThumbnail =
+                    saved.thumbnail;
+
+
+                if(thumbnailImage){
+
+                    thumbnailImage.src =
+                        selectedThumbnail;
+
+                }
+
+
+                if(thumbnailPreview){
+
+                    thumbnailPreview.style.display =
+                        "block";
+
+                }
+
+            }
+
+        }
+
+
+        showStreamingUI();
+
+
+        setStatus(
+            "Your stream is already live."
+        );
+
+
+        /*
+         * Reconnect camera/mic when returning
+         * to this page if they are not active.
+         */
+
+        if(
+            !canvasStream ||
+            !canvasStream.getTracks().length
+        ){
+
+            await startCameraAndMicrophone(
+                true,
+                true
+            );
+
+        }
+
+
+        if(
+            typeof connectBroadcasterSocket ===
+            "function"
+        ){
+
+            connectBroadcasterSocket();
+
+        }
+
+
+        return true;
+
+    }catch(error){
+
+        console.error(
+            "Restore stream error:",
+            error
+        );
+
+        return false;
+
+    }
+
+}
+
+
+/* =========================================
+   START NEW STREAM
+========================================= */
+
+async function startStreaming(){
+
+    if(startStreamBusy){
+        return;
+    }
+
+
+    startStreamBusy = true;
+
+
+    try{
+
+        const token =
+            getAuthToken();
+
+
+        if(!token){
+
+            setStatus(
+                "Please log in first.",
+                true
+            );
+
+            return;
+
+        }
+
+
+        /*
+         * ALWAYS check backend first.
+         * This prevents duplicate live streams.
+         */
+
+        const alreadyLive =
+            await restoreExistingStream();
+
+
+        if(alreadyLive){
+
+            return;
+
+        }
+
+
+        const title =
+            streamTitle
+                ? streamTitle.value.trim()
+                : "";
+
+
+        if(!title){
+
+            setStatus(
+                "Please enter a stream title.",
+                true
+            );
+
+            return;
+
+        }
+
+
+        /*
+         * Make sure camera is ready.
+         */
+
+        if(
+            !canvasStream ||
+            !cameraEnabled
+        ){
+
+            const ready =
+                await startCameraAndMicrophone(
+                    true,
+                    microphoneEnabled
+                );
+
+
+            if(!ready){
+
+                return;
+
+            }
+
+        }
+
+
+        const response =
+            await fetch(
+                API_BASE +
+                "/api/streams",
+                {
+                    method:"POST",
+
+                    headers:
+                        jsonAuthHeaders(),
+
+                    body:JSON.stringify({
+
+                        title:title
+
+                    })
+                }
+            );
+
+
+        const data =
+            await response
+                .json()
+                .catch(
+                    () => ({})
+                );
+
+
+        if(!response.ok){
+
+            setStatus(
+                data.message ||
+                "Could not start stream.",
+                true
+            );
+
+            return;
+
+        }
+
+
+        const stream =
+            data.stream ||
+            data;
+
+
+        currentStreamId =
+            stream.id;
+
+
+        isStreaming = true;
+
+
+        saveStream({
+
+            id:
+                currentStreamId,
+
+            title:
+                title,
+
+            category:
+                category
+                    ? category.value
+                    : "",
+
+            description:
+                description
+                    ? description.value
+                    : "",
+
+            thumbnail:
+                selectedThumbnail || ""
+
+        });
+
+
+        showStreamingUI();
+
+
+        setStatus(
+            "You are live."
+        );
+
+
+        if(
+            typeof connectBroadcasterSocket ===
+            "function"
+        ){
+
+            connectBroadcasterSocket();
+
+        }
+
+
+    }catch(error){
+
+        console.error(
+            "Start stream error:",
+            error
+        );
+
+
+        setStatus(
+            "Could not start streaming.",
+            true
+        );
+
+    }finally{
+
+        startStreamBusy = false;
+
+    }
+
+}
+
+
+/* =========================================
+   START BUTTON
+========================================= */
+
+if(startStreamingButton){
+
+    startStreamingButton.addEventListener(
+        "click",
+        startStreaming
+    );
+
+}
+
+
+/* =========================================
+   CHECK WHEN GOLIVE OPENS
+========================================= */
+
+if(getAuthToken()){
+
+    restoreExistingStream();
+
+}
+
+  </script>
+  <script>
+
+/* =========================================
+   SOCKET.IO — BROADCASTER
+========================================= */
+
+function connectBroadcasterSocket(){
+
+    if(!currentStreamId){
+        return;
+    }
+
+
+    if(typeof io !== "function"){
+
+        console.log(
+            "Socket.IO is not available."
+        );
+
+        return;
+
+    }
+
+
+    /*
+     * Already connected to this stream.
+     */
+
+    if(
+        socket &&
+        socket.connected &&
+        socket.streamId ===
+        String(currentStreamId)
+    ){
+
+        return;
+
+    }
+
+
+    /*
+     * Remove old socket safely.
+     */
+
+    if(socket){
+
+        try{
+            socket.disconnect();
+        }catch(error){
+            console.log(error);
+        }
+
+        socket = null;
+
+    }
+
+
+    socket =
+        io(
+            SOCKET_URL,
+            {
+                transports:[
+                    "websocket",
+                    "polling"
+                ],
+
+                reconnection:true,
+
+                reconnectionAttempts:Infinity,
+
+                reconnectionDelay:1000,
+
+                timeout:20000
+            }
+        );
+
+
+    socket.streamId =
+        String(currentStreamId);
+
+
+    socket.on(
+        "connect",
+        function(){
+
+            console.log(
+                "Broadcaster socket connected."
+            );
+
+
+            socket.emit(
+                "join-stream",
+                {
+                    streamId:
+                        currentStreamId
+                }
+            );
+
+
+            socket.emit(
+                "broadcaster-join",
+                {
+                    streamId:
+                        currentStreamId
+                }
+            );
+
+
+            setWebRTCStatus(
+                "Live connection active."
+            );
+
+        }
+    );
+
+
+    socket.on(
+        "disconnect",
+        function(){
+
+            console.log(
+                "Broadcaster socket disconnected."
+            );
+
+
+            /*
+             * IMPORTANT:
+             * Disconnecting socket does NOT
+             * end the backend stream.
+             */
+
+            if(isStreaming){
+
+                setWebRTCStatus(
+                    "Reconnecting live connection..."
+                );
+
+            }
+
+        }
+    );
+
+
+    socket.on(
+        "connect_error",
+        function(error){
+
+            console.log(
+                "Socket connection error:",
+                error
+            );
+
+        }
+    );
+
+
+    socket.on(
+        "viewer-count",
+        function(data){
+
+            if(!data){
+                return;
+            }
+
+
+            /*
+             * If the page contains a viewer
+             * count element, update it.
+             */
+
+            const viewerCount =
+                document.getElementById(
+                    "viewerCount"
+                );
+
+
+            if(viewerCount){
+
+                const count =
+                    Number(
+                        data.count ??
+                        data.viewers ??
+                        0
+                    );
+
+
+                viewerCount.textContent =
+                    count + " watching";
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =========================================
+   KEEP LIVE STREAM ALIVE
+========================================= */
+
+function startStreamHeartbeat(){
+
+    stopStreamHeartbeat();
+
+
+    heartbeat =
+        setInterval(
+            async function(){
+
+                if(
+                    !isStreaming ||
+                    !currentStreamId
+                ){
+
+                    return;
+
+                }
+
+
+                try{
+
+                    /*
+                     * Checking the stream does not
+                     * end it. It simply confirms
+                     * that the backend still has it.
+                     */
+
+                    const response =
+                        await fetch(
+                            API_BASE +
+                            "/api/streams/my",
+                            {
+                                method:"GET",
+                                headers:
+                                    authHeaders()
+                            }
+                        );
+
+
+                    if(!response.ok){
+                        return;
+                    }
+
+
+                    const data =
+                        await response
+                            .json()
+                            .catch(
+                                () => ({})
+                            );
+
+
+                    const streams =
+                        Array.isArray(data)
+                            ? data
+                            : (
+                                Array.isArray(
+                                    data.streams
+                                )
+                                ? data.streams
+                                : []
+                            );
+
+
+                    const stillLive =
+                        streams.some(
+                            stream =>
+                                String(
+                                    stream.id
+                                ) ===
+                                String(
+                                    currentStreamId
+                                ) &&
+                                stream.status ===
+                                "live"
+                        );
+
+
+                    if(!stillLive){
+
+                        /*
+                         * Backend says the stream
+                         * was ended elsewhere.
+                         */
+
+                        isStreaming =
+                            false;
+
+                        currentStreamId =
+                            null;
+
+                        localStorage.removeItem(
+                            "canvasActiveStream"
+                        );
+
+                        showStartUI();
+
+                        setStatus(
+                            "The stream is no longer live.",
+                            true
+                        );
+
+                    }
+
+                }catch(error){
+
+                    console.log(
+                        "Heartbeat check failed:",
+                        error
+                    );
+
+                }
+
+            },
+            30000
+        );
+
+}
+
+
+function stopStreamHeartbeat(){
+
+    if(heartbeat){
+
+        clearInterval(
+            heartbeat
+        );
+
+        heartbeat = null;
+
+    }
+
+}
+
+
+/* =========================================
+   END STREAMING
+========================================= */
+
+async function endStreaming(){
+
+    if(endStreamBusy){
+        return;
+    }
+
+
+    if(!currentStreamId){
+
+        isStreaming = false;
+
+        showStartUI();
+
+        return;
+
+    }
+
+
+    endStreamBusy = true;
+
+
+    try{
+
+        setStatus(
+            "Ending stream..."
+        );
+
+
+        const streamId =
+            currentStreamId;
+
+
+        const response =
+            await fetch(
+                API_BASE +
+                "/api/streams/" +
+                encodeURIComponent(
+                    streamId
+                ) +
+                "/end",
+                {
+                    method:"PUT",
+
+                    headers:
+                        authHeaders()
+                }
+            );
+
+
+        if(!response.ok){
+
+            const data =
+                await response
+                    .json()
+                    .catch(
+                        () => ({})
+                    );
+
+
+            setStatus(
+                data.message ||
+                "Could not end stream.",
+                true
+            );
+
+            return;
+
+        }
+
+
+        /*
+         * ONLY HERE do we mark the stream
+         * as no longer live.
+         */
+
+        isStreaming = false;
+
+
+        currentStreamId =
+            null;
+
+
+        localStorage.removeItem(
+            "canvasActiveStream"
+        );
+
+
+        stopStreamHeartbeat();
+
+
+        /*
+         * Disconnect broadcaster socket.
+         */
+
+        if(socket){
+
+            try{
+
+                socket.disconnect();
+
+            }catch(error){
+
+                console.log(error);
+
+            }
+
+            socket = null;
+
+        }
+
+
+        /*
+         * Stop camera and microphone after
+         * the creator explicitly ends streaming.
+         */
+
+        if(canvasStream){
+
+            canvasStream
+                .getTracks()
+                .forEach(
+                    track =>
+                        track.stop()
+                );
+
+            canvasStream = null;
+
+        }
+
+
+        cameraEnabled = false;
+
+        microphoneEnabled = false;
+
+
+        updateMediaButtons();
+
+
+        showStartUI();
+
+
+        setWebRTCStatus(
+            "Camera and microphone are off."
+        );
+
+
+        setStatus(
+            "Stream ended."
+        );
+
+
+    }catch(error){
+
+        console.error(
+            "End stream error:",
+            error
+        );
+
+
+        setStatus(
+            "Could not end stream.",
+            true
+        );
+
+    }finally{
+
+        endStreamBusy = false;
+
+    }
+
+}
+
+
+/* =========================================
+   END BUTTON
+========================================= */
+
+if(stopStreamingButton){
+
+    stopStreamingButton.addEventListener(
+        "click",
+        endStreaming
+    );
+
+}
+
+
+/* =========================================
+   SAVE CURRENT STREAM INFORMATION
+========================================= */
+
+function updateSavedStreamInfo(){
+
+    if(!currentStreamId){
+        return;
+    }
+
+
+    saveStream({
+
+        id:
+            currentStreamId,
+
+        title:
+            streamTitle
+                ? streamTitle.value
+                : "",
+
+        category:
+            category
+                ? category.value
+                : "",
+
+        description:
+            description
+                ? description.value
+                : "",
+
+        thumbnail:
+            selectedThumbnail || ""
+
+    });
+
+}
+
+
+if(streamTitle){
+
+    streamTitle.addEventListener(
+        "input",
+        updateSavedStreamInfo
+    );
+
+}
+
+
+if(category){
+
+    category.addEventListener(
+        "change",
+        updateSavedStreamInfo
+    );
+
+}
+
+
+if(description){
+
+    description.addEventListener(
+        "input",
+        updateSavedStreamInfo
+    );
+
+}
+
+
+/* =========================================
+   PAGE SHOW / RETURN TO GOLIVE
+========================================= */
+
+window.addEventListener(
+    "pageshow",
+    async function(){
+
+        if(!getAuthToken()){
+            return;
+        }
+
+
+        /*
+         * If backend still says we're live,
+         * restore the existing stream.
+         */
+
+        if(!isStreaming){
+
+            await restoreExistingStream();
+
+        }
+
+
+        if(
+            isStreaming &&
+            currentStreamId
+        ){
+
+            if(
+                !canvasStream ||
+                !canvasStream.getTracks().length
+            ){
+
+                await startCameraAndMicrophone(
+                    true,
+                    true
+                );
+
+            }
+
+
+            connectBroadcasterSocket();
+
+            startStreamHeartbeat();
+
+        }
+
+    }
+);
+
+
+/* =========================================
+   INITIAL HEARTBEAT
+========================================= */
+
+if(isStreaming){
+
+    startStreamHeartbeat();
+
+}
+
+
+/* =========================================
+   LEAVING GOLIVE
+========================================= */
+
+/*
+ * IMPORTANT:
+ *
+ * DO NOT call endStreaming() here.
+ *
+ * Going to Home / Explore / Profile must
+ * NOT end the backend stream.
+ *
+ * The creator must press "End Streaming".
+ */
+
+
+/*
+ * We can disconnect the socket when leaving
+ * this document. The backend stream remains
+ * LIVE.
+ */
+
+window.addEventListener(
+    "pagehide",
+    function(){
+
+        if(socket){
+
+            try{
+
+                socket.disconnect();
+
+            }catch(error){
+
+                console.log(error);
+
+            }
+
+        }
+
+
+        /*
+         * Stop the local camera to prevent the
+         * phone camera from staying active.
+         *
+         * This does NOT end the backend stream.
+         */
+
+        if(canvasStream){
+
+            canvasStream
+                .getTracks()
+                .forEach(
+                    track =>
+                        track.stop()
+                );
+
+            canvasStream = null;
+
+        }
+
+    }
+);
+
+
+/* =========================================
+   FINAL INITIALIZATION
+========================================= */
+
+(async function(){
+
+    try{
+
+        await loadGoLiveProfile();
+
+    }catch(error){
+
+        console.log(
+            "Profile initialization error:",
+            error
+        );
+
+    }
+
+
+    try{
+
+        if(getAuthToken()){
+
+            const restored =
+                await restoreExistingStream();
+
+
+            if(
+                restored &&
+                currentStreamId
+            ){
+
+                startStreamHeartbeat();
+
+            }
+
+        }
+
+    }catch(error){
+
+        console.log(
+            "Stream initialization error:",
+            error
+        );
+
+    }
+
+})();
+
+</script>
+
+</body>
+  </html>
