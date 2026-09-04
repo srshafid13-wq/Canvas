@@ -1,0 +1,3318 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width,initial-scale=1.0">
+
+<title>Canvas - Go Live</title>
+
+<link rel="stylesheet" href="style.css">
+
+<style>
+
+/* =========================================
+   CANVAS GO LIVE
+   PART 1 / 6
+========================================= */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html,
+body{
+    width:100%;
+    min-height:100%;
+}
+
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    background:#FAF9F6;
+    color:#4B3326;
+    padding-bottom:82px;
+}
+
+
+/* =========================================
+   TOP NAV
+========================================= */
+
+.top-nav{
+    width:100%;
+    height:62px;
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    padding:0 15px;
+
+    background:#FAF9F6;
+
+    border-bottom:1px solid rgba(75,51,38,.10);
+
+    position:sticky;
+    top:0;
+
+    z-index:50;
+}
+
+.logo{
+    font-size:23px;
+    font-weight:800;
+    color:#4B3326;
+    letter-spacing:-.5px;
+}
+
+.top-actions{
+    display:flex;
+    align-items:center;
+}
+
+
+/* =========================================
+   TOP PROFILE
+========================================= */
+
+.profile-icon{
+    width:40px;
+    height:40px;
+    min-width:40px;
+
+    border-radius:50%;
+    overflow:hidden;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    background:#F3F3F3;
+
+    border:1.5px solid #D4A62A;
+
+    text-decoration:none;
+}
+
+.profile-icon img{
+    width:100%;
+    height:100%;
+
+    object-fit:cover;
+    display:block;
+}
+
+
+/* =========================================
+   DEFAULT PROFILE
+========================================= */
+
+.default-avatar{
+    width:100%;
+    height:100%;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    overflow:hidden;
+}
+
+.default-avatar svg{
+    width:100%;
+    height:100%;
+
+    display:block;
+}
+
+
+/* =========================================
+   MAIN
+========================================= */
+
+.main{
+    width:100%;
+    max-width:760px;
+
+    margin:0 auto;
+
+    padding:18px 14px 25px;
+}
+
+.page-title{
+    font-size:26px;
+    font-weight:800;
+
+    margin-bottom:5px;
+}
+
+.page-subtitle{
+    font-size:14px;
+
+    color:#806B5D;
+
+    margin-bottom:17px;
+}
+
+
+/* =========================================
+   CAMERA CARD
+========================================= */
+
+.camera-card{
+    width:100%;
+
+    background:#F3E8D3;
+
+    border:2px solid #DCC8AA;
+
+    border-radius:18px;
+
+    overflow:hidden;
+}
+
+.camera-box{
+    width:100%;
+    height:350px;
+
+    background:#241B16;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    position:relative;
+
+    overflow:hidden;
+}
+
+#cameraPreview{
+    width:100%;
+    height:100%;
+
+    object-fit:cover;
+    object-position:center center;
+
+    display:none;
+
+    background:#111;
+}
+
+.camera-message{
+    text-align:center;
+
+    padding:20px;
+
+    color:#E8DCCB;
+}
+
+.camera-message-icon{
+    font-size:40px;
+
+    margin-bottom:9px;
+}
+
+.camera-message-title{
+    font-size:17px;
+    font-weight:700;
+
+    margin-bottom:5px;
+}
+
+.camera-message-text{
+    font-size:13px;
+
+    color:#BBAA98;
+
+    line-height:1.4;
+}
+
+
+/* =========================================
+   CAMERA CONTROLS
+========================================= */
+
+.camera-controls{
+    display:flex;
+
+    gap:8px;
+
+    padding:11px;
+
+    background:#F3E8D3;
+}
+
+.media-button{
+    flex:1;
+
+    min-height:44px;
+
+    border:1px solid rgba(75,51,38,.12);
+
+    border-radius:11px;
+
+    background:#FFF;
+
+    color:#4B3326;
+
+    font-size:12px;
+    font-weight:700;
+
+    cursor:pointer;
+
+    -webkit-tap-highlight-color:transparent;
+}
+
+.media-button:active{
+    transform:scale(.97);
+}
+
+.media-button.active{
+    background:#4B3326;
+    color:#FFF;
+}
+
+
+/* =========================================
+   STATUS
+========================================= */
+
+.permission-message{
+    margin-top:9px;
+
+    text-align:center;
+
+    font-size:12px;
+
+    color:#9A7658;
+}
+
+.webrtc-status{
+    margin-top:4px;
+
+    text-align:center;
+
+    font-size:12px;
+
+    color:#806B5D;
+}
+
+
+/* =========================================
+   STREAM CARD
+========================================= */
+
+.stream-card{
+    margin-top:18px;
+
+    padding:17px;
+
+    background:#FFF;
+
+    border:1px solid rgba(75,51,38,.10);
+
+    border-radius:18px;
+
+    box-shadow:
+        0 5px 20px rgba(75,51,38,.06);
+}
+
+.form-group{
+    margin-bottom:15px;
+}
+
+.form-label{
+    display:block;
+
+    margin-bottom:7px;
+
+    font-size:13px;
+    font-weight:700;
+}
+
+.form-input,
+.form-select,
+.form-textarea{
+    width:100%;
+
+    border:1px solid #DCCFC2;
+
+    border-radius:11px;
+
+    padding:12px 13px;
+
+    background:#FAF9F6;
+
+    color:#4B3326;
+
+    outline:none;
+
+    font-family:inherit;
+
+    font-size:14px;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus{
+    border-color:#9A7658;
+
+    box-shadow:
+        0 0 0 3px rgba(154,118,88,.10);
+}
+
+.form-textarea{
+    min-height:95px;
+
+    resize:vertical;
+}
+
+
+/* =========================================
+   THUMBNAIL
+========================================= */
+
+.thumbnail-upload{
+    width:100%;
+
+    min-height:125px;
+
+    border:2px dashed #D5C2A8;
+
+    border-radius:14px;
+
+    background:#FBF6EE;
+
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+
+    text-align:center;
+
+    cursor:pointer;
+
+    overflow:hidden;
+}
+
+.thumbnail-upload-title{
+    font-size:15px;
+
+    font-weight:800;
+}
+
+.thumbnail-upload-text{
+    margin-top:5px;
+
+    font-size:12px;
+
+    color:#8A7768;
+}
+
+#thumbnailInput{
+    display:none;
+}
+
+#thumbnailPreview{
+    width:100%;
+
+    display:none;
+
+    cursor:pointer;
+}
+
+#thumbnailImage{
+    width:100%;
+
+    max-height:220px;
+
+    object-fit:cover;
+
+    display:block;
+}
+
+
+/* =========================================
+   STREAM ACTIONS
+========================================= */
+
+.stream-actions{
+    margin-top:18px;
+}
+
+.stream-button{
+    width:100%;
+
+    min-height:48px;
+
+    border:0;
+
+    border-radius:13px;
+
+    font-size:15px;
+    font-weight:800;
+
+    cursor:pointer;
+
+    -webkit-tap-highlight-color:transparent;
+}
+
+.start-button{
+    background:#4B3326;
+
+    color:#FFF;
+}
+
+.end-button{
+    background:#8E3025;
+
+    color:#FFF;
+
+    margin-top:9px;
+}
+
+.stream-button:disabled{
+    opacity:.55;
+
+    cursor:not-allowed;
+}
+
+.hidden{
+    display:none!important;
+}
+
+.status-box{
+    min-height:20px;
+
+    margin-top:12px;
+
+    text-align:center;
+
+    font-size:13px;
+
+    color:#806B5D;
+}
+
+
+/* =========================================
+   BOTTOM NAV
+========================================= */
+
+.bottom-nav{
+    position:fixed;
+
+    left:0;
+    right:0;
+    bottom:0;
+
+    height:72px;
+
+    background:#FFF;
+
+    border-top:
+        1px solid rgba(75,51,38,.10);
+
+    display:flex;
+
+    align-items:center;
+    justify-content:space-around;
+
+    z-index:100;
+}
+
+.bottom-nav a{
+    flex:1;
+
+    height:100%;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+    justify-content:center;
+
+    gap:4px;
+
+    text-decoration:none;
+
+    color:#806B5D;
+
+    font-size:11px;
+
+    font-weight:700;
+
+    position:relative;
+}
+
+.bottom-nav a.active{
+    color:#4B3326;
+}
+
+.bottom-nav a.active::before,
+.bottom-nav a.active::after{
+    content:none!important;
+    display:none!important;
+}
+
+.bottom-nav-icon{
+    width:25px;
+    height:25px;
+
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+
+    font-size:22px;
+
+    line-height:1;
+}
+
+
+/* =========================================
+   EXPLORE ICON
+========================================= */
+
+.explore-icon{
+    width:22px;
+    height:22px;
+}
+
+.explore-icon circle,
+.explore-icon path{
+    stroke:currentColor;
+}
+
+
+/* =========================================
+   BOTTOM PROFILE
+========================================= */
+
+.bottom-profile{
+    width:25px;
+    height:25px;
+
+    border-radius:50%;
+
+    overflow:hidden;
+
+    background:#F3F3F3;
+
+    border:1.5px solid #D4A62A;
+
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+}
+
+.bottom-profile img{
+    width:100%;
+    height:100%;
+
+    object-fit:cover;
+
+    display:block;
+}
+
+.bottom-profile .default-avatar{
+    width:25px;
+    height:25px;
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media(max-width:480px){
+
+    .top-nav{
+        height:60px;
+
+        padding:0 13px;
+    }
+
+    .logo{
+        font-size:22px;
+    }
+
+    .main{
+        padding:15px 12px 22px;
+    }
+
+    .page-title{
+        font-size:23px;
+    }
+
+    .camera-box{
+        height:300px;
+    }
+
+    .camera-controls{
+        gap:6px;
+    }
+
+    .media-button{
+        font-size:11px;
+    }
+
+    .stream-card{
+        padding:14px;
+    }
+
+}
+
+
+/* =========================================
+   SMALL PHONES
+========================================= */
+
+@media(max-width:360px){
+
+    .camera-box{
+        height:280px;
+    }
+
+    .camera-message-icon{
+        font-size:34px;
+    }
+
+    .page-title{
+        font-size:22px;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================
+     TOP NAV
+========================================= -->
+
+<header class="top-nav">
+
+    <div class="logo">
+        Canvas
+    </div>
+
+    <div class="top-actions">
+
+        <a
+            href="profile.html"
+            class="profile-icon"
+            id="topProfileIcon"
+            aria-label="Profile">
+
+            <span class="default-avatar">
+
+                <svg
+                    viewBox="0 0 64 64"
+                    xmlns="http://www.w3.org/2000/svg">
+
+                    <circle
+                        cx="32"
+                        cy="32"
+                        r="32"
+                        fill="#eeeeee"/>
+
+                    <circle
+                        cx="32"
+                        cy="24"
+                        r="10"
+                        fill="#999999"/>
+
+                    <path
+                        d="M14 54c1.8-11 8.8-17 18-17s16.2 6 18 17"
+                        fill="#999999"/>
+
+                </svg>
+
+            </span>
+
+        </a>
+
+    </div>
+
+</header>
+
+
+<!-- =========================================
+     MAIN
+========================================= -->
+
+<main class="main">
+
+
+    <h1 class="page-title">
+        Go Live
+    </h1>
+
+
+    <p class="page-subtitle">
+        Start your live stream on Canvas.
+    </p>
+
+
+    <!-- =====================================
+         CAMERA
+    ====================================== -->
+
+    <section class="camera-card">
+
+        <div class="camera-box">
+
+            <video
+                id="cameraPreview"
+                autoplay
+                muted
+                playsinline>
+            </video>
+
+
+            <div
+                class="camera-message"
+                id="cameraMessage">
+
+                <div class="camera-message-icon">
+                    📷
+                </div>
+
+                <div class="camera-message-title">
+                    Camera is off
+                </div>
+
+                <div class="camera-message-text">
+                    Turn on your camera and microphone
+                    to prepare your stream.
+                </div>
+
+  </div>
+  <div class="camera-controls">
+
+            <button
+                type="button"
+                class="media-button"
+                id="cameraButton">
+
+                📷 Camera Off
+
+            </button>
+
+
+            <button
+                type="button"
+                class="media-button"
+                id="micButton">
+
+                🎙️ Microphone Off
+
+            </button>
+
+
+            <button
+                type="button"
+                class="media-button"
+                id="switchCameraButton"
+                aria-label="Switch Camera">
+
+                🔄
+
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <div
+        class="permission-message"
+        id="permissionMessage">
+    </div>
+
+
+    <div
+        class="webrtc-status"
+        id="webrtcStatus">
+    </div>
+
+
+    <!-- =====================================
+         STREAM DETAILS
+    ====================================== -->
+
+    <section class="stream-card">
+
+
+        <div class="form-group">
+
+            <label
+                class="form-label"
+                for="streamTitle">
+
+                Stream Title
+
+            </label>
+
+
+            <input
+                type="text"
+                id="streamTitle"
+                class="form-input"
+                maxlength="100"
+                placeholder="What are you streaming?"
+                autocomplete="off">
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label
+                class="form-label"
+                for="category">
+
+                Category
+
+            </label>
+
+
+            <select
+                id="category"
+                class="form-select">
+
+                <option value="">
+                    Select Category
+                </option>
+
+                <option value="Gaming">
+                    Gaming
+                </option>
+
+                <option value="Music">
+                    Music
+                </option>
+
+                <option value="Entertainment">
+                    Entertainment
+                </option>
+
+                <option value="Sports">
+                    Sports
+                </option>
+
+                <option value="Education">
+                    Education
+                </option>
+
+                <option value="Technology">
+                    Technology
+                </option>
+
+                <option value="Just Talking">
+                    Just Talking
+                </option>
+
+                <option value="Other">
+                    Other
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label
+                class="form-label"
+                for="description">
+
+                Description
+
+            </label>
+
+
+            <textarea
+                id="description"
+                class="form-textarea"
+                maxlength="500"
+                placeholder="Tell viewers what your stream is about..."></textarea>
+
+        </div>
+
+
+        <!-- =================================
+             THUMBNAIL
+        ================================== -->
+
+        <div class="form-group">
+
+            <label class="form-label">
+                Stream Thumbnail
+            </label>
+
+
+            <input
+                type="file"
+                id="thumbnailInput"
+                accept="image/*">
+
+
+            <div
+                class="thumbnail-upload"
+                id="choosePhotoButton">
+
+                <div>
+
+                    <div class="thumbnail-upload-title">
+                        Choose Photo
+                    </div>
+
+                    <div class="thumbnail-upload-text">
+                        Select a thumbnail for your stream
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div id="thumbnailPreview">
+
+                <img
+                    id="thumbnailImage"
+                    alt="Stream thumbnail">
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================
+             STREAM BUTTONS
+        ================================== -->
+
+        <div class="stream-actions">
+
+            <button
+                type="button"
+                id="startStreamingButton"
+                class="stream-button start-button">
+
+                🔴 Start Streaming
+
+            </button>
+
+
+            <button
+                type="button"
+                id="stopStreamingButton"
+                class="stream-button end-button hidden">
+
+                ⏹ End Streaming
+
+            </button>
+
+        </div>
+
+
+        <div
+            id="streamStatus"
+            class="status-box">
+        </div>
+
+
+    </section>
+
+</main>
+<!-- =========================================
+     CANVAS GO LIVE
+     PART 2 / 6
+========================================= -->
+
+
+<!-- SOCKET.IO -->
+
+<script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+
+
+<script>
+
+/* =========================================
+   API CONFIG
+========================================= */
+
+const API_BASE =
+    "https://canvas-kh9p.onrender.com";
+
+const SOCKET_URL =
+    API_BASE;
+
+
+/* =========================================
+   MEDIA STATE
+========================================= */
+
+let canvasStream = null;
+
+let cameraEnabled = false;
+
+let microphoneEnabled = false;
+
+let currentFacingMode = "user";
+
+
+/* =========================================
+   LIVE STREAM STATE
+========================================= */
+
+let isStreaming = false;
+
+let currentStreamId = null;
+
+let broadcasterRoom = null;
+
+let socket = null;
+
+let streamHeartbeat = null;
+
+let startStreamBusy = false;
+
+let endStreamBusy = false;
+
+
+/* =========================================
+   THUMBNAIL STATE
+========================================= */
+
+let selectedThumbnail = "";
+
+
+/* =========================================
+   DOM ELEMENTS
+========================================= */
+
+const cameraPreview =
+    document.getElementById(
+        "cameraPreview"
+    );
+
+const cameraMessage =
+    document.getElementById(
+        "cameraMessage"
+    );
+
+const permissionMessage =
+    document.getElementById(
+        "permissionMessage"
+    );
+
+const webrtcStatus =
+    document.getElementById(
+        "webrtcStatus"
+    );
+
+const streamStatus =
+    document.getElementById(
+        "streamStatus"
+    );
+
+const streamTitle =
+    document.getElementById(
+        "streamTitle"
+    );
+
+const category =
+    document.getElementById(
+        "category"
+    );
+
+const description =
+    document.getElementById(
+        "description"
+    );
+
+const thumbnailInput =
+    document.getElementById(
+        "thumbnailInput"
+    );
+
+const thumbnailPreview =
+    document.getElementById(
+        "thumbnailPreview"
+    );
+
+const thumbnailImage =
+    document.getElementById(
+        "thumbnailImage"
+    );
+
+const choosePhotoButton =
+    document.getElementById(
+        "choosePhotoButton"
+    );
+
+const cameraButton =
+    document.getElementById(
+        "cameraButton"
+    );
+
+const micButton =
+    document.getElementById(
+        "micButton"
+    );
+
+const switchCameraButton =
+    document.getElementById(
+        "switchCameraButton"
+    );
+
+const startStreamingButton =
+    document.getElementById(
+        "startStreamingButton"
+    );
+
+const stopStreamingButton =
+    document.getElementById(
+        "stopStreamingButton"
+    );
+
+
+/* =========================================
+   AUTH
+========================================= */
+
+function getAuthToken(){
+
+    return (
+        localStorage.getItem(
+            "canvasAuthToken"
+        ) ||
+
+        localStorage.getItem(
+            "canvasToken"
+        ) ||
+
+        localStorage.getItem(
+            "authToken"
+        ) ||
+
+        localStorage.getItem(
+            "token"
+        ) ||
+
+        ""
+    );
+
+}
+
+
+function authHeaders(){
+
+    const token =
+        getAuthToken();
+
+    const headers = {
+        "Accept":
+            "application/json"
+    };
+
+    if(token){
+
+        headers.Authorization =
+            "Bearer " + token;
+
+    }
+
+    return headers;
+
+}
+
+
+function jsonAuthHeaders(){
+
+    const token =
+        getAuthToken();
+
+    const headers = {
+        "Content-Type":
+            "application/json",
+
+        "Accept":
+            "application/json"
+    };
+
+    if(token){
+
+        headers.Authorization =
+            "Bearer " + token;
+
+    }
+
+    return headers;
+
+}
+
+
+/* =========================================
+   STATUS HELPERS
+========================================= */
+
+function setStatus(
+    message,
+    error = false
+){
+
+    if(!streamStatus){
+        return;
+    }
+
+    streamStatus.textContent =
+        message || "";
+
+    streamStatus.style.color =
+        error
+            ? "#9A3026"
+            : "#806B5D";
+
+}
+
+
+function setPermissionMessage(
+    message
+){
+
+    if(permissionMessage){
+
+        permissionMessage.textContent =
+            message || "";
+
+    }
+
+}
+
+
+function setWebRTCStatus(
+    message
+){
+
+    if(webrtcStatus){
+
+        webrtcStatus.textContent =
+            message || "";
+
+    }
+
+}
+
+
+/* =========================================
+   DEFAULT AVATAR
+========================================= */
+
+function createDefaultAvatar(){
+
+    const wrapper =
+        document.createElement(
+            "span"
+        );
+
+    wrapper.className =
+        "default-avatar";
+
+    wrapper.innerHTML = `
+        <svg
+            viewBox="0 0 64 64"
+            xmlns="http://www.w3.org/2000/svg">
+
+            <circle
+                cx="32"
+                cy="32"
+                r="32"
+                fill="#eeeeee"/>
+
+            <circle
+                cx="32"
+                cy="24"
+                r="10"
+                fill="#999999"/>
+
+            <path
+                d="M14 54c1.8-11 8.8-17 18-17s16.2 6 18 17"
+                fill="#999999"/>
+
+        </svg>
+    `;
+
+    return wrapper;
+
+}
+
+
+/* =========================================
+   PROFILE IMAGE
+========================================= */
+
+function getStoredProfileImage(){
+
+    let image =
+        localStorage.getItem(
+            "canvasProfilePicture"
+        );
+
+
+    if(!image){
+
+        image =
+            localStorage.getItem(
+                "profilePicture"
+            );
+
+    }
+
+
+    if(!image){
+
+        try{
+
+            const profile =
+                JSON.parse(
+                    localStorage.getItem(
+                        "canvasProfile"
+                    ) || "null"
+                );
+
+
+            if(profile){
+
+                image =
+                    profile.profile_picture ||
+                    profile.profilePicture ||
+                    profile.profileImage ||
+                    profile.photo ||
+                    profile.avatar ||
+                    profile.image ||
+                    "";
+
+            }
+
+        }catch(error){
+
+            console.warn(
+                "Profile cache read failed:",
+                error
+            );
+
+        }
+
+    }
+
+
+    return image || "";
+
+}
+
+
+/* =========================================
+   SAVE PROFILE IMAGE
+========================================= */
+
+function saveProfileImage(
+    image
+){
+
+    if(!image){
+        return;
+    }
+
+    try{
+
+        localStorage.setItem(
+            "canvasProfilePicture",
+            image
+        );
+
+        localStorage.setItem(
+            "profilePicture",
+            image
+        );
+
+    }catch(error){
+
+        console.warn(
+            "Could not save profile image:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   APPLY PROFILE IMAGE
+========================================= */
+
+function applyProfileImage(
+    element,
+    image
+){
+
+    if(!element){
+        return;
+    }
+
+    element.innerHTML = "";
+
+
+    if(image){
+
+        const img =
+            document.createElement(
+                "img"
+            );
+
+        img.src =
+            image;
+
+        img.alt =
+            "Profile";
+
+        img.onerror =
+            function(){
+
+                element.innerHTML =
+                    "";
+
+                element.appendChild(
+                    createDefaultAvatar()
+                );
+
+            };
+
+        element.appendChild(
+            img
+        );
+
+        return;
+
+    }
+
+
+    element.appendChild(
+        createDefaultAvatar()
+    );
+
+}
+
+
+/* =========================================
+   UPDATE PROFILE ICONS
+========================================= */
+
+function updateGoLiveProfile(){
+
+    const image =
+        getStoredProfileImage();
+
+
+    const top =
+        document.getElementById(
+            "topProfileIcon"
+        );
+
+    const bottom =
+        document.getElementById(
+            "bottomProfileIcon"
+        );
+
+
+    applyProfileImage(
+        top,
+        image
+    );
+
+    applyProfileImage(
+        bottom,
+        image
+    );
+
+}
+
+
+/* =========================================
+   LOAD PROFILE FROM BACKEND
+========================================= */
+
+async function loadGoLiveProfile(){
+
+    updateGoLiveProfile();
+
+
+    const token =
+        getAuthToken();
+
+
+    if(!token){
+        return;
+    }
+
+
+    /* =====================================
+       /api/me
+    ====================================== */
+
+    try{
+
+        const response =
+            await fetch(
+                API_BASE + "/api/me",
+                {
+                    method:"GET",
+
+                    headers:
+                        authHeaders(),
+
+                    cache:"no-store"
+                }
+            );
+
+
+        if(response.ok){
+
+            const data =
+                await response.json();
+
+            const user =
+                data.user ||
+                data.data ||
+                data;
+
+
+            if(user){
+
+                try{
+
+                    localStorage.setItem(
+                        "canvasCurrentUser",
+                        JSON.stringify(user)
+                    );
+                  }catch(error){
+
+                    console.warn(
+                        "User cache failed:",
+                        error
+                    );
+
+                }
+
+
+                const image =
+                    user.profile_picture ||
+                    user.profilePicture ||
+                    user.profileImage ||
+                    user.photo ||
+                    user.avatar ||
+                    user.image ||
+                    "";
+
+
+                if(image){
+
+                    saveProfileImage(
+                        image
+                    );
+
+                }
+
+            }
+
+        }
+
+    }catch(error){
+
+        console.warn(
+            "Could not load /api/me:",
+            error.message
+        );
+
+    }
+
+
+    /* =====================================
+       /api/profile
+    ====================================== */
+
+    try{
+
+        const response =
+            await fetch(
+                API_BASE + "/api/profile",
+                {
+                    method:"GET",
+
+                    headers:
+                        authHeaders(),
+
+                    cache:"no-store"
+                }
+            );
+
+
+        if(response.ok){
+
+            const data =
+                await response.json();
+
+            const profile =
+                data.profile ||
+                data.data ||
+                data.user ||
+                data;
+
+
+            if(profile){
+
+                try{
+
+                    localStorage.setItem(
+                        "canvasProfile",
+                        JSON.stringify(profile)
+                    );
+
+                }catch(error){
+
+                    console.warn(
+                        "Profile cache failed:",
+                        error
+                    );
+
+                }
+
+
+                const image =
+                    profile.profile_picture ||
+                    profile.profilePicture ||
+                    profile.profileImage ||
+                    profile.photo ||
+                    profile.avatar ||
+                    profile.image ||
+                    "";
+
+
+                if(image){
+
+                    saveProfileImage(
+                        image
+                    );
+
+                }
+
+            }
+
+        }
+
+    }catch(error){
+
+        console.warn(
+            "Could not load /api/profile:",
+            error.message
+        );
+
+    }
+
+
+    updateGoLiveProfile();
+
+}
+
+
+/* =========================================
+   THUMBNAIL PICKER
+========================================= */
+
+if(
+    choosePhotoButton &&
+    thumbnailInput
+){
+
+    choosePhotoButton.addEventListener(
+        "click",
+        function(){
+
+            thumbnailInput.click();
+
+        }
+    );
+
+}
+
+
+if(thumbnailInput){
+
+    thumbnailInput.addEventListener(
+        "change",
+        function(){
+
+            const file =
+                thumbnailInput.files &&
+                thumbnailInput.files[0];
+
+
+            if(!file){
+                return;
+            }
+
+
+            if(
+                !file.type ||
+                !file.type.startsWith("image/")
+            ){
+
+                setStatus(
+                    "Please select an image file.",
+                    true
+                );
+
+                thumbnailInput.value =
+                    "";
+
+                return;
+
+            }
+
+
+            const reader =
+                new FileReader();
+
+
+            reader.onload =
+                function(event){
+
+                    selectedThumbnail =
+                        event.target.result || "";
+
+
+                    if(thumbnailImage){
+
+                        thumbnailImage.src =
+                            selectedThumbnail;
+
+                    }
+
+
+                    if(thumbnailPreview){
+
+                        thumbnailPreview.style.display =
+                            "block";
+
+                    }
+
+
+                    if(choosePhotoButton){
+
+                        choosePhotoButton.style.display =
+                            "none";
+
+                    }
+
+
+                    setStatus(
+                        "Thumbnail selected."
+                    );
+
+                };
+
+
+            reader.onerror =
+                function(){
+
+                    setStatus(
+                        "Could not load thumbnail.",
+                        true
+                    );
+
+                };
+
+
+            reader.readAsDataURL(
+                file
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================
+   RESELECT THUMBNAIL
+========================================= */
+
+if(thumbnailPreview){
+
+    thumbnailPreview.addEventListener(
+        "click",
+        function(){
+
+            if(thumbnailInput){
+
+                thumbnailInput.click();
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =========================================
+   INITIAL PROFILE
+========================================= */
+
+updateGoLiveProfile();
+
+loadGoLiveProfile();
+
+</script>
+<script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+
+<script>
+
+/* =========================================
+   CANVAS GO LIVE
+   PART 3 / 6
+========================================= */
+
+const API_BASE =
+    "https://canvas-kh9p.onrender.com";
+
+const SOCKET_URL =
+    API_BASE;
+
+
+/* =========================================
+   STREAM STATE
+========================================= */
+
+let canvasStream = null;
+
+let cameraEnabled = false;
+let microphoneEnabled = false;
+
+let currentFacingMode = "user";
+
+let isStreaming = false;
+let currentStreamId = null;
+
+let selectedThumbnail = "";
+
+let socket = null;
+let broadcasterRoom = null;
+
+let streamHeartbeat = null;
+
+let startStreamBusy = false;
+let endStreamBusy = false;
+
+
+/* =========================================
+   DOM ELEMENTS
+========================================= */
+
+const cameraPreview =
+    document.getElementById("cameraPreview");
+
+const cameraMessage =
+    document.getElementById("cameraMessage");
+
+const permissionMessage =
+    document.getElementById("permissionMessage");
+
+const webrtcStatus =
+    document.getElementById("webrtcStatus");
+
+const streamStatus =
+    document.getElementById("streamStatus");
+
+const streamTitle =
+    document.getElementById("streamTitle");
+
+const category =
+    document.getElementById("category");
+
+const description =
+    document.getElementById("description");
+
+const thumbnailInput =
+    document.getElementById("thumbnailInput");
+
+const thumbnailPreview =
+    document.getElementById("thumbnailPreview");
+
+const thumbnailImage =
+    document.getElementById("thumbnailImage");
+
+const choosePhotoButton =
+    document.getElementById("choosePhotoButton");
+
+const cameraButton =
+    document.getElementById("cameraButton");
+
+const micButton =
+    document.getElementById("micButton");
+
+const switchCameraButton =
+    document.getElementById("switchCameraButton");
+
+const startStreamingButton =
+    document.getElementById("startStreamingButton");
+
+const stopStreamingButton =
+    document.getElementById("stopStreamingButton");
+
+
+/* =========================================
+   AUTH
+========================================= */
+
+function getAuthToken(){
+
+    return (
+        localStorage.getItem("canvasAuthToken") ||
+        localStorage.getItem("canvasToken") ||
+        localStorage.getItem("authToken") ||
+        localStorage.getItem("token") ||
+        ""
+    );
+
+}
+
+
+function authHeaders(){
+
+    const token =
+        getAuthToken();
+
+    const headers = {
+        "Accept":
+            "application/json"
+    };
+
+    if(token){
+
+        headers.Authorization =
+            "Bearer " + token;
+
+    }
+
+    return headers;
+
+}
+
+
+function jsonAuthHeaders(){
+
+    const token =
+        getAuthToken();
+
+    const headers = {
+        "Content-Type":
+            "application/json",
+
+        "Accept":
+            "application/json"
+    };
+
+    if(token){
+
+        headers.Authorization =
+            "Bearer " + token;
+
+    }
+
+    return headers;
+
+}
+
+
+/* =========================================
+   STATUS HELPERS
+========================================= */
+
+function setStatus(
+    message,
+    error = false
+){
+
+    if(!streamStatus){
+        return;
+    }
+
+    streamStatus.textContent =
+        message || "";
+
+    streamStatus.style.color =
+        error
+            ? "#9A3026"
+            : "#806B5D";
+
+}
+
+
+function setPermissionMessage(message){
+
+    if(permissionMessage){
+
+        permissionMessage.textContent =
+            message || "";
+
+    }
+
+}
+
+
+function setWebRTCStatus(message){
+
+    if(webrtcStatus){
+
+        webrtcStatus.textContent =
+            message || "";
+
+    }
+
+}
+
+
+/* =========================================
+   INITIAL UI STATE
+========================================= */
+
+if(startStreamingButton){
+
+    startStreamingButton.style.display =
+        "block";
+
+    startStreamingButton.disabled =
+        false;
+
+}
+
+
+if(stopStreamingButton){
+
+    stopStreamingButton.style.display =
+        "none";
+
+    stopStreamingButton.disabled =
+        false;
+
+}
+
+
+if(cameraPreview){
+
+    cameraPreview.style.display =
+        "none";
+
+}
+
+
+if(cameraMessage){
+
+    cameraMessage.style.display =
+        "block";
+
+}
+
+</script>
+<script>
+
+/* =========================================
+   CAMERA + MICROPHONE
+========================================= */
+
+async function startCameraAndMicrophone(
+    wantCamera = true,
+    wantMicrophone = true
+){
+
+    try{
+
+        if(canvasStream){
+
+            canvasStream.getTracks().forEach(
+                track => track.stop()
+            );
+
+        }
+
+        const constraints = {
+
+            video: wantCamera ? {
+                facingMode: {
+                    ideal: currentFacingMode
+                },
+
+                width: {
+                    ideal: 1280
+                },
+
+                height: {
+                    ideal: 720
+                },
+
+                frameRate: {
+                    ideal: 30,
+                    max: 30
+                }
+
+            } : false,
+
+            audio: wantMicrophone ? {
+
+                echoCancellation: true,
+                noiseSuppression: true,
+                autoGainControl: true
+
+            } : false
+
+        };
+
+
+        canvasStream =
+            await navigator.mediaDevices
+                .getUserMedia(constraints);
+
+
+        cameraEnabled =
+            wantCamera;
+
+        microphoneEnabled =
+            wantMicrophone;
+
+
+        if(cameraPreview){
+
+            cameraPreview.srcObject =
+                canvasStream;
+
+            cameraPreview.muted =
+                true;
+
+            cameraPreview.playsInline =
+                true;
+
+            cameraPreview.style.display =
+                "block";
+
+            cameraPreview.play()
+                .catch(() => {});
+
+        }
+
+
+        if(cameraMessage){
+
+            cameraMessage.style.display =
+                "none";
+
+        }
+
+
+        updateMediaButtons();
+
+        setPermissionMessage("");
+
+        setWebRTCStatus(
+            "Camera and microphone ready"
+        );
+
+        return true;
+
+    }catch(error){
+
+        console.error(
+            "Camera/microphone error:",
+            error
+        );
+
+        cameraEnabled = false;
+        microphoneEnabled = false;
+
+        setPermissionMessage(
+            "Camera or microphone permission is required."
+        );
+
+        setWebRTCStatus(
+            "Camera unavailable"
+        );
+
+        updateMediaButtons();
+
+        return false;
+
+    }
+
+}
+
+
+/* =========================================
+   MEDIA BUTTONS
+========================================= */
+
+function updateMediaButtons(){
+
+    if(cameraButton){
+
+        cameraButton.textContent =
+            cameraEnabled
+                ? "📷 Camera On"
+                : "📷 Camera Off";
+
+    }
+
+
+    if(micButton){
+
+        micButton.textContent =
+            microphoneEnabled
+                ? "🎙️ Microphone On"
+                : "🎙️ Microphone Off";
+
+    }
+
+}
+
+
+/* =========================================
+   CAMERA TOGGLE
+========================================= */
+
+async function toggleCamera(){
+
+    if(cameraEnabled){
+
+        if(canvasStream){
+
+            canvasStream
+                .getVideoTracks()
+                .forEach(track => {
+                    track.stop();
+                });
+
+        }
+
+        cameraEnabled = false;
+
+        updateMediaButtons();
+
+        return;
+
+    }
+
+    await startCameraAndMicrophone(
+        true,
+        microphoneEnabled
+    );
+
+}
+
+
+/* =========================================
+   MICROPHONE TOGGLE
+========================================= */
+
+async function toggleMicrophone(){
+
+    if(microphoneEnabled){
+
+        if(canvasStream){
+
+            canvasStream
+                .getAudioTracks()
+                .forEach(track => {
+                    track.stop();
+                });
+
+        }
+
+        microphoneEnabled = false;
+
+        updateMediaButtons();
+
+        return;
+
+    }
+
+    await startCameraAndMicrophone(
+        cameraEnabled,
+        true
+    );
+
+}
+
+
+/* =========================================
+   SWITCH FRONT / BACK CAMERA
+========================================= */
+
+async function switchCamera(){
+
+    currentFacingMode =
+        currentFacingMode === "user"
+            ? "environment"
+            : "user";
+
+
+    await startCameraAndMicrophone(
+        true,
+        microphoneEnabled
+    );
+
+}
+
+
+/* =========================================
+   CAMERA BUTTON EVENTS
+========================================= */
+
+if(cameraButton){
+
+    cameraButton.addEventListener(
+        "click",
+        toggleCamera
+    );
+
+}
+
+
+if(micButton){
+
+    micButton.addEventListener(
+        "click",
+        toggleMicrophone
+    );
+
+}
+
+
+if(switchCameraButton){
+
+    switchCameraButton.addEventListener(
+        "click",
+        switchCamera
+    );
+
+  }
+  /* =========================================
+   THUMBNAIL
+========================================= */
+
+if(choosePhotoButton){
+
+    choosePhotoButton.addEventListener(
+        "click",
+        () => {
+
+            if(thumbnailInput){
+
+                thumbnailInput.click();
+
+            }
+
+        }
+    );
+
+}
+
+
+if(thumbnailInput){
+
+    thumbnailInput.addEventListener(
+        "change",
+        event => {
+
+            const file =
+                event.target.files &&
+                event.target.files[0];
+
+            if(!file){
+                return;
+            }
+
+
+            const reader =
+                new FileReader();
+
+
+            reader.onload = function(){
+
+                selectedThumbnail =
+                    reader.result;
+
+
+                if(thumbnailImage){
+
+                    thumbnailImage.src =
+                        selectedThumbnail;
+
+                }
+
+
+                if(thumbnailPreview){
+
+                    thumbnailPreview.style.display =
+                        "block";
+
+                }
+
+            };
+
+
+            reader.readAsDataURL(file);
+
+        }
+    );
+
+}
+
+
+/* =========================================
+   INITIAL MEDIA BUTTON STATE
+========================================= */
+
+updateMediaButtons();
+
+</script>
+<script>
+
+/* =========================================
+   STREAM DATA
+========================================= */
+
+function getLocalStreamData(){
+
+    try{
+
+        const saved =
+            localStorage.getItem(
+                "canvasActiveStream"
+            );
+
+        return saved
+            ? JSON.parse(saved)
+            : null;
+
+    }catch(error){
+
+        return null;
+
+    }
+
+}
+
+
+function saveLocalStreamData(stream){
+
+    try{
+
+        localStorage.setItem(
+            "canvasActiveStream",
+            JSON.stringify(stream)
+        );
+
+    }catch(error){
+
+        console.error(
+            "Could not save stream:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   FIND EXISTING LIVE STREAM
+========================================= */
+
+async function restoreExistingStream(){
+
+    const token =
+        getAuthToken();
+
+    if(!token){
+
+        setStatus(
+            "Please log in first.",
+            true
+        );
+
+        return false;
+
+    }
+
+
+    try{
+
+        const response =
+            await fetch(
+                API_BASE + "/api/streams/my",
+                {
+                    method: "GET",
+                    headers: authHeaders()
+                }
+            );
+
+
+        if(response.status === 401){
+
+            setStatus(
+                "Your login session has expired.",
+                true
+            );
+
+            return false;
+
+        }
+
+
+        if(!response.ok){
+
+            return false;
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        const streams =
+            Array.isArray(data)
+                ? data
+                : (
+                    Array.isArray(data.streams)
+                        ? data.streams
+                        : []
+                );
+
+
+        const liveStream =
+            streams.find(
+                stream =>
+                    stream.status === "live"
+            );
+
+
+        if(!liveStream){
+
+            return false;
+
+        }
+
+
+        currentStreamId =
+            liveStream.id;
+
+        isStreaming = true;
+
+
+        if(streamTitle &&
+           liveStream.title){
+
+            streamTitle.value =
+                liveStream.title;
+
+        }
+
+
+        const localData =
+            getLocalStreamData();
+
+
+        if(localData &&
+           localData.id === liveStream.id){
+
+            if(category &&
+               localData.category){
+
+                category.value =
+                    localData.category;
+
+            }
+
+            if(description &&
+               localData.description){
+
+                description.value =
+                    localData.description;
+
+            }
+
+            if(
+                localData.thumbnail
+            ){
+
+                selectedThumbnail =
+                    localData.thumbnail;
+
+                if(thumbnailImage){
+
+                    thumbnailImage.src =
+                        selectedThumbnail;
+
+                }
+
+                if(thumbnailPreview){
+
+                    thumbnailPreview.style.display =
+                        "block";
+
+                }
+
+            }
+
+        }
+
+
+        showStreamingUI();
+
+        setStatus(
+            "Your stream is already live."
+        );
+
+
+        if(typeof connectBroadcasterSocket ===
+           "function"){
+
+            connectBroadcasterSocket();
+
+        }
+
+
+        return true;
+
+    }catch(error){
+
+        console.error(
+            "Restore stream error:",
+            error
+        );
+
+        return false;
+
+    }
+
+}
+
+
+/* =========================================
+   STREAMING UI
+========================================= */
+
+function showStreamingUI(){
+
+    if(startStreamingButton){
+
+        startStreamingButton.style.display =
+            "none";
+
+    }
+
+
+    if(stopStreamingButton){
+
+        stopStreamingButton.style.display =
+            "block";
+
+    }
+
+}
+
+
+function showStartUI(){
+
+    if(startStreamingButton){
+
+        startStreamingButton.style.display =
+            "block";
+
+    }
+
+
+    if(stopStreamingButton){
+
+        stopStreamingButton.style.display =
+            "none";
+
+    }
+
+}
+
+
+/* =========================================
+   START STREAM
+========================================= */
+
+async function startStreaming(){
+
+    if(startStreamBusy){
+        return;
+    }
+
+    startStreamBusy = true;
+
+
+    try{
+
+        const token =
+            getAuthToken();
+
+        if(!token){
+
+            setStatus(
+                "Please log in first.",
+                true
+            );
+
+            return;
+
+        }
+
+
+        /* Check backend first */
+
+        const restored =
+            await restoreExistingStream();
+
+
+        if(restored){
+
+            return;
+
+        }
+
+
+        if(!canvasStream ||
+           !cameraEnabled){
+
+            const ready =
+                await startCameraAndMicrophone(
+                    true,
+                    microphoneEnabled
+                );
+
+            if(!ready){
+
+                return;
+
+            }
+
+        }
+
+
+        const title =
+            streamTitle
+                ? streamTitle.value.trim()
+                : "";
+
+
+        if(!title){
+
+            setStatus(
+                "Please enter a stream title.",
+                true
+            );
+
+            return;
+
+        }
+
+
+        const response =
+            await fetch(
+                API_BASE + "/api/streams",
+                {
+                    method: "POST",
+
+                    headers:
+                        jsonAuthHeaders(),
+
+                    body: JSON.stringify({
+                        title: title
+                    })
+                }
+            );
+
+
+        const data =
+            await response.json()
+                .catch(() => ({}));
+
+
+        if(!response.ok){
+
+            setStatus(
+                data.message ||
+                "Could not start stream.",
+                true
+            );
+
+            return;
+
+        }
+
+
+        const stream =
+            data.stream || data;
+
+
+        currentStreamId =
+            stream.id;
+
+        isStreaming = true;
+
+
+        saveLocalStreamData({
+
+            id: currentStreamId,
+
+            title: title,
+
+            category:
+                category
+                    ? category.value
+                    : "",
+
+            description:
+                description
+                    ? description.value
+                    : "",
+
+            thumbnail:
+                selectedThumbnail || ""
+
+        });
+
+
+        showStreamingUI();
+
+
+        setStatus(
+            "You are live."
+        );
+
+
+        if(typeof connectBroadcasterSocket ===
+           "function"){
+
+            connectBroadcasterSocket();
+
+        }
+
+
+    }catch(error){
+
+        console.error(
+            "Start stream error:",
+            error
+        );
+
+        setStatus(
+            "Could not start streaming.",
+            true
+        );
+
+    }finally{
+
+        startStreamBusy = false;
+
+    }
+
+}
+
+
+/* =========================================
+   START BUTTON
+========================================= */
+
+if(startStreamingButton){
+
+    startStreamingButton.addEventListener(
+        "click",
+        startStreaming
+    );
+
+}
+
+
+/* =========================================
+   CHECK STREAM WHEN PAGE OPENS
+========================================= */
+
+async function checkExistingStream(){
+
+    if(!getAuthToken()){
+        return;
+    }
+
+    await restoreExistingStream();
+
+}
+
+
+checkExistingStream();
+
+</script>
+<script>
+
+/* =========================================
+   SOCKET.IO — BROADCASTER
+========================================= */
+
+function connectBroadcasterSocket(){
+
+    if(!currentStreamId){
+        return;
+    }
+
+
+    if(socket){
+
+        try{
+            socket.disconnect();
+        }catch(error){}
+
+    }
+
+
+    socket =
+        io(SOCKET_URL, {
+            transports: ["websocket", "polling"]
+        });
+
+
+    broadcasterRoom =
+        "stream-" + currentStreamId;
+
+
+    socket.on("connect", () => {
+
+        socket.emit(
+            "join-stream",
+            {
+                streamId:
+                    currentStreamId,
+
+                role:
+                    "broadcaster"
+            }
+        );
+
+    });
+
+
+    socket.on("disconnect", () => {
+
+        console.log(
+            "Broadcaster socket disconnected"
+        );
+
+    });
+
+}
+
+
+/* =========================================
+   STREAM HEARTBEAT
+========================================= */
+
+function startStreamHeartbeat(){
+
+    stopStreamHeartbeat();
+
+
+    streamHeartbeat =
+        setInterval(() => {
+
+            if(
+                isStreaming &&
+                currentStreamId
+            ){
+
+                console.log(
+                    "Stream still active:",
+                    currentStreamId
+                );
+
+            }
+
+        }, 15000);
+
+}
+
+
+function stopStreamHeartbeat(){
+
+    if(streamHeartbeat){
+
+        clearInterval(
+            streamHeartbeat
+        );
+
+        streamHeartbeat = null;
+
+    }
+
+}
+
+
+/* =========================================
+   END STREAM — EXPLICIT ONLY
+========================================= */
+
+async function endStreaming(){
+
+    if(endStreamBusy){
+        return;
+    }
+
+    if(!currentStreamId){
+
+        showStartUI();
+
+        isStreaming = false;
+
+        return;
+
+    }
+
+
+    endStreamBusy = true;
+
+
+    try{
+
+        const response =
+            await fetch(
+                API_BASE +
+                "/api/streams/" +
+                encodeURIComponent(
+                    currentStreamId
+                ) +
+                "/end",
+                {
+                    method: "PUT",
+                    headers: authHeaders()
+                }
+            );
+
+
+        if(!response.ok){
+
+            const data =
+                await response.json()
+                    .catch(() => ({}));
+
+            setStatus(
+                data.message ||
+                "Could not end stream.",
+                true
+            );
+
+            return;
+
+        }
+
+
+        isStreaming = false;
+
+        currentStreamId = null;
+
+
+        stopStreamHeartbeat();
+
+
+        if(socket){
+
+            try{
+                socket.disconnect();
+            }catch(error){}
+
+            socket = null;
+
+        }
+
+
+        localStorage.removeItem(
+            "canvasActiveStream"
+        );
+
+
+        showStartUI();
+
+
+        setStatus(
+            "Stream ended."
+        );
+
+
+    }catch(error){
+
+        console.error(
+            "End stream error:",
+            error
+        );
+
+        setStatus(
+            "Could not end stream.",
+            true
+        );
+
+    }finally{
+
+        endStreamBusy = false;
+
+    }
+
+}
+
+
+/* =========================================
+   END BUTTON
+========================================= */
+
+if(stopStreamingButton){
+
+    stopStreamingButton.addEventListener(
+        "click",
+        endStreaming
+    );
+
+}
+
+
+/* =========================================
+   PAGE CLEANUP
+   IMPORTANT:
+   DO NOT END THE STREAM HERE
+========================================= */
+
+function cleanupGoLive(){
+
+    stopStreamHeartbeat();
+
+
+    if(socket){
+
+        try{
+            socket.disconnect();
+        }catch(error){}
+
+        socket = null;
+
+    }
+
+
+    /*
+       DO NOT call endStreaming() here.
+
+       Going to Home, Explore, Profile,
+       refreshing, or leaving this page
+       must NOT mark the backend stream
+       as ended.
+    */
+
+}
+
+
+/* =========================================
+   PAGE NAVIGATION
+========================================= */
+
+window.addEventListener(
+    "pagehide",
+    cleanupGoLive
+);
+
+
+window.addEventListener(
+    "beforeunload",
+    cleanupGoLive
+);
+
+
+/* =========================================
+   RETURNING TO GO LIVE
+========================================= */
+
+window.addEventListener(
+    "pageshow",
+    async () => {
+
+        if(!getAuthToken()){
+            return;
+        }
+
+
+        if(!isStreaming){
+
+            await restoreExistingStream();
+
+        }
+
+    }
+);
+
+
+/* =========================================
+   START HEARTBEAT AFTER RESTORE
+========================================= */
+
+const originalShowStreamingUI =
+    showStreamingUI;
+
+
+showStreamingUI = function(){
+
+    originalShowStreamingUI();
+
+    startStreamHeartbeat();
+
+};
+
+
+/* =========================================
+   INITIAL BUTTON STATE
+========================================= */
+
+if(isStreaming){
+
+    showStreamingUI();
+
+}else{
+
+    showStartUI();
+
+}
+
+</script>
+</body>
+</html>
