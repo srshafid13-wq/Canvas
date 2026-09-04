@@ -1,0 +1,3367 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Canvas Profile</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    background:#fff;
+    color:#4b3326;
+    font-family:Arial,Helvetica,sans-serif;
+    min-height:100vh;
+    padding-bottom:90px;
+}
+
+/* =========================================
+   TOP NAV
+========================================= */
+
+.navbar{
+    height:72px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 22px;
+    background:#fff;
+    border-bottom:1px solid #eee;
+}
+
+.logo{
+    font-size:34px;
+    font-weight:800;
+    color:#6F4E37;
+}
+
+.back{
+    width:40px;
+    height:40px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#6F4E37;
+    font-size:34px;
+    text-decoration:none;
+}
+
+.header-space{
+    width:40px;
+}
+
+/* =========================================
+   PROFILE CONTAINER
+========================================= */
+
+.profile-container{
+    width:100%;
+    max-width:650px;
+    margin:auto;
+    padding:30px 22px 110px;
+}
+
+.profile-title{
+    font-size:30px;
+    font-weight:800;
+    margin-bottom:8px;
+}
+
+.profile-subtitle{
+    color:#777;
+    font-size:16px;
+    line-height:1.5;
+    margin-bottom:30px;
+}
+
+/* =========================================
+   AVATAR
+========================================= */
+
+.avatar-section{
+    text-align:center;
+    margin-bottom:30px;
+}
+
+.avatar{
+    width:110px;
+    height:110px;
+    margin:auto;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:50%;
+    overflow:hidden;
+
+    background:#f1f1f1;
+    border:3px solid #D4A017;
+
+    color:#6F4E37;
+    font-size:48px;
+}
+
+.avatar img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.photo-actions{
+    display:flex;
+    justify-content:center;
+    gap:18px;
+    margin-top:12px;
+}
+
+.photo-button{
+    color:#6F4E37;
+    font-size:15px;
+    font-weight:700;
+    cursor:pointer;
+}
+
+.delete-photo-button{
+    border:0;
+    background:none;
+    color:#b44a3c;
+    font-size:15px;
+    font-weight:700;
+    cursor:pointer;
+    display:none;
+}
+
+#photoInput{
+    display:none;
+}
+
+/* =========================================
+   FORM
+========================================= */
+
+.form-group{
+    margin-bottom:20px;
+}
+
+.form-group label{
+    display:block;
+    margin-bottom:8px;
+    color:#4b3326;
+    font-size:15px;
+    font-weight:700;
+}
+
+.form-group input,
+.form-group textarea{
+    width:100%;
+    padding:14px;
+
+    border:1px solid #ddd;
+    border-radius:12px;
+
+    background:#fafafa;
+    color:#333;
+
+    font-size:16px;
+    outline:none;
+}
+
+.form-group textarea{
+    height:100px;
+    resize:none;
+}
+
+.form-group input:focus,
+.form-group textarea:focus{
+    border-color:#D4A017;
+    background:#fff;
+}
+
+/* =========================================
+   SAVE BUTTON
+========================================= */
+
+.save-button{
+    width:100%;
+    padding:15px;
+
+    border:0;
+    border-radius:12px;
+
+    background:#6F4E37;
+    color:#fff;
+
+    font-size:17px;
+    font-weight:700;
+
+    cursor:pointer;
+}
+
+.save-button:disabled{
+    opacity:.65;
+    cursor:not-allowed;
+}
+
+/* =========================================
+   PROFILE VIEW
+========================================= */
+
+#profileView{
+    display:none;
+    text-align:center;
+}
+
+.profile-name{
+    margin-top:18px;
+    color:#4b3326;
+    font-size:28px;
+    font-weight:800;
+}
+
+.profile-username{
+    margin-top:5px;
+    color:#777;
+    font-size:18px;
+}
+
+.profile-bio{
+    max-width:400px;
+    margin:18px auto;
+    color:#555;
+    font-size:17px;
+    line-height:1.5;
+}
+
+.stats{
+    display:flex;
+    justify-content:center;
+    gap:60px;
+
+    margin:25px 0;
+    padding-bottom:25px;
+
+    border-bottom:1px solid #eee;
+}
+
+.stat strong{
+    display:block;
+    color:#4b3326;
+    font-size:24px;
+}
+
+.stat span{
+    display:block;
+    margin-top:5px;
+    color:#777;
+    font-size:15px;
+}
+
+/* =========================================
+   ACCOUNT
+========================================= */
+
+.account-section{
+    margin-top:25px;
+    text-align:left;
+}
+
+.account-title{
+    margin-bottom:20px;
+    font-size:28px;
+}
+
+.account-item{
+    padding:16px 0;
+    border-bottom:1px solid #eee;
+}
+
+.account-label{
+    margin-bottom:6px;
+    color:#777;
+    font-size:14px;
+}
+
+.account-value{
+    color:#333;
+    font-size:17px;
+    word-break:break-word;
+}
+
+.edit-button,
+.password-button,
+.logout-button{
+    width:100%;
+    padding:14px;
+    margin-top:12px;
+
+    border-radius:10px;
+
+    font-size:15px;
+    font-weight:700;
+
+    cursor:pointer;
+}
+
+.edit-button{
+    border:1px solid #6F4E37;
+    background:#fff;
+    color:#6F4E37;
+}
+
+.password-button{
+    border:1px solid #D4A017;
+    background:#fff;
+    color:#6F4E37;
+}
+
+.logout-button{
+    border:1px solid #ddd;
+    background:#fff;
+    color:#777;
+}
+
+/* =========================================
+   PASSWORD
+========================================= */
+
+#passwordSection{
+    display:none;
+
+    margin-top:25px;
+    padding-top:20px;
+
+    border-top:1px solid #eee;
+}
+
+.password-title{
+    margin-bottom:18px;
+    font-size:20px;
+}
+
+/* =========================================
+   BOTTOM NAV
+========================================= */
+
+.bottom-nav{
+    position:fixed;
+    left:0;
+    bottom:0;
+
+    width:100%;
+    height:75px;
+
+    display:flex;
+
+    background:#fff;
+    border-top:2px solid #d4a62a;
+
+    z-index:1000;
+}
+
+.bottom-nav a{
+    flex:1;
+    height:100%;
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+
+    gap:4px;
+
+    color:#8a6b58;
+    font-size:23px;
+
+    text-decoration:none;
+}
+
+.bottom-nav a span{
+    font-size:11px;
+    font-weight:700;
+}
+
+.bottom-nav a.active{
+    color:#4b3326;
+}
+
+/* IMPORTANT:
+   NO MUSTARD ACTIVE SPOT
+*/
+
+.bottom-nav a.active::before{
+    display:none !important;
+    content:none !important;
+}
+
+#bottomProfileImage{
+    width:23px;
+    height:23px;
+
+    object-fit:cover;
+    border-radius:50%;
+
+    border:1.5px solid #d4a62a;
+}
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media(max-width:600px){
+
+    .navbar{
+        height:68px;
+        padding:0 16px;
+    }
+
+    .logo{
+        font-size:30px;
+    }
+
+    .profile-container{
+        padding:30px 22px 110px;
+    }
+
+    .profile-title{
+        font-size:28px;
+    }
+
+    .stats{
+        gap:55px;
+    }
+
+    .bottom-nav{
+        height:70px;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- =========================================
+     TOP NAV
+========================================= -->
+
+<header class="navbar">
+
+    <a
+        href="stream.html"
+        class="back"
+    >
+        ‹
+    </a>
+
+    <div class="logo">
+        Canvas
+    </div>
+
+    <div class="header-space"></div>
+
+</header>
+
+
+<!-- =========================================
+     MAIN PROFILE
+========================================= -->
+
+<main class="profile-container">
+
+    <!-- =====================================
+         CREATE / EDIT PROFILE
+    ====================================== -->
+
+    <section id="createProfile">
+
+        <h1
+            class="profile-title"
+            id="formTitle"
+        >
+            Create your profile
+        </h1>
+
+        <p
+            class="profile-subtitle"
+            id="formSubtitle"
+        >
+            Set up your Canvas profile and let people know who you are.
+        </p>
+
+
+        <!-- PROFILE PHOTO -->
+
+        <div class="avatar-section">
+
+            <div
+                class="avatar"
+                id="avatarPreview"
+            >
+                ⬤
+            </div>
+
+            <div class="photo-actions">
+
+                <label
+                    class="photo-button"
+                    for="photoInput"
+                >
+                    Choose profile picture
+                </label>
+
+                <button
+                    type="button"
+                    class="delete-photo-button"
+                    id="deletePhotoButton"
+                    onclick="deleteProfilePhoto()"
+                >
+                    Delete picture
+                </button>
+
+            </div>
+
+            <input
+                type="file"
+                id="photoInput"
+                accept="image/*"
+            >
+
+        </div>
+
+
+        <!-- NAME -->
+
+        <div class="form-group">
+
+            <label for="displayName">
+                Display name
+            </label>
+
+            <input
+                type="text"
+                id="displayName"
+                placeholder="Your name"
+                maxlength="30"
+                autocomplete="name"
+            >
+
+        </div>
+
+
+        <!-- USERNAME -->
+
+        <div class="form-group">
+
+            <label for="username">
+                Username
+            </label>
+
+            <input
+                type="text"
+                id="username"
+                placeholder="@username"
+                maxlength="100"
+                autocomplete="username"
+            >
+
+        </div>
+
+
+        <!-- BIO -->
+
+        <div class="form-group">
+
+            <label for="bio">
+                Bio
+            </label>
+
+            <textarea
+                id="bio"
+                placeholder="Tell people about yourself..."
+                maxlength="150"
+            ></textarea>
+
+        </div>
+
+
+        <!-- SAVE -->
+
+        <button
+            type="button"
+            class="save-button"
+            id="saveProfileButton"
+            onclick="saveProfile()"
+        >
+            Save Profile
+        </button>
+
+    </section>
+
+
+    <!-- =====================================
+         PROFILE VIEW
+    ====================================== -->
+
+    <section id="profileView">
+
+        <div
+            class="avatar"
+            id="profileAvatar"
+        >
+            ⬤
+        </div>
+
+        <h1
+            class="profile-name"
+            id="profileName"
+        >
+            Canvas Creator
+        </h1>
+
+        <p
+            class="profile-username"
+            id="profileUsername"
+        >
+            @username
+        </p>
+
+        <p
+            class="profile-bio"
+            id="profileBio"
+        >
+            No bio yet.
+        </p>
+
+
+        <!-- STATS -->
+
+        <div class="stats">
+
+            <div class="stat">
+
+                <strong id="followersCount">
+                    0
+                </strong>
+
+                <span>
+                    Followers
+                </span>
+
+            </div>
+
+
+            <div class="stat">
+
+                <strong id="followingCount">
+                    0
+                </strong>
+
+                <span>
+                    Following
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- ACCOUNT -->
+
+        <section class="account-section">
+
+            <h2 class="account-title">
+                Account
+            </h2>
+
+
+            <div class="account-item">
+
+                <div class="account-label">
+                    Email
+                </div>
+
+                <div
+                    class="account-value"
+                    id="accountEmail"
+                >
+                    Not available
+                </div>
+
+            </div>
+
+
+            <div class="account-item">
+
+                <div class="account-label">
+                    Password
+                </div>
+
+                <div class="account-value">
+                    ••••••••
+                </div>
+
+            </div>
+
+
+            <button
+                class="edit-button"
+                onclick="editProfile()"
+            >
+                Edit Profile
+            </button>
+
+
+            <button
+                class="password-button"
+                onclick="togglePasswordSection()"
+            >
+                Change Password
+            </button>
+
+
+            <button
+                class="logout-button"
+                onclick="logout()"
+            >
+                Log Out
+            </button>
+
+
+            <!-- PASSWORD SECTION -->
+
+            <div id="passwordSection">
+
+                <h2 class="password-title">
+                    Change Password
+                </h2>
+
+                <div class="form-group">
+
+                    <label>
+                        Current password
+                    </label>
+
+                    <input
+                        type="password"
+                        id="currentPassword"
+                        autocomplete="current-password"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        New password
+                    </label>
+
+                    <input
+                        type="password"
+                        id="newPassword"
+                        autocomplete="new-password"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Confirm password
+                    </label>
+
+                    <input
+                        type="password"
+                        id="confirmNewPassword"
+                        autocomplete="new-password"
+                    >
+
+                </div>
+
+
+                <button
+                    class="save-button"
+                    id="changePasswordButton"
+                    onclick="changePassword()"
+                >
+                    Save New Password
+                </button>
+
+            </div>
+
+        </section>
+
+    </section>
+
+  </main>
+  <!-- =========================================
+     BOTTOM NAVIGATION
+========================================= -->
+
+<nav class="bottom-nav">
+
+    <a href="stream.html">
+        ⌂
+        <span>Home</span>
+    </a>
+
+    <a href="explore.html">
+        <svg
+            width="23"
+            height="23"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.4"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+        >
+            <circle cx="11" cy="11" r="7"></circle>
+            <line x1="16.5" y1="16.5" x2="21" y2="21"></line>
+        </svg>
+
+        <span>Explore</span>
+    </a>
+
+    <a href="golive.html">
+        ⊙
+        <span>Go Live</span>
+    </a>
+
+    <a
+        href="profile.html"
+        class="active"
+    >
+        <span id="bottomProfileIcon">⬤</span>
+        <span>Profile</span>
+    </a>
+
+</nav>
+
+
+<!-- =========================================
+     PROFILE SCRIPT
+========================================= -->
+
+<script>
+
+/* =========================================
+   CANVAS API
+========================================= */
+
+const API = "https://canvas-kh9p.onrender.com";
+
+const AUTH_KEY = "canvasAuthToken";
+
+const PROFILE_KEY = "canvasProfile";
+
+const ACCOUNT_KEY = "canvasAccount";
+
+const PROFILE_IMAGE_KEYS = [
+    "canvasProfilePicture",
+    "profilePicture"
+];
+
+
+/* =========================================
+   STATE
+========================================= */
+
+let currentUser = null;
+
+let currentProfile = null;
+
+let selectedPhoto = "";
+
+let savingProfile = false;
+
+let changingPassword = false;
+
+
+/* =========================================
+   BASIC HELPERS
+========================================= */
+
+function $(id){
+
+    return document.getElementById(id);
+
+}
+
+
+/* =========================================
+   AUTH TOKEN
+========================================= */
+
+function getAuthToken(){
+
+    return (
+        localStorage.getItem(AUTH_KEY) ||
+        localStorage.getItem("authToken") ||
+        localStorage.getItem("token") ||
+        ""
+    ).trim();
+
+}
+
+
+/* =========================================
+   AUTH HEADERS
+========================================= */
+
+function authHeaders(){
+
+    const token = getAuthToken();
+
+    const headers = {
+        "Content-Type":"application/json"
+    };
+
+    if(token){
+
+        headers["Authorization"] =
+            "Bearer " + token;
+
+    }
+
+    return headers;
+
+}
+
+
+/* =========================================
+   CLEAR AUTH
+========================================= */
+
+function clearAuthentication(){
+
+    localStorage.removeItem("canvasAuthToken");
+
+    localStorage.removeItem("authToken");
+
+    localStorage.removeItem("token");
+
+    localStorage.removeItem("canvasLoggedIn");
+
+    localStorage.removeItem("canvasCurrentUser");
+
+    localStorage.removeItem("canvasAccount");
+
+    localStorage.removeItem("canvasProfile");
+
+    localStorage.removeItem("canvasProfilePicture");
+
+    localStorage.removeItem("profilePicture");
+
+}
+
+
+/* =========================================
+   FORCE LOGIN
+========================================= */
+
+function goToLogin(){
+
+    clearAuthentication();
+
+    window.location.replace("login.html");
+
+}
+
+
+/* =========================================
+   CHECK LOGIN FIRST
+========================================= */
+
+function requireLogin(){
+
+    const token = getAuthToken();
+
+    if(!token){
+
+        goToLogin();
+
+        return false;
+
+    }
+
+    return true;
+
+}
+
+
+/* =========================================
+   SAFE JSON RESPONSE
+========================================= */
+
+async function readResponse(response){
+
+    let data = {};
+
+    try{
+
+        data = await response.json();
+
+    }catch{
+
+        data = {};
+
+    }
+
+    return data;
+
+}
+
+
+/* =========================================
+   LOCAL ACCOUNT
+========================================= */
+
+function getLocalAccount(){
+
+    try{
+
+        return JSON.parse(
+            localStorage.getItem(ACCOUNT_KEY) || "{}"
+        );
+
+    }catch{
+
+        return {};
+
+    }
+
+}
+
+
+/* =========================================
+   SAVE LOCAL ACCOUNT
+========================================= */
+
+function saveLocalAccount(account){
+
+    try{
+
+        localStorage.setItem(
+            ACCOUNT_KEY,
+            JSON.stringify(account || {})
+        );
+
+    }catch{
+
+        /* ignore localStorage errors */
+
+    }
+
+}
+
+
+/* =========================================
+   LOCAL PROFILE
+========================================= */
+
+function getLocalProfile(){
+
+    try{
+
+        return JSON.parse(
+            localStorage.getItem(PROFILE_KEY) || "{}"
+        );
+
+    }catch{
+
+        return {};
+
+    }
+
+}
+
+
+/* =========================================
+   SAVE LOCAL PROFILE
+========================================= */
+
+function saveLocalProfile(profile){
+
+    try{
+
+        localStorage.setItem(
+            PROFILE_KEY,
+            JSON.stringify(profile || {})
+        );
+
+    }catch{
+
+        /* ignore localStorage errors */
+
+    }
+
+}
+
+
+/* =========================================
+   SAVE PROFILE IMAGE LOCALLY
+========================================= */
+
+function saveProfileImageLocally(image){
+
+    if(image){
+
+        localStorage.setItem(
+            "canvasProfilePicture",
+            image
+        );
+
+        localStorage.setItem(
+            "profilePicture",
+            image
+        );
+
+    }else{
+
+        localStorage.removeItem(
+            "canvasProfilePicture"
+        );
+
+        localStorage.removeItem(
+            "profilePicture"
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   GET LOCAL PROFILE IMAGE
+========================================= */
+
+function getLocalProfileImage(){
+
+    return (
+        localStorage.getItem("canvasProfilePicture") ||
+        localStorage.getItem("profilePicture") ||
+        ""
+    );
+
+}
+
+
+/* =========================================
+   PROFILE IMAGE FROM SERVER
+========================================= */
+
+function getProfileImage(profile){
+
+    if(!profile){
+
+        return "";
+
+    }
+
+    return (
+        profile.profile_picture ||
+        profile.profilePicture ||
+        profile.profile_image ||
+        profile.profileImage ||
+        profile.photo ||
+        profile.avatar ||
+        ""
+    );
+
+}
+
+
+/* =========================================
+   NORMALIZE USER
+========================================= */
+
+function normalizeUser(user){
+
+    user = user || {};
+
+    return {
+
+        id:user.id || "",
+
+        name:user.name || "",
+
+        username:String(
+            user.username || ""
+        ).replace(/^@/, ""),
+
+        email:user.email || "",
+
+        bio:user.bio || "",
+
+        photo:
+            user.profile_picture ||
+            user.profilePicture ||
+            user.profile_image ||
+            user.profileImage ||
+            user.photo ||
+            user.avatar ||
+            ""
+
+    };
+
+}
+
+
+/* =========================================
+   SAVE EVERYTHING LOCALLY
+========================================= */
+
+function saveUserLocally(user){
+
+    const normalized =
+        normalizeUser(user);
+
+    saveLocalAccount({
+
+        id:normalized.id,
+
+        name:normalized.name,
+
+        username:normalized.username,
+
+        email:normalized.email
+
+    });
+
+
+    saveLocalProfile({
+
+        id:normalized.id,
+
+        name:normalized.name,
+
+        username:normalized.username,
+
+        email:normalized.email,
+
+        bio:normalized.bio,
+
+        photo:normalized.photo
+
+    });
+
+
+    if(normalized.photo){
+
+        saveProfileImageLocally(
+            normalized.photo
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   AVATAR DEFAULT
+========================================= */
+
+function setAvatar(element, image){
+
+    if(!element){
+
+        return;
+
+    }
+
+    if(image){
+
+        element.innerHTML =
+            `<img src="${image}" alt="Profile picture">`;
+
+    }else{
+
+        element.textContent = "⬤";
+
+    }
+
+}
+
+
+/* =========================================
+   UPDATE BOTTOM PROFILE ICON
+========================================= */
+
+function updateBottomProfileIcon(image){
+
+    const icon =
+        $("bottomProfileIcon");
+
+    if(!icon){
+
+        return;
+
+    }
+
+    if(image){
+
+        icon.innerHTML =
+            `<img
+                id="bottomProfileImage"
+                src="${image}"
+                alt="Profile"
+            >`;
+
+    }else{
+
+        icon.textContent = "⬤";
+
+    }
+
+}
+
+
+/* =========================================
+   APPLY PROFILE PHOTO EVERYWHERE
+========================================= */
+
+function applyProfilePicture(image){
+
+    setAvatar(
+        $("avatarPreview"),
+        image
+    );
+
+    setAvatar(
+        $("profileAvatar"),
+        image
+    );
+
+    updateBottomProfileIcon(
+        image
+    );
+
+    const deleteButton =
+        $("deletePhotoButton");
+
+    if(deleteButton){
+
+        deleteButton.style.display =
+            image
+                ? "inline-block"
+                : "none";
+
+    }
+
+}
+
+
+/* =========================================
+   GET CURRENT ACCOUNT USERNAME
+========================================= */
+
+function getSavedUsername(){
+
+    const account =
+        getLocalAccount();
+
+    const profile =
+        getLocalProfile();
+
+    return String(
+        account.username ||
+        profile.username ||
+        ""
+    ).replace(/^@/, "");
+
+}
+
+
+/* =========================================
+   PROFILE FORM MODE
+========================================= */
+
+function showEditForm(profile){
+
+    $("profileView").style.display =
+        "none";
+
+    $("createProfile").style.display =
+        "block";
+
+    $("formTitle").textContent =
+        "Create your profile";
+
+    $("formSubtitle").textContent =
+        "Set up your Canvas profile and let people know who you are.";
+
+    if(profile){
+
+        $("displayName").value =
+            profile.name || "";
+
+        $("username").value =
+            profile.username || "";
+
+        $("bio").value =
+            profile.bio || "";
+
+        selectedPhoto =
+            profile.photo || "";
+
+        applyProfilePicture(
+            selectedPhoto
+        );
+
+    }
+
+}
+<script>
+
+/* =========================================
+   SHOW CREATE PROFILE
+========================================= */
+
+function showCreateProfile(){
+
+    if($("profileView")){
+
+        $("profileView").style.display =
+            "none";
+
+    }
+
+    if($("createProfile")){
+
+        $("createProfile").style.display =
+            "block";
+
+    }
+
+    $("formTitle").textContent =
+        "Create your profile";
+
+    $("formSubtitle").textContent =
+        "Set up your Canvas profile and let people know who you are.";
+
+    const account =
+        getLocalAccount();
+
+    const existingProfile =
+        getLocalProfile();
+
+    $("displayName").value =
+        existingProfile.name ||
+        account.name ||
+        "";
+
+    $("username").value =
+        existingProfile.username ||
+        account.username ||
+        "";
+
+    $("bio").value =
+        existingProfile.bio ||
+        "";
+
+    selectedPhoto =
+        existingProfile.photo ||
+        getLocalProfileImage() ||
+        "";
+
+    applyProfilePicture(
+        selectedPhoto
+    );
+
+}
+
+
+/* =========================================
+   SHOW PROFILE
+========================================= */
+
+function showProfile(profile){
+
+    currentProfile =
+        normalizeUser(profile);
+
+    $("createProfile").style.display =
+        "none";
+
+    $("profileView").style.display =
+        "block";
+
+
+    $("profileName").textContent =
+        currentProfile.name ||
+        "Canvas Creator";
+
+
+    $("profileUsername").textContent =
+        "@" +
+        (
+            currentProfile.username ||
+            "username"
+        ).replace(/^@/, "");
+
+
+    $("profileBio").textContent =
+        currentProfile.bio ||
+        "No bio yet.";
+
+
+    $("accountEmail").textContent =
+        currentProfile.email ||
+        getLocalAccount().email ||
+        "Not available";
+
+
+    setAvatar(
+        $("profileAvatar"),
+        currentProfile.photo
+    );
+
+
+    updateBottomProfileIcon(
+        currentProfile.photo
+    );
+
+}
+
+
+/* =========================================
+   LOAD CURRENT LOGGED-IN USER
+========================================= */
+
+async function loadCurrentUser(){
+
+    const token =
+        getAuthToken();
+
+    /*
+       NEVER show Create Profile before login.
+    */
+
+    if(!token){
+
+        goToLogin();
+
+        return null;
+
+    }
+
+
+    try{
+
+        const response =
+            await fetch(
+                API + "/api/me",
+                {
+                    method:"GET",
+                    headers:authHeaders()
+                }
+            );
+
+
+        /*
+           Token is invalid/expired.
+           Send user back to Login.
+        */
+
+        if(response.status === 401){
+
+            goToLogin();
+
+            return null;
+
+        }
+
+
+        const data =
+            await readResponse(
+                response
+            );
+
+
+        if(
+            !response.ok ||
+            !data.success ||
+            !data.user
+        ){
+
+            throw new Error(
+                data.message ||
+                "Unable to load your account."
+            );
+
+        }
+
+
+        currentUser =
+            normalizeUser(
+                data.user
+            );
+
+
+        /*
+           Keep login account information
+           synchronized with the server.
+        */
+
+        saveLocalAccount({
+
+            id:currentUser.id,
+
+            name:currentUser.name,
+
+            username:currentUser.username,
+
+            email:currentUser.email
+
+        });
+
+
+        return currentUser;
+
+    }catch(error){
+
+        /*
+           Do NOT show Create Profile just
+           because the server request failed.
+        */
+
+        console.error(
+            "Canvas /api/me error:",
+            error
+        );
+
+        const local =
+            getLocalAccount();
+
+        if(
+            local &&
+            local.id &&
+            getAuthToken()
+        ){
+
+            currentUser =
+                normalizeUser(
+                    local
+                );
+
+            return currentUser;
+
+        }
+
+
+        alert(
+            "Your login session could not be verified. Please log in again."
+        );
+
+        goToLogin();
+
+        return null;
+
+    }
+
+}
+
+
+/* =========================================
+   LOAD PROFILE FROM SERVER
+========================================= */
+
+async function loadProfileFromServer(){
+
+    if(!requireLogin()){
+
+        return;
+
+    }
+
+
+    /*
+       First verify that the person is actually
+       logged in.
+    */
+
+    const user =
+        await loadCurrentUser();
+
+
+    if(!user){
+
+        return;
+
+    }
+
+
+    try{
+
+        const response =
+            await fetch(
+                API + "/api/profile",
+                {
+                    method:"GET",
+                    headers:authHeaders()
+                }
+            );
+
+
+        if(response.status === 401){
+
+            goToLogin();
+
+            return;
+
+        }
+
+
+        const data =
+            await readResponse(
+                response
+            );
+
+
+        /*
+           Server profile exists.
+        */
+
+        if(
+            response.ok &&
+            data.success &&
+            data.profile
+        ){
+
+            const serverProfile =
+                data.profile;
+
+
+            const profile =
+                normalizeUser({
+
+                    id:
+                        serverProfile.id ||
+                        user.id,
+
+                    name:
+                        serverProfile.name ||
+                        user.name,
+
+                    username:
+                        serverProfile.username ||
+                        user.username,
+
+                    email:
+                        serverProfile.email ||
+                        user.email,
+
+                    bio:
+                        serverProfile.bio ||
+                        "",
+
+                    profile_picture:
+                        serverProfile.profile_picture ||
+                        ""
+
+                });
+
+
+            currentProfile =
+                profile;
+
+
+            saveUserLocally(
+                profile
+            );
+
+
+            showProfile(
+                profile
+            );
+
+
+            return;
+
+        }
+
+
+        /*
+           Some older accounts may have no profile
+           data yet.
+
+           IMPORTANT:
+           They are already logged in, so NOW
+           Create Profile is allowed to appear.
+        */
+
+        const localProfile =
+            getLocalProfile();
+
+
+        const profileExists =
+            localProfile &&
+            (
+                localProfile.name ||
+                localProfile.username ||
+                localProfile.bio ||
+                localProfile.photo
+            );
+
+
+        if(profileExists){
+
+            showProfile(
+                normalizeUser(
+                    localProfile
+                )
+            );
+
+        }else{
+
+            showCreateProfile();
+
+        }
+
+    }catch(error){
+
+        console.error(
+            "Canvas /api/profile error:",
+            error
+        );
+
+
+        /*
+           Do not redirect to Login if we already
+           verified the authentication.
+
+           Instead use local profile data or
+           show the Create Profile form.
+        */
+
+        const localProfile =
+            getLocalProfile();
+
+
+        if(
+            localProfile &&
+            (
+                localProfile.name ||
+                localProfile.username
+            )
+        ){
+
+            showProfile(
+                normalizeUser(
+                    localProfile
+                )
+            );
+
+        }else{
+
+            showCreateProfile();
+
+        }
+
+    }
+
+}
+
+
+/* =========================================
+   PROFILE PHOTO SELECT
+========================================= */
+
+function setupPhotoInput(){
+
+    const input =
+        $("photoInput");
+
+    if(!input){
+
+        return;
+
+    }
+
+
+    input.addEventListener(
+        "change",
+        function(){
+
+            const file =
+                this.files &&
+                this.files[0];
+
+
+            if(!file){
+
+                return;
+
+            }
+
+
+            if(
+                !file.type ||
+                !file.type.startsWith("image/")
+            ){
+
+                alert(
+                    "Please choose an image file."
+                );
+
+                this.value = "";
+
+                return;
+
+            }
+
+
+            /*
+               Prevent extremely large files from
+               creating an enormous profile payload.
+            */
+
+            if(
+                file.size >
+                8 * 1024 * 1024
+            ){
+
+                alert(
+                    "Please choose an image smaller than 8 MB."
+                );
+
+                this.value = "";
+
+                return;
+
+            }
+
+
+            const reader =
+                new FileReader();
+
+
+            reader.onload =
+                function(event){
+
+                    selectedPhoto =
+                        event.target.result ||
+                        "";
+
+
+                    applyProfilePicture(
+                        selectedPhoto
+                    );
+
+                };
+
+
+            reader.onerror =
+                function(){
+
+                    alert(
+                        "Unable to read that image."
+                    );
+
+                };
+
+
+            reader.readAsDataURL(
+                file
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================
+   DELETE SELECTED PHOTO
+========================================= */
+
+function deleteProfilePhoto(){
+
+    selectedPhoto = "";
+
+
+    const input =
+        $("photoInput");
+
+    if(input){
+
+        input.value = "";
+
+    }
+
+
+    applyProfilePicture(
+        ""
+    );
+
+}
+
+
+/* =========================================
+   USERNAME CLEANUP
+========================================= */
+
+function cleanUsername(value){
+
+    return String(
+        value || ""
+    )
+    .trim()
+    .replace(/^@/, "")
+    .replace(/\s+/g, "")
+    .toLowerCase();
+
+}
+
+
+/* =========================================
+   SAVE PROFILE
+========================================= */
+
+async function saveProfile(){
+
+    /*
+       Login MUST happen first.
+    */
+
+    if(!requireLogin()){
+
+        return;
+
+    }
+
+
+    if(savingProfile){
+
+        return;
+
+    }
+
+
+    const token =
+        getAuthToken();
+
+
+    if(!token){
+
+        goToLogin();
+
+        return;
+
+    }
+
+
+    const name =
+        $("displayName").value.trim();
+
+
+    const username =
+        cleanUsername(
+            $("username").value
+        );
+
+
+    const bio =
+        $("bio").value.trim();
+
+
+    if(!name){
+
+        alert(
+            "Please enter your display name."
+        );
+
+        $("displayName").focus();
+
+        return;
+
+    }
+
+
+    if(!username){
+
+        alert(
+            "Please enter a username."
+        );
+
+        $("username").focus();
+
+        return;
+
+    }
+
+
+    /*
+       Match the server's username rules:
+       letters, numbers, underscore and dot.
+    */
+
+    if(
+        !/^[a-zA-Z0-9_.]+$/.test(
+            username
+        )
+    ){
+
+        alert(
+            "Username can only contain letters, numbers, underscores (_) and dots (.)."
+        );
+
+        $("username").focus();
+
+        return;
+
+    }
+
+
+    if(
+        username.length < 3
+    ){
+
+        alert(
+            "Username must be at least 3 characters."
+        );
+
+        $("username").focus();
+
+        return;
+
+    }
+
+
+    const button =
+        $("saveProfileButton");
+
+
+    savingProfile = true;
+
+
+    if(button){
+
+        button.disabled = true;
+
+        button.textContent =
+            "Saving Profile...";
+
+    }
+
+
+    try{
+
+        /*
+           THIS is the correct endpoint.
+
+           The server expects:
+           PUT /api/profile
+
+           NOT:
+           PUT /api/profile/username
+        */
+
+        const response =
+            await fetch(
+                API + "/api/profile",
+                {
+                    method:"PUT",
+
+                    headers:authHeaders(),
+
+                    body:JSON.stringify({
+
+                        name:name,
+
+                        username:username,
+
+                        bio:bio,
+
+                        profile_picture:
+                            selectedPhoto || ""
+
+                    })
+
+                }
+            );
+
+
+        if(response.status === 401){
+
+            goToLogin();
+
+            return;
+
+        }
+
+
+        const data =
+            await readResponse(
+                response
+            );
+
+
+        if(
+            !response.ok ||
+            !data.success
+        ){
+
+            throw new Error(
+                data.message ||
+                "Unable to save profile."
+            );
+
+        }
+
+
+        /*
+           Current server returns `user`,
+           not `profile`.
+        */
+
+        const savedUser =
+            data.user ||
+            {
+
+                ...currentUser,
+
+                name:name,
+
+                username:username,
+
+                bio:bio,
+
+                profile_picture:
+                    selectedPhoto || ""
+
+            };
+
+
+        const savedProfile =
+            normalizeUser({
+
+                ...savedUser,
+
+                name:
+                    savedUser.name ||
+                    name,
+
+                username:
+                    savedUser.username ||
+                    username,
+
+                email:
+                    savedUser.email ||
+                    currentUser.email ||
+                    "",
+
+                bio:
+                    savedUser.bio ||
+                    bio,
+
+                profile_picture:
+                    savedUser.profile_picture ||
+                    selectedPhoto ||
+                    ""
+
+            });
+
+
+        currentUser =
+            savedProfile;
+
+
+        currentProfile =
+            savedProfile;
+
+
+        saveUserLocally(
+            savedProfile
+        );
+
+
+        /*
+           Update the account information too,
+           because username/name may have changed.
+        */
+
+        saveLocalAccount({
+
+            id:savedProfile.id,
+
+            name:savedProfile.name,
+
+            username:savedProfile.username,
+
+            email:savedProfile.email
+
+        });
+
+
+        showProfile(
+            savedProfile
+        );
+
+
+        alert(
+            "Profile saved successfully."
+        );
+
+
+    }catch(error){
+
+        console.error(
+            "Canvas profile save error:",
+            error
+        );
+
+
+        alert(
+            error.message ||
+            "Unable to save profile."
+        );
+
+
+    }finally{
+
+        savingProfile = false;
+
+
+        if(button){
+
+            button.disabled = false;
+
+            button.textContent =
+                "Save Profile";
+
+        }
+
+    }
+
+}
+
+</script>
+  <script>
+
+/* =========================================
+   EDIT PROFILE
+========================================= */
+
+function editProfile(){
+
+    if(!requireLogin()){
+
+        return;
+
+    }
+
+    const profile =
+        currentProfile ||
+        getLocalProfile();
+
+
+    if(!profile){
+
+        showCreateProfile();
+
+        return;
+
+    }
+
+
+    $("profileView").style.display =
+        "none";
+
+    $("createProfile").style.display =
+        "block";
+
+
+    $("formTitle").textContent =
+        "Edit your profile";
+
+
+    $("formSubtitle").textContent =
+        "Update your Canvas profile information.";
+
+
+    $("displayName").value =
+        profile.name || "";
+
+
+    $("username").value =
+        profile.username || "";
+
+
+    $("bio").value =
+        profile.bio || "";
+
+
+    selectedPhoto =
+        profile.photo ||
+        getLocalProfileImage() ||
+        "";
+
+
+    applyProfilePicture(
+        selectedPhoto
+    );
+
+}
+
+
+/* =========================================
+   PASSWORD SECTION
+========================================= */
+
+function togglePasswordSection(){
+
+    if(!requireLogin()){
+
+        return;
+
+    }
+
+
+    const box =
+        $("passwordSection");
+
+
+    if(!box){
+
+        return;
+
+    }
+
+
+    if(box.style.display === "block"){
+
+        box.style.display =
+            "none";
+
+    }else{
+
+        box.style.display =
+            "block";
+
+    }
+
+}
+
+
+/* =========================================
+   CHANGE PASSWORD
+========================================= */
+
+async function changePassword(){
+
+    if(!requireLogin()){
+
+        return;
+
+    }
+
+
+    if(changingPassword){
+
+        return;
+
+    }
+
+
+    const current =
+        $("currentPassword").value;
+
+
+    const newPassword =
+        $("newPassword").value;
+
+
+    const confirmPassword =
+        $("confirmNewPassword").value;
+
+
+    if(!current){
+
+        alert(
+            "Please enter your current password."
+        );
+
+        $("currentPassword").focus();
+
+        return;
+
+    }
+
+
+    if(!newPassword){
+
+        alert(
+            "Please enter a new password."
+        );
+
+        $("newPassword").focus();
+
+        return;
+
+    }
+
+
+    if(newPassword.length < 8){
+
+        alert(
+            "New password must be at least 8 characters."
+        );
+
+        $("newPassword").focus();
+
+        return;
+
+    }
+
+
+    if(newPassword !== confirmPassword){
+
+        alert(
+            "Passwords do not match."
+        );
+
+        $("confirmNewPassword").focus();
+
+        return;
+
+    }
+
+
+    const button =
+        $("changePasswordButton");
+
+
+    changingPassword = true;
+
+
+    if(button){
+
+        button.disabled = true;
+
+        button.textContent =
+            "Changing Password...";
+
+    }
+
+
+    try{
+
+        const response =
+            await fetch(
+                API + "/api/change-password",
+                {
+                    method:"PUT",
+
+                    headers:authHeaders(),
+
+                    body:JSON.stringify({
+
+                        currentPassword:current,
+
+                        newPassword:newPassword
+
+                    })
+
+                }
+            );
+
+
+        if(response.status === 401){
+
+            /*
+               Could mean expired token OR
+               incorrect current password.
+
+               Check response message below.
+            */
+
+        }
+
+
+        const data =
+            await readResponse(
+                response
+            );
+
+
+        if(!response.ok || !data.success){
+
+            throw new Error(
+                data.message ||
+                "Unable to change password."
+            );
+
+        }
+
+
+        alert(
+            "Password changed successfully."
+        );
+
+
+        $("currentPassword").value =
+            "";
+
+        $("newPassword").value =
+            "";
+
+        $("confirmNewPassword").value =
+            "";
+
+
+        $("passwordSection").style.display =
+            "none";
+
+
+    }catch(error){
+
+        console.error(
+            "Canvas password error:",
+            error
+        );
+
+
+        alert(
+            error.message ||
+            "Unable to change password."
+        );
+
+
+    }finally{
+
+        changingPassword = false;
+
+
+        if(button){
+
+            button.disabled = false;
+
+            button.textContent =
+                "Save New Password";
+
+        }
+
+    }
+
+}
+
+
+/* =========================================
+   DELETE PROFILE PICTURE FROM SERVER
+========================================= */
+
+async function deleteSavedProfilePhoto(){
+
+    if(!requireLogin()){
+
+        return false;
+
+    }
+
+
+    try{
+
+        const response =
+            await fetch(
+                API + "/api/profile/picture",
+                {
+                    method:"DELETE",
+
+                    headers:authHeaders()
+                }
+            );
+
+
+        if(response.status === 401){
+
+            goToLogin();
+
+            return false;
+
+        }
+
+
+        const data =
+            await readResponse(
+                response
+            );
+
+
+        if(
+            !response.ok ||
+            !data.success
+        ){
+
+            throw new Error(
+                data.message ||
+                "Unable to delete profile picture."
+            );
+
+        }
+
+
+        return true;
+
+    }catch(error){
+
+        console.error(
+            "Canvas profile picture delete error:",
+            error
+        );
+
+        /*
+           If there was no server picture,
+           local deletion can still continue.
+        */
+
+        return false;
+
+    }
+
+}
+
+
+/* =========================================
+   DELETE PROFILE PICTURE
+========================================= */
+
+async function removeProfilePicture(){
+
+    if(!requireLogin()){
+
+        return;
+
+    }
+
+
+    const existingImage =
+        currentProfile &&
+        currentProfile.photo;
+
+
+    /*
+       If this is only a newly selected image,
+       there is nothing to delete from server.
+    */
+
+    if(!existingImage){
+
+        deleteProfilePhoto();
+
+        return;
+
+    }
+
+
+    const confirmed =
+        confirm(
+            "Delete your profile picture?"
+        );
+
+
+    if(!confirmed){
+
+        return;
+
+    }
+
+
+    const deleted =
+        await deleteSavedProfilePhoto();
+
+
+    if(!deleted){
+
+        alert(
+            "Unable to delete your profile picture."
+        );
+
+        return;
+
+    }
+
+
+    selectedPhoto = "";
+
+
+    saveProfileImageLocally(
+        ""
+    );
+
+
+    if(currentProfile){
+
+        currentProfile.photo =
+            "";
+
+        saveUserLocally(
+            currentProfile
+        );
+
+    }
+
+
+    applyProfilePicture(
+        ""
+    );
+
+
+    /*
+       Keep the edit form open if the user
+       is currently editing.
+    */
+
+    if(
+        $("createProfile").style.display !==
+        "none"
+    ){
+
+        $("deletePhotoButton").style.display =
+            "none";
+
+    }
+
+}
+
+
+/* =========================================
+   DELETE BUTTON HANDLER
+========================================= */
+
+async function handleDeletePhoto(){
+
+    if(!requireLogin()){
+
+        return;
+
+    }
+
+
+    /*
+       If user selected a new local photo but
+       has not saved it yet, simply remove it.
+    */
+
+    if(
+        selectedPhoto &&
+        (
+            !currentProfile ||
+            selectedPhoto !== currentProfile.photo
+        )
+    ){
+
+        deleteProfilePhoto();
+
+        return;
+
+    }
+
+
+    await removeProfilePicture();
+
+}
+
+
+/* =========================================
+   CANCEL EDIT
+========================================= */
+
+function cancelEdit(){
+
+    if(!requireLogin()){
+
+        return;
+
+    }
+
+
+    if(currentProfile){
+
+        showProfile(
+            currentProfile
+        );
+
+    }else{
+
+        loadProfileFromServer();
+
+    }
+
+}
+
+
+/* =========================================
+   LOGOUT
+========================================= */
+
+async function logout(){
+
+    const token =
+        getAuthToken();
+
+
+    if(!token){
+
+        goToLogin();
+
+        return;
+
+    }
+
+
+    const confirmed =
+        confirm(
+            "Log out of Canvas?"
+        );
+
+
+    if(!confirmed){
+
+        return;
+
+    }
+
+
+    try{
+
+        /*
+           Tell the server to invalidate the
+           current session.
+        */
+
+        await fetch(
+            API + "/api/logout",
+            {
+                method:"POST",
+
+                headers:authHeaders()
+            }
+        );
+
+    }catch(error){
+
+        /*
+           Even if the network request fails,
+           the local session must still be cleared.
+        */
+
+        console.warn(
+            "Canvas logout request failed:",
+            error
+        );
+
+    }finally{
+
+        clearAuthentication();
+
+        currentUser = null;
+
+        currentProfile = null;
+
+        selectedPhoto = "";
+
+
+        window.location.replace(
+            "login.html"
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   PHOTO BUTTON SETUP
+========================================= */
+
+function setupPhotoButtons(){
+
+    const deleteButton =
+        $("deletePhotoButton");
+
+
+    if(deleteButton){
+
+        /*
+           Replace the old inline action with
+           the proper server-aware handler.
+        */
+
+        deleteButton.onclick =
+            handleDeletePhoto;
+
+    }
+
+}
+
+
+/* =========================================
+   USERNAME INPUT
+========================================= */
+
+function setupUsernameInput(){
+
+    const input =
+        $("username");
+
+
+    if(!input){
+
+        return;
+
+    }
+
+
+    input.addEventListener(
+        "input",
+        function(){
+
+            /*
+               Keep @ optional and clean the
+               value before saving.
+            */
+
+            this.value =
+                this.value
+                .replace(/\s+/g, "")
+                .replace(/[^a-zA-Z0-9_.@]/g, "");
+
+        }
+    );
+
+
+    input.addEventListener(
+        "blur",
+        function(){
+
+            this.value =
+                cleanUsername(
+                    this.value
+                );
+
+        }
+    );
+
+}
+
+
+/* =========================================
+   PROFILE FORM INITIAL STATE
+========================================= */
+
+function resetProfileForm(){
+
+    $("formTitle").textContent =
+        "Create your profile";
+
+
+    $("formSubtitle").textContent =
+        "Set up your Canvas profile and let people know who you are.";
+
+
+    $("displayName").value =
+        "";
+
+
+    $("username").value =
+        "";
+
+
+    $("bio").value =
+        "";
+
+
+    selectedPhoto = "";
+
+
+    applyProfilePicture(
+        ""
+    );
+
+}
+
+
+/* =========================================
+   INITIALIZE PROFILE
+========================================= */
+
+async function initializeProfile(){
+
+    /*
+       THIS IS THE FIRST CHECK.
+
+       If there is no login token:
+       Profile page NEVER shows Create Profile.
+       It immediately sends the user to Login.
+    */
+
+    if(!requireLogin()){
+
+        return;
+
+    }
+
+
+    setupPhotoInput();
+
+    setupPhotoButtons();
+
+    setupUsernameInput();
+
+
+    /*
+       Now that authentication exists,
+       ask the backend who is logged in and
+       whether their profile exists.
+    */
+
+    await loadProfileFromServer();
+
+}
+
+
+/* =========================================
+   PAGE START
+========================================= */
+
+if(
+    document.readyState ===
+    "loading"
+){
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        initializeProfile
+    );
+
+}else{
+
+    initializeProfile();
+
+}
+
+  </script>
+ <script>
+
+/* =========================================
+   KEEP PROFILE DATA SYNCED WHEN PAGE
+   BECOMES VISIBLE AGAIN
+========================================= */
+
+document.addEventListener(
+    "visibilitychange",
+    function(){
+
+        if(
+            document.visibilityState ===
+            "visible"
+        ){
+
+            /*
+               Only refresh if we are already
+               authenticated. This prevents the
+               page from creating a profile for
+               a logged-out visitor.
+            */
+
+            if(getAuthToken()){
+
+                loadProfileFromServer();
+
+            }
+
+        }
+
+    }
+);
+
+
+/* =========================================
+   HANDLE BROWSER BACK/FORWARD CACHE
+========================================= */
+
+window.addEventListener(
+    "pageshow",
+    function(){
+
+        /*
+           If the login token disappeared while
+           this page was cached, immediately
+           return to Login.
+        */
+
+        if(!getAuthToken()){
+
+            goToLogin();
+
+        }
+
+    }
+);
+
+
+/* =========================================
+   PREVENT FORM-LIKE ENTER BEHAVIOR
+========================================= */
+
+document.addEventListener(
+    "keydown",
+    function(event){
+
+        if(
+            event.key === "Enter" &&
+            event.target &&
+            event.target.id === "username"
+        ){
+
+            event.preventDefault();
+
+        }
+
+    }
+);
+
+
+/* =========================================
+   PROFILE IMAGE ERROR HANDLING
+========================================= */
+
+document.addEventListener(
+    "error",
+    function(event){
+
+        const element =
+            event.target;
+
+
+        if(
+            element &&
+            element.tagName === "IMG"
+        ){
+
+            /*
+               If a saved profile image becomes
+               invalid/unavailable, show the
+               default Canvas profile icon.
+            */
+
+            if(
+                element.id ===
+                "bottomProfileImage"
+            ){
+
+                const icon =
+                    $("bottomProfileIcon");
+
+                if(icon){
+
+                    icon.textContent =
+                        "⬤";
+
+                }
+
+            }
+
+        }
+
+    },
+    true
+);
+
+
+/* =========================================
+   SECURITY:
+   NEVER STORE PASSWORD LOCALLY
+========================================= */
+
+/*
+   Older versions of Profile stored the
+   password inside canvasAccount.
+
+   Remove that old value if it still exists.
+
+   The real password is handled by the
+   backend /api/change-password endpoint.
+*/
+
+try{
+
+    const account =
+        getLocalAccount();
+
+    if(
+        account &&
+        Object.prototype.hasOwnProperty.call(
+            account,
+            "password"
+        )
+    ){
+
+        delete account.password;
+
+        saveLocalAccount(
+            account
+        );
+
+    }
+
+}catch(error){
+
+    console.warn(
+        "Unable to clean old local password:",
+        error
+    );
+
+}
+
+
+/* =========================================
+   FINAL AUTH CHECK
+========================================= */
+
+setInterval(
+    function(){
+
+        /*
+           If the user logs out from another
+           Canvas page/tab, don't leave this
+           profile page accessible.
+        */
+
+        if(!getAuthToken()){
+
+            window.location.replace(
+                "login.html"
+            );
+
+        }
+
+    },
+    5000
+);
+
+</script>
+
+</body>
+
+</html> 
