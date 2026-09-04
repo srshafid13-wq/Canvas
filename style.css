@@ -1,0 +1,2262 @@
+/* =========================================
+   CANVAS - GLOBAL STYLE
+========================================= */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html{
+    width:100%;
+    min-height:100%;
+    scroll-behavior:smooth;
+}
+
+body{
+    width:100%;
+    min-height:100vh;
+    margin:0;
+    padding:0;
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+    background:#ffffff;
+    color:#111111;
+    overflow-x:hidden;
+}
+
+button,
+input,
+textarea,
+select{
+    font:inherit;
+}
+
+button{
+    cursor:pointer;
+}
+
+img{
+    max-width:100%;
+    display:block;
+}
+
+a{
+    color:inherit;
+    text-decoration:none;
+}
+
+
+/* =========================================
+   CANVAS APP WRAPPER
+========================================= */
+
+.canvas-app{
+    width:100%;
+    min-height:100vh;
+    position:relative;
+}
+
+.page{
+    width:100%;
+    min-height:100vh;
+    padding-bottom:90px;
+}
+
+
+/* =========================================
+   TOP NAVIGATION
+========================================= */
+
+.top-nav{
+    width:100%;
+    height:64px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 18px;
+    background:#ffffff;
+    position:relative;
+    z-index:100;
+}
+
+.logo{
+    font-size:24px;
+    font-weight:800;
+    line-height:1;
+    color:#111111;
+    white-space:nowrap;
+}
+
+.top-nav-left{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.top-nav-right{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+
+/* =========================================
+   BACK BUTTON
+========================================= */
+
+.back-button,
+.profile-back,
+#profileBackBtn{
+    width:40px;
+    height:40px;
+    border:0;
+    background:transparent;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:25px;
+    color:#111111;
+    border-radius:50%;
+}
+
+.back-button:active,
+.profile-back:active,
+#profileBackBtn:active{
+    background:rgba(0,0,0,0.06);
+}
+
+
+/* =========================================
+   MAIN CONTENT
+========================================= */
+
+.main-content{
+    width:100%;
+    max-width:1100px;
+    margin:0 auto;
+    padding:20px;
+}
+
+.container{
+    width:100%;
+    max-width:1100px;
+    margin:0 auto;
+    padding:20px;
+}
+
+
+/* =========================================
+   COMMON BUTTONS
+========================================= */
+
+button{
+    border:0;
+    outline:none;
+}
+
+.primary-btn{
+    width:100%;
+    min-height:48px;
+    border-radius:12px;
+    background:#111111;
+    color:#ffffff;
+    font-weight:700;
+    padding:12px 18px;
+    transition:
+        opacity .2s ease,
+        transform .15s ease;
+}
+
+.primary-btn:hover{
+    opacity:.92;
+}
+
+.primary-btn:active{
+    transform:scale(.98);
+}
+
+.primary-btn:disabled{
+    opacity:.55;
+    cursor:not-allowed;
+}
+
+.secondary-btn{
+    min-height:44px;
+    padding:10px 16px;
+    border-radius:10px;
+    background:#f1f1f1;
+    color:#111111;
+    font-weight:600;
+}
+
+.danger-btn{
+    min-height:44px;
+    padding:10px 16px;
+    border-radius:10px;
+    background:#111111;
+    color:#ffffff;
+    font-weight:600;
+}
+
+
+/* =========================================
+   FORM ELEMENTS
+========================================= */
+
+.form-group{
+    width:100%;
+    margin-bottom:16px;
+}
+
+.form-group label{
+    display:block;
+    margin-bottom:7px;
+    font-size:14px;
+    font-weight:700;
+    color:#222222;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select{
+    width:100%;
+    border:1px solid #dddddd;
+    background:#ffffff;
+    color:#111111;
+    border-radius:11px;
+    padding:13px 14px;
+    outline:none;
+    transition:
+        border-color .2s ease,
+        box-shadow .2s ease;
+}
+
+.form-group input{
+    height:48px;
+}
+
+.form-group textarea{
+    min-height:110px;
+    resize:vertical;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus{
+    border-color:#111111;
+    box-shadow:
+        0 0 0 2px
+        rgba(0,0,0,.06);
+}
+
+
+/* =========================================
+   BOTTOM NAVIGATION
+========================================= */
+
+.bottom-nav{
+    position:fixed;
+    left:0;
+    right:0;
+    bottom:0;
+    width:100%;
+    height:72px;
+    background:#ffffff;
+    border-top:1px solid #eeeeee;
+    display:flex;
+    align-items:center;
+    justify-content:space-around;
+    z-index:9999;
+    padding:
+        5px
+        8px
+        calc(5px + env(safe-area-inset-bottom));
+}
+
+.bottom-nav a{
+    position:relative;
+    width:25%;
+    height:62px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:3px;
+    color:#777777;
+    background:transparent;
+    border:0;
+    outline:none;
+    text-decoration:none;
+}
+
+.bottom-nav a:hover{
+    color:#111111;
+}
+
+.bottom-nav a.active{
+    color:#111111;
+}
+
+
+/* =========================================
+   IMPORTANT:
+   REMOVE MUSTARD / ACTIVE SPOT
+========================================= */
+
+.bottom-nav a.active::before,
+.bottom-nav a.active::after,
+.bottom-nav a::before,
+.bottom-nav a::after{
+    content:none !important;
+    display:none !important;
+    width:0 !important;
+    height:0 !important;
+    border:0 !important;
+    background:transparent !important;
+    box-shadow:none !important;
+}
+
+
+/* =========================================
+   NAV ICONS
+========================================= */
+
+.bottom-nav .nav-icon{
+    width:25px;
+    height:25px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:25px;
+    line-height:1;
+    flex-shrink:0;
+}
+
+.bottom-nav .home-icon{
+    font-size:25px;
+    line-height:1;
+}
+
+.bottom-nav .go-live-icon{
+    font-size:25px;
+    line-height:1;
+}
+
+
+/* =========================================
+   EXPLORE SVG
+========================================= */
+
+.bottom-nav .explore-icon,
+.bottom-nav svg{
+    width:25px;
+    height:25px;
+    min-width:25px;
+    min-height:25px;
+    display:block;
+}
+
+.bottom-nav svg{
+    fill:none;
+    stroke:currentColor;
+    stroke-width:2;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+}
+
+
+/* =========================================
+   NAV PROFILE
+========================================= */
+
+.bottom-nav .nav-profile{
+    width:25px;
+    height:25px;
+    min-width:25px;
+    min-height:25px;
+    border-radius:50%;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#222222;
+    color:#ffffff;
+    font-size:14px;
+    line-height:1;
+    flex-shrink:0;
+}
+
+.bottom-nav .nav-profile img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    border-radius:50%;
+}
+
+.bottom-nav .nav-profile.default-profile{
+    background:#222222;
+    color:#ffffff;
+}
+
+
+/* =========================================
+   NAV LABELS
+========================================= */
+
+.bottom-nav .nav-label{
+    font-size:11px;
+    line-height:1;
+    font-weight:600;
+    white-space:nowrap;
+}
+
+
+/* =========================================
+   PROFILE PAGE BASE
+========================================= */
+
+.profile-page{
+    width:100%;
+    min-height:100vh;
+    padding-bottom:90px;
+}
+
+.profile-container{
+    width:100%;
+    max-width:700px;
+    margin:0 auto;
+    padding:18px;
+}
+
+.profile-card{
+    width:100%;
+    background:#ffffff;
+    border:1px solid #eeeeee;
+    border-radius:18px;
+    padding:20px;
+    margin-bottom:16px;
+}
+
+.profile-header{
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+}
+
+
+/* =========================================
+   PROFILE AVATAR
+========================================= */
+
+.profile-avatar,
+#profileAvatar,
+#avatarPreview{
+    width:96px;
+    height:96px;
+    min-width:96px;
+    min-height:96px;
+    border-radius:50%;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#222222;
+    color:#ffffff;
+    font-size:28px;
+    font-weight:700;
+    object-fit:cover;
+}
+
+.profile-avatar img,
+#profileAvatar img,
+#avatarPreview img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    border-radius:50%;
+  }
+/* =========================================
+   PROFILE INFORMATION
+========================================= */
+
+.profile-name{
+    margin-top:14px;
+    font-size:24px;
+    font-weight:800;
+    line-height:1.2;
+    color:#111111;
+}
+
+.profile-username{
+    margin-top:5px;
+    font-size:14px;
+    color:#777777;
+}
+
+.profile-bio{
+    width:100%;
+    max-width:520px;
+    margin-top:12px;
+    font-size:14px;
+    line-height:1.5;
+    color:#444444;
+    white-space:pre-wrap;
+    overflow-wrap:anywhere;
+}
+
+
+/* =========================================
+   PROFILE STATS
+========================================= */
+
+.profile-stats{
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:40px;
+    margin-top:20px;
+}
+
+.profile-stat{
+    min-width:70px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+}
+
+.profile-stat strong{
+    font-size:18px;
+    font-weight:800;
+    color:#111111;
+}
+
+.profile-stat span{
+    margin-top:3px;
+    font-size:12px;
+    color:#777777;
+}
+
+
+/* =========================================
+   PROFILE ACTIONS
+========================================= */
+
+.profile-actions{
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    margin-top:18px;
+}
+
+.profile-actions button{
+    min-height:42px;
+    padding:9px 18px;
+    border-radius:10px;
+    font-size:14px;
+    font-weight:700;
+}
+
+.edit-profile-btn{
+    background:#111111;
+    color:#ffffff;
+}
+
+.change-password-btn{
+    background:#f1f1f1;
+    color:#111111;
+}
+
+
+/* =========================================
+   PROFILE FORM
+========================================= */
+
+#createProfile,
+.create-profile{
+    width:100%;
+}
+
+#profileFormTitle{
+    margin-bottom:18px;
+    font-size:22px;
+    font-weight:800;
+    color:#111111;
+}
+
+.profile-form{
+    width:100%;
+}
+
+.profile-form-actions{
+    width:100%;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-top:8px;
+}
+
+.profile-form-actions button{
+    flex:1;
+}
+
+
+/* =========================================
+   PROFILE PHOTO CONTROLS
+========================================= */
+
+.profile-photo-section{
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    margin-bottom:22px;
+}
+
+.profile-photo-controls{
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    margin-top:14px;
+    flex-wrap:wrap;
+}
+
+.choose-photo-btn,
+#choosePhotoBtn{
+    min-height:42px;
+    padding:10px 16px;
+    border-radius:10px;
+    background:#111111;
+    color:#ffffff;
+    font-size:14px;
+    font-weight:700;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.delete-photo-btn,
+#deletePhotoBtn{
+    min-height:42px;
+    padding:10px 16px;
+    border-radius:10px;
+    background:#eeeeee;
+    color:#111111;
+    font-size:14px;
+    font-weight:700;
+    display:none;
+    align-items:center;
+    justify-content:center;
+}
+
+.delete-photo-btn:disabled,
+#deletePhotoBtn:disabled{
+    opacity:.55;
+    cursor:not-allowed;
+}
+
+#profilePhotoInput{
+    display:none !important;
+}
+
+
+/* =========================================
+   ACCOUNT SECTION
+========================================= */
+
+.account-section{
+    width:100%;
+    margin-top:20px;
+}
+
+.account-title{
+    margin-bottom:12px;
+    font-size:18px;
+    font-weight:800;
+    color:#111111;
+}
+
+.account-row{
+    width:100%;
+    min-height:54px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:15px;
+    padding:10px 0;
+    border-bottom:1px solid #eeeeee;
+}
+
+.account-row:last-child{
+    border-bottom:0;
+}
+
+.account-row-label{
+    font-size:13px;
+    font-weight:700;
+    color:#444444;
+}
+
+.account-row-value{
+    max-width:65%;
+    font-size:14px;
+    color:#777777;
+    text-align:right;
+    overflow-wrap:anywhere;
+}
+
+.account-password{
+    letter-spacing:2px;
+}
+
+
+/* =========================================
+   PASSWORD SECTION
+========================================= */
+
+#passwordSection,
+.password-section{
+    width:100%;
+    margin-top:18px;
+    padding-top:18px;
+    border-top:1px solid #eeeeee;
+}
+
+.password-section-title{
+    margin-bottom:15px;
+    font-size:18px;
+    font-weight:800;
+    color:#111111;
+}
+
+.password-actions{
+    width:100%;
+    display:flex;
+    gap:10px;
+}
+
+.password-actions button{
+    flex:1;
+}
+
+
+/* =========================================
+   LOGOUT
+========================================= */
+
+.logout-section{
+    width:100%;
+    margin-top:20px;
+    padding-top:18px;
+    border-top:1px solid #eeeeee;
+}
+
+.logout-btn,
+#logoutBtn{
+    width:100%;
+    min-height:46px;
+    border-radius:11px;
+    background:#111111;
+    color:#ffffff;
+    font-size:14px;
+    font-weight:700;
+}
+
+.logout-btn:active,
+#logoutBtn:active{
+    transform:scale(.98);
+}
+
+
+/* =========================================
+   WATCH PAGE
+========================================= */
+
+.watch-page{
+    width:100%;
+    min-height:100vh;
+    padding-bottom:90px;
+}
+
+.watch-container{
+    width:100%;
+    max-width:1000px;
+    margin:0 auto;
+    padding:15px;
+}
+
+.video-container{
+    width:100%;
+    background:#000000;
+    border-radius:14px;
+    overflow:hidden;
+    position:relative;
+}
+
+.video-container video,
+#liveVideo{
+    width:100%;
+    height:auto;
+    min-height:240px;
+    max-height:70vh;
+    display:block;
+    object-fit:contain;
+    background:#000000;
+}
+
+.stream-info{
+    width:100%;
+    padding:15px 0;
+}
+
+.stream-title{
+    font-size:20px;
+    font-weight:800;
+    line-height:1.3;
+}
+
+.stream-meta{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-top:7px;
+    font-size:13px;
+    color:#777777;
+}
+
+
+/* =========================================
+   WATCH CREATOR
+========================================= */
+
+.creator-row{
+    width:100%;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-top:12px;
+}
+
+.creator-avatar{
+    width:40px;
+    height:40px;
+    min-width:40px;
+    border-radius:50%;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#222222;
+    color:#ffffff;
+}
+
+.creator-avatar img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    border-radius:50%;
+}
+
+.creator-info{
+    min-width:0;
+    flex:1;
+}
+
+.creator-name{
+    font-size:14px;
+    font-weight:800;
+    color:#111111;
+}
+
+.creator-username{
+    margin-top:2px;
+    font-size:12px;
+    color:#777777;
+}
+
+.follow-btn{
+    min-height:38px;
+    padding:8px 15px;
+    border-radius:9px;
+    background:#111111;
+    color:#ffffff;
+    font-size:13px;
+    font-weight:700;
+}
+
+
+/* =========================================
+   WATCH ACTIONS
+========================================= */
+
+.watch-actions{
+    width:100%;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-top:14px;
+    flex-wrap:wrap;
+}
+
+.watch-action-btn{
+    min-height:40px;
+    padding:9px 14px;
+    border-radius:9px;
+    background:#f1f1f1;
+    color:#111111;
+    font-size:13px;
+    font-weight:700;
+}
+
+.support-btn{
+    background:#111111;
+    color:#ffffff;
+}
+
+
+/* =========================================
+   WATCHING COUNT
+========================================= */
+
+.watching-count{
+    display:flex;
+    align-items:center;
+    gap:5px;
+    font-size:13px;
+    color:#666666;
+}
+
+.watching-count .eye-icon,
+.eye-icon{
+    display:none !important;
+}
+
+
+/* =========================================
+   CHAT
+========================================= */
+
+.chat-section{
+    width:100%;
+    margin-top:20px;
+    border:1px solid #eeeeee;
+    border-radius:14px;
+    overflow:hidden;
+    background:#ffffff;
+}
+
+.chat-header{
+    width:100%;
+    padding:13px 15px;
+    border-bottom:1px solid #eeeeee;
+    font-size:15px;
+    font-weight:800;
+}
+
+.chat-messages{
+    width:100%;
+    height:300px;
+    overflow-y:auto;
+    padding:12px;
+}
+
+.chat-message{
+    width:100%;
+    display:flex;
+    align-items:flex-start;
+    gap:8px;
+    margin-bottom:10px;
+}
+
+.chat-message-avatar{
+    width:28px;
+    height:28px;
+    min-width:28px;
+    border-radius:50%;
+    overflow:hidden;
+    background:#222222;
+}
+
+.chat-message-avatar img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.chat-message-content{
+    min-width:0;
+    flex:1;
+}
+
+.chat-message-name{
+    font-size:12px;
+    font-weight:800;
+    color:#111111;
+}
+
+.chat-message-text{
+    margin-top:2px;
+    font-size:13px;
+    line-height:1.4;
+    color:#333333;
+    overflow-wrap:anywhere;
+}
+
+.chat-input-area{
+    width:100%;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:10px;
+    border-top:1px solid #eeeeee;
+}
+
+.chat-input-area input{
+    flex:1;
+    min-width:0;
+    height:42px;
+    border:1px solid #dddddd;
+    border-radius:10px;
+    padding:0 12px;
+    outline:none;
+}
+
+.chat-input-area input:focus{
+    border-color:#111111;
+}
+
+.chat-send-btn{
+    width:42px;
+    height:42px;
+    min-width:42px;
+    border-radius:10px;
+    background:#111111;
+    color:#ffffff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:18px;
+    font-weight:700;
+}
+
+
+/* =========================================
+   STREAM ENDED
+========================================= */
+
+.stream-ended{
+    width:100%;
+    min-height:260px;
+    border-radius:14px;
+    background:#f5f5f5;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:25px;
+}
+
+.stream-ended h2{
+    font-size:22px;
+    font-weight:800;
+}
+
+.stream-ended p{
+    margin-top:8px;
+    font-size:14px;
+    color:#777777;
+}
+
+
+/* =========================================
+   GO LIVE
+========================================= */
+
+.golive-page{
+    width:100%;
+    min-height:100vh;
+    padding-bottom:90px;
+}
+
+.golive-container{
+    width:100%;
+    max-width:900px;
+    margin:0 auto;
+    padding:18px;
+}
+
+.camera-box{
+    width:100%;
+    max-width:100%;
+    background:#000000;
+    border-radius:14px;
+    overflow:hidden;
+    position:relative;
+}
+
+.camera-box video,
+#cameraPreview{
+    width:100%;
+    height:auto;
+    min-height:250px;
+    max-height:65vh;
+    display:block;
+    object-fit:cover;
+    background:#000000;
+}
+
+.media-controls{
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    margin-top:14px;
+    flex-wrap:wrap;
+}
+
+.media-controls button{
+    min-height:42px;
+    padding:9px 14px;
+    border-radius:10px;
+    background:#f1f1f1;
+    color:#111111;
+    font-size:13px;
+    font-weight:700;
+}
+
+.start-streaming-btn{
+    width:100%;
+    min-height:50px;
+    margin-top:15px;
+    border-radius:11px;
+    background:#111111;
+    color:#ffffff;
+    font-size:15px;
+    font-weight:800;
+}
+
+.end-streaming-btn{
+    width:100%;
+    min-height:50px;
+    margin-top:10px;
+    border-radius:11px;
+    background:#111111;
+    color:#ffffff;
+    font-size:15px;
+    font-weight:800;
+  }
+/* =========================================
+   GO LIVE DETAILS
+========================================= */
+
+.golive-details{
+    width:100%;
+    margin-top:18px;
+}
+
+.golive-details input,
+.golive-details textarea{
+    width:100%;
+    border:1px solid #dddddd;
+    background:#ffffff;
+    color:#111111;
+    border-radius:11px;
+    outline:none;
+    padding:13px 14px;
+}
+
+.golive-details input{
+    height:48px;
+}
+
+.golive-details textarea{
+    min-height:90px;
+    resize:vertical;
+}
+
+.golive-details input:focus,
+.golive-details textarea:focus{
+    border-color:#111111;
+}
+
+
+/* =========================================
+   THUMBNAIL
+========================================= */
+
+.thumbnail-section{
+    width:100%;
+    margin-top:16px;
+}
+
+.thumbnail-preview{
+    width:100%;
+    max-width:420px;
+    aspect-ratio:16 / 9;
+    margin:0 auto 12px;
+    border-radius:12px;
+    overflow:hidden;
+    background:#eeeeee;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.thumbnail-preview img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.thumbnail-placeholder{
+    color:#777777;
+    font-size:14px;
+    text-align:center;
+    padding:15px;
+}
+
+.thumbnail-input{
+    display:none !important;
+}
+
+.choose-thumbnail-btn{
+    width:100%;
+    min-height:44px;
+    border-radius:10px;
+    background:#f1f1f1;
+    color:#111111;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:14px;
+    font-weight:700;
+}
+
+
+/* =========================================
+   EXPLORE PAGE
+========================================= */
+
+.explore-page{
+    width:100%;
+    min-height:100vh;
+    padding-bottom:90px;
+}
+
+.explore-container{
+    width:100%;
+    max-width:1100px;
+    margin:0 auto;
+    padding:18px;
+}
+
+.explore-header{
+    width:100%;
+    margin-bottom:18px;
+}
+
+.explore-title{
+    font-size:25px;
+    font-weight:800;
+    color:#111111;
+}
+
+.explore-subtitle{
+    margin-top:5px;
+    font-size:13px;
+    color:#777777;
+}
+
+
+/* =========================================
+   EXPLORE SEARCH
+========================================= */
+
+.explore-search{
+    width:100%;
+    position:relative;
+    margin-bottom:18px;
+}
+
+.explore-search input{
+    width:100%;
+    height:48px;
+    border:1px solid #dddddd;
+    border-radius:12px;
+    background:#ffffff;
+    color:#111111;
+    padding:0 45px 0 14px;
+    outline:none;
+}
+
+.explore-search input:focus{
+    border-color:#111111;
+}
+
+.explore-search-icon{
+    position:absolute;
+    right:13px;
+    top:50%;
+    width:22px;
+    height:22px;
+    transform:translateY(-50%);
+    pointer-events:none;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.explore-search-icon svg{
+    width:22px;
+    height:22px;
+    fill:none;
+    stroke:currentColor;
+    stroke-width:2;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+}
+
+
+/*
+ * There should NOT be another floating search
+ * button in the top-right corner of Explore.
+ */
+
+.explore-page > .search-button,
+.explore-page .top-search-button,
+.explore-page .search-icon-button,
+.explore-page .header-search{
+    display:none !important;
+}
+
+
+/* =========================================
+   CATEGORY ROW
+========================================= */
+
+.category-row{
+    width:100%;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    overflow-x:auto;
+    padding-bottom:5px;
+    scrollbar-width:none;
+}
+
+.category-row::-webkit-scrollbar{
+    display:none;
+}
+
+.category-chip{
+    flex:0 0 auto;
+    min-height:36px;
+    padding:8px 14px;
+    border-radius:20px;
+    background:#f1f1f1;
+    color:#444444;
+    font-size:13px;
+    font-weight:700;
+    border:0;
+}
+
+.category-chip.active{
+    background:#111111;
+    color:#ffffff;
+}
+
+
+/* =========================================
+   STREAM GRID
+========================================= */
+
+.stream-grid{
+    width:100%;
+    display:grid;
+    grid-template-columns:
+        repeat(
+            auto-fill,
+            minmax(260px, 1fr)
+        );
+    gap:16px;
+}
+
+.stream-card{
+    width:100%;
+    background:#ffffff;
+    border:1px solid #eeeeee;
+    border-radius:14px;
+    overflow:hidden;
+    cursor:pointer;
+    transition:
+        transform .15s ease,
+        box-shadow .15s ease;
+}
+
+.stream-card:hover{
+    transform:translateY(-2px);
+    box-shadow:
+        0 5px 18px
+        rgba(0,0,0,.08);
+}
+
+.stream-thumbnail{
+    width:100%;
+    aspect-ratio:16 / 9;
+    background:#eeeeee;
+    overflow:hidden;
+    position:relative;
+}
+
+.stream-thumbnail img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.stream-placeholder{
+    width:100%;
+    height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#777777;
+    font-size:14px;
+}
+
+.live-badge{
+    position:absolute;
+    top:9px;
+    left:9px;
+    padding:5px 8px;
+    border-radius:6px;
+    background:#111111;
+    color:#ffffff;
+    font-size:10px;
+    font-weight:800;
+}
+
+.stream-card-info{
+    width:100%;
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    padding:12px;
+}
+
+.stream-card-avatar{
+    width:36px;
+    height:36px;
+    min-width:36px;
+    border-radius:50%;
+    overflow:hidden;
+    background:#222222;
+    color:#ffffff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.stream-card-avatar img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.stream-card-text{
+    min-width:0;
+    flex:1;
+}
+
+.stream-card-title{
+    font-size:14px;
+    font-weight:800;
+    line-height:1.35;
+    color:#111111;
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+}
+
+.stream-card-creator{
+    margin-top:4px;
+    font-size:12px;
+    color:#777777;
+}
+
+.stream-card-viewers{
+    margin-top:3px;
+    font-size:11px;
+    color:#999999;
+}
+
+
+/* =========================================
+   EMPTY STATES
+========================================= */
+
+.empty-state{
+    width:100%;
+    min-height:220px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:30px 20px;
+    color:#777777;
+}
+
+.empty-state h3{
+    color:#111111;
+    font-size:18px;
+    font-weight:800;
+}
+
+.empty-state p{
+    max-width:400px;
+    margin-top:7px;
+    font-size:13px;
+    line-height:1.5;
+}
+
+
+/* =========================================
+   HOME PAGE
+========================================= */
+
+.home-page{
+    width:100%;
+    min-height:100vh;
+    padding-bottom:90px;
+}
+
+.home-container{
+    width:100%;
+    max-width:1100px;
+    margin:0 auto;
+    padding:18px;
+}
+
+.home-header{
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom:18px;
+}
+
+.home-title{
+    font-size:25px;
+    font-weight:800;
+    color:#111111;
+}
+
+.home-live-list{
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+}
+
+
+/* =========================================
+   HOME LIVE CARD
+========================================= */
+
+.live-card{
+    width:100%;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:12px;
+    border:1px solid #eeeeee;
+    border-radius:14px;
+    background:#ffffff;
+    cursor:pointer;
+}
+
+.live-card-thumbnail{
+    width:150px;
+    aspect-ratio:16 / 9;
+    flex-shrink:0;
+    border-radius:10px;
+    overflow:hidden;
+    background:#eeeeee;
+}
+
+.live-card-thumbnail img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.live-card-info{
+    min-width:0;
+    flex:1;
+}
+
+.live-card-title{
+    font-size:15px;
+    font-weight:800;
+    line-height:1.35;
+    color:#111111;
+}
+
+.live-card-user{
+    margin-top:5px;
+    font-size:12px;
+    color:#777777;
+}
+
+.live-card-viewers{
+    margin-top:4px;
+    font-size:11px;
+    color:#999999;
+}
+
+
+/* =========================================
+   SEARCH / DISCOVERY CLEANUP
+========================================= */
+
+.top-search,
+.top-search-icon,
+.search-top-right,
+.header-search-icon,
+.page-search-button{
+    display:none !important;
+}
+
+
+/*
+ * Do not hide the actual Explore search field.
+ */
+
+.explore-search,
+.explore-search input,
+.explore-search-icon{
+    display:flex;
+}
+
+.explore-search input{
+    display:block;
+}
+
+
+/* =========================================
+   COMMON STATUS
+========================================= */
+
+.status-message{
+    width:100%;
+    padding:12px 14px;
+    border-radius:10px;
+    background:#f5f5f5;
+    color:#555555;
+    font-size:13px;
+    line-height:1.45;
+}
+
+.error-message{
+    width:100%;
+    padding:12px 14px;
+    border-radius:10px;
+    background:#f5f5f5;
+    color:#222222;
+    font-size:13px;
+    line-height:1.45;
+}
+
+.success-message{
+    width:100%;
+    padding:12px 14px;
+    border-radius:10px;
+    background:#f1f1f1;
+    color:#111111;
+    font-size:13px;
+    line-height:1.45;
+}
+
+
+/* =========================================
+   LOADING
+========================================= */
+
+.loading{
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:30px 15px;
+    color:#777777;
+    font-size:13px;
+}
+
+.spinner{
+    width:20px;
+    height:20px;
+    border:2px solid #dddddd;
+    border-top-color:#111111;
+    border-radius:50%;
+    animation:
+        canvas-spin
+        .8s linear infinite;
+}
+
+@keyframes canvas-spin{
+
+    from{
+        transform:rotate(0deg);
+    }
+
+    to{
+        transform:rotate(360deg);
+    }
+}
+
+
+/* =========================================
+   HIDDEN HELPERS
+========================================= */
+
+.hidden{
+    display:none !important;
+}
+
+[hidden]{
+    display:none !important;
+  }
+/* =========================================
+   RESPONSIVE - TABLET
+========================================= */
+
+@media (max-width:900px){
+
+    .main-content,
+    .container,
+    .explore-container,
+    .home-container,
+    .watch-container,
+    .golive-container{
+        padding-left:16px;
+        padding-right:16px;
+    }
+
+    .stream-grid{
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(0,1fr)
+            );
+    }
+
+    .camera-box video,
+    #cameraPreview{
+        min-height:220px;
+    }
+
+    .video-container video,
+    #liveVideo{
+        min-height:220px;
+    }
+}
+
+
+/* =========================================
+   RESPONSIVE - MOBILE
+========================================= */
+
+@media (max-width:600px){
+
+    body{
+        font-size:14px;
+    }
+
+    .page,
+    .profile-page,
+    .watch-page,
+    .golive-page,
+    .explore-page,
+    .home-page{
+        padding-bottom:82px;
+    }
+
+
+    /* -------------------------------
+       TOP NAV
+    ------------------------------- */
+
+    .top-nav{
+        height:58px;
+        padding:0 14px;
+    }
+
+    .logo{
+        font-size:22px;
+    }
+
+
+    /* -------------------------------
+       CONTENT
+    ------------------------------- */
+
+    .main-content,
+    .container,
+    .profile-container,
+    .explore-container,
+    .home-container,
+    .watch-container,
+    .golive-container{
+        padding:14px;
+    }
+
+
+    /* -------------------------------
+       BOTTOM NAV
+    ------------------------------- */
+
+    .bottom-nav{
+        height:68px;
+        padding:
+            4px
+            5px
+            calc(
+                4px +
+                env(safe-area-inset-bottom)
+            );
+    }
+
+    .bottom-nav a{
+        height:58px;
+        width:25%;
+    }
+
+    .bottom-nav .nav-icon,
+    .bottom-nav .explore-icon,
+    .bottom-nav svg{
+        width:24px;
+        height:24px;
+        min-width:24px;
+        min-height:24px;
+    }
+
+    .bottom-nav .home-icon,
+    .bottom-nav .go-live-icon{
+        font-size:24px;
+    }
+
+    .bottom-nav .nav-profile{
+        width:24px;
+        height:24px;
+        min-width:24px;
+        min-height:24px;
+    }
+
+    .bottom-nav .nav-label{
+        font-size:10px;
+    }
+
+
+    /* -------------------------------
+       PROFILE
+    ------------------------------- */
+
+    .profile-card{
+        padding:16px;
+        border-radius:15px;
+    }
+
+    .profile-avatar,
+    #profileAvatar,
+    #avatarPreview{
+        width:88px;
+        height:88px;
+        min-width:88px;
+        min-height:88px;
+    }
+
+    .profile-name{
+        font-size:22px;
+    }
+
+    .profile-stats{
+        gap:25px;
+    }
+
+    .profile-actions{
+        flex-direction:column;
+        width:100%;
+    }
+
+    .profile-actions button{
+        width:100%;
+    }
+
+    .profile-form-actions{
+        flex-direction:column;
+    }
+
+    .profile-form-actions button{
+        width:100%;
+    }
+
+    .profile-photo-controls{
+        flex-direction:column;
+    }
+
+    .choose-photo-btn,
+    #choosePhotoBtn,
+    .delete-photo-btn,
+    #deletePhotoBtn{
+        width:100%;
+    }
+
+    .account-row{
+        align-items:flex-start;
+        flex-direction:column;
+        gap:4px;
+    }
+
+    .account-row-value{
+        max-width:100%;
+        text-align:left;
+    }
+
+
+    /* -------------------------------
+       EXPLORE
+    ------------------------------- */
+
+    .explore-title{
+        font-size:23px;
+    }
+
+    .stream-grid{
+        grid-template-columns:1fr;
+        gap:12px;
+    }
+
+    .stream-card-info{
+        padding:10px;
+    }
+
+
+    /* -------------------------------
+       HOME
+    ------------------------------- */
+
+    .home-title{
+        font-size:23px;
+    }
+
+    .live-card{
+        padding:10px;
+    }
+
+    .live-card-thumbnail{
+        width:125px;
+    }
+
+    .live-card-title{
+        font-size:14px;
+    }
+
+
+    /* -------------------------------
+       WATCH
+    ------------------------------- */
+
+    .watch-container{
+        padding:10px;
+    }
+
+    .video-container{
+        border-radius:10px;
+    }
+
+    .video-container video,
+    #liveVideo{
+        min-height:200px;
+        max-height:60vh;
+    }
+
+    .stream-title{
+        font-size:18px;
+    }
+
+    .creator-row{
+        gap:8px;
+    }
+
+    .creator-avatar{
+        width:38px;
+        height:38px;
+        min-width:38px;
+    }
+
+    .follow-btn{
+        padding:8px 12px;
+    }
+
+    .watch-actions{
+        gap:8px;
+    }
+
+    .chat-messages{
+        height:260px;
+    }
+
+
+    /* -------------------------------
+       GO LIVE
+    ------------------------------- */
+
+    .golive-container{
+        padding:12px;
+    }
+
+    .camera-box{
+        border-radius:10px;
+    }
+
+    .camera-box video,
+    #cameraPreview{
+        min-height:200px;
+        max-height:60vh;
+    }
+
+    .media-controls{
+        gap:8px;
+    }
+
+    .media-controls button{
+        flex:1;
+        min-width:
+            calc(50% - 8px);
+    }
+}
+
+
+/* =========================================
+   VERY SMALL PHONES
+========================================= */
+
+@media (max-width:380px){
+
+    .top-nav{
+        padding:0 11px;
+    }
+
+    .logo{
+        font-size:21px;
+    }
+
+    .main-content,
+    .container,
+    .profile-container,
+    .explore-container,
+    .home-container,
+    .watch-container,
+    .golive-container{
+        padding-left:10px;
+        padding-right:10px;
+    }
+
+    .bottom-nav .nav-label{
+        font-size:9px;
+    }
+
+    .bottom-nav .nav-icon,
+    .bottom-nav .explore-icon,
+    .bottom-nav svg{
+        width:23px;
+        height:23px;
+        min-width:23px;
+        min-height:23px;
+    }
+
+    .bottom-nav .home-icon,
+    .bottom-nav .go-live-icon{
+        font-size:23px;
+    }
+
+    .bottom-nav .nav-profile{
+        width:23px;
+        height:23px;
+        min-width:23px;
+        min-height:23px;
+    }
+
+    .live-card-thumbnail{
+        width:110px;
+    }
+
+    .profile-stats{
+        gap:18px;
+    }
+}
+
+
+/* =========================================
+   TOUCH DEVICES
+========================================= */
+
+@media (hover:none){
+
+    .stream-card:hover{
+        transform:none;
+        box-shadow:none;
+    }
+
+    .primary-btn:hover{
+        opacity:1;
+    }
+
+    .bottom-nav a:hover{
+        color:#777777;
+    }
+
+    .bottom-nav a.active:hover{
+        color:#111111;
+    }
+}
+
+
+/* =========================================
+   ACCESSIBILITY
+========================================= */
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible{
+    outline:2px solid #111111;
+    outline-offset:2px;
+}
+
+
+/* =========================================
+   PREVENT HORIZONTAL OVERFLOW
+========================================= */
+
+html,
+body{
+    max-width:100%;
+    overflow-x:hidden;
+}
+
+video,
+canvas,
+iframe{
+    max-width:100%;
+}
+
+
+/* =========================================
+   NO EXTRA PROFILE ICON ON TOP
+========================================= */
+
+.top-nav .profile-icon,
+.top-nav .profile-button,
+.top-nav .top-profile,
+.top-nav .header-profile{
+    display:none !important;
+}
+
+
+/* =========================================
+   NO EXTRA SEARCH ICON ON PAGES
+========================================= */
+
+.watch-page .search-icon,
+.watch-page .search-button,
+.watch-page .top-search,
+.golive-page .search-icon,
+.golive-page .search-button,
+.golive-page .top-search,
+.profile-page .search-icon,
+.profile-page .search-button,
+.profile-page .top-search{
+    display:none !important;
+}
+
+
+/* =========================================
+   FINAL ACTIVE NAV RESET
+========================================= */
+
+.bottom-nav a.active{
+    border:0 !important;
+    outline:0 !important;
+    box-shadow:none !important;
+}
+
+.bottom-nav a.active::before,
+.bottom-nav a.active::after{
+    display:none !important;
+    content:none !important;
+}
+
+
+/* =========================================
+   PROFILE IMAGE DEFAULT
+========================================= */
+
+.default-profile,
+.profile-placeholder{
+    background:#222222 !important;
+    color:#ffffff !important;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+}
+
+
+/* =========================================
+   IMAGE SAFETY
+========================================= */
+
+.profile-avatar img,
+#profileAvatar img,
+#avatarPreview img,
+.nav-profile img,
+.creator-avatar img,
+.stream-card-avatar img,
+.live-card-thumbnail img,
+.thumbnail-preview img{
+    max-width:none;
+}
+
+
+/* =========================================
+   DISABLED STATE
+========================================= */
+
+button:disabled{
+    pointer-events:none;
+}
+
+
+/* =========================================
+   END OF CANVAS STYLE
+========================================= */
