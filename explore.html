@@ -1,0 +1,2219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Canvas</title>
+
+<link
+    rel="stylesheet"
+    href="style.css"
+>
+
+<style>
+
+/* =========================================
+   CANVAS EXPLORE
+   PART 1 / 3
+========================================= */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html,
+body{
+    width:100%;
+    min-height:100%;
+}
+
+body{
+    background:#fff;
+    color:#4b3326;
+    font-family:Arial,Helvetica,sans-serif;
+    padding-bottom:82px;
+}
+
+
+/* =========================================
+   TOP NAV
+   SAME AS STREAM
+========================================= */
+
+.navbar{
+    width:100%;
+    height:70px;
+
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+
+    padding:0 20px;
+
+    background:#fff;
+
+    border-bottom:2px solid #d4a62a;
+
+    position:sticky;
+    top:0;
+
+    z-index:1000;
+}
+
+.logo{
+    font-size:32px;
+    font-weight:800;
+    color:#4b3326;
+}
+
+
+/*
+   IMPORTANT:
+   Explore does NOT have the
+   top-right profile icon.
+*/
+
+#topProfileIcon{
+    display:none !important;
+}
+
+
+/* =========================================
+   EXPLORE AREA
+========================================= */
+
+.container{
+    width:100%;
+    max-width:820px;
+
+    margin:0 auto;
+
+    padding:24px 18px 30px;
+}
+
+
+/* =========================================
+   SEARCH
+========================================= */
+
+.search-box{
+    width:100%;
+
+    display:flex;
+    align-items:center;
+
+    margin-bottom:20px;
+
+    position:relative;
+}
+
+.search-input{
+    width:100%;
+    height:48px;
+
+    padding:0 48px 0 17px;
+
+    border:1px solid #eadfd8;
+    border-radius:14px;
+
+    background:#fff;
+
+    color:#4b3326;
+
+    font-family:Arial,Helvetica,sans-serif;
+    font-size:15px;
+
+    outline:none;
+
+    box-shadow:
+        0 4px 15px
+        rgba(75,51,38,.05);
+}
+
+.search-input::placeholder{
+    color:#8a766a;
+}
+
+.search-input:focus{
+    border-color:#d4a62a;
+}
+
+.search-icon{
+    position:absolute;
+
+    right:15px;
+
+    width:21px;
+    height:21px;
+
+    pointer-events:none;
+}
+
+
+/* =========================================
+   CATEGORIES
+========================================= */
+
+.categories{
+    width:100%;
+
+    display:flex;
+    align-items:center;
+
+    gap:9px;
+
+    overflow-x:auto;
+
+    padding-bottom:5px;
+    margin-bottom:25px;
+
+    scrollbar-width:none;
+
+    -ms-overflow-style:none;
+}
+
+.categories::-webkit-scrollbar{
+    display:none;
+}
+
+.category{
+    flex-shrink:0;
+
+    padding:9px 15px;
+
+    border:1px solid #dfd1c7;
+    border-radius:20px;
+
+    background:#fff;
+
+    color:#5b4435;
+
+    font-family:Arial,Helvetica,sans-serif;
+    font-size:14px;
+    font-weight:500;
+
+    cursor:pointer;
+
+    white-space:nowrap;
+
+    outline:none;
+
+    position:relative;
+    z-index:2;
+
+    pointer-events:auto;
+
+    -webkit-tap-highlight-color:transparent;
+
+    transition:
+        background .18s ease,
+        color .18s ease,
+        border-color .18s ease,
+        transform .12s ease;
+}
+
+.category:hover{
+    border-color:#4b3326;
+}
+
+.category:active{
+    transform:scale(.96);
+}
+
+.category.active{
+    background:#4b3326;
+    color:#fff;
+
+    border-color:#4b3326;
+}
+
+
+/* =========================================
+   LIVE HEADER
+========================================= */
+
+.live-section-header{
+    width:100%;
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    margin-bottom:15px;
+}
+
+.live-section-header h2{
+    margin:0;
+
+    font-size:24px;
+    line-height:1.2;
+
+    font-weight:700;
+
+    color:#4A3728;
+}
+
+
+/* =========================================
+   REFRESH BUTTON
+========================================= */
+
+.refresh-btn{
+    width:40px;
+    height:40px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    flex-shrink:0;
+
+    padding:0;
+
+    border:0;
+    outline:none;
+
+    border-radius:50%;
+
+    background:transparent;
+
+    box-shadow:none;
+
+    color:#4A3728;
+
+    font-family:Arial,sans-serif;
+
+    font-size:25px;
+    font-weight:600;
+
+    cursor:pointer;
+
+    -webkit-tap-highlight-color:transparent;
+
+    transition:
+        transform .2s ease,
+        opacity .2s ease;
+}
+
+.refresh-btn:hover{
+    background:transparent;
+}
+
+.refresh-btn:focus{
+    outline:none;
+    box-shadow:none;
+}
+
+.refresh-btn:active{
+    transform:scale(.90);
+}
+
+.refresh-btn:disabled{
+    opacity:.6;
+    cursor:default;
+}
+
+.refresh-btn.spinning{
+    animation:
+        canvasSpin .7s linear infinite;
+}
+
+@keyframes canvasSpin{
+
+    from{
+        transform:rotate(0deg);
+    }
+
+    to{
+        transform:rotate(360deg);
+    }
+
+}
+
+
+/* =========================================
+   STREAM LIST
+========================================= */
+
+.stream-list{
+    width:100%;
+
+    display:flex;
+    flex-direction:column;
+
+    gap:15px;
+}
+
+
+/* =========================================
+   STREAM CARD
+========================================= */
+
+.stream-card{
+    width:100%;
+
+    background:#fff;
+
+    border:1px solid #eadfd8;
+
+    border-radius:18px;
+
+    overflow:hidden;
+
+    box-shadow:
+        0 5px 20px
+        rgba(75,51,38,.07);
+
+    cursor:pointer;
+
+    -webkit-tap-highlight-color:transparent;
+}
+
+.stream-thumbnail{
+    width:100%;
+
+    aspect-ratio:16/9;
+
+    background:#251b17;
+
+    overflow:hidden;
+
+    position:relative;
+}
+
+.stream-thumbnail img{
+    width:100%;
+    height:100%;
+
+    object-fit:cover;
+
+    display:block;
+}
+
+.stream-thumbnail-placeholder{
+    width:100%;
+    height:100%;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    background:#f3e8d3;
+
+    color:#4b3326;
+
+    font-size:16px;
+    font-weight:700;
+}
+
+
+/* =========================================
+   LIVE BADGE
+========================================= */
+
+.stream-live-badge{
+    position:absolute;
+
+    top:10px;
+    left:10px;
+
+    padding:5px 8px;
+
+    border-radius:7px;
+
+    background:#a33a2b;
+
+    color:#fff;
+
+    font-size:11px;
+    font-weight:800;
+}
+
+
+/* =========================================
+   STREAM INFO
+========================================= */
+
+.stream-info{
+    padding:14px;
+}
+
+.stream-title{
+    margin-bottom:9px;
+
+    color:#4b3326;
+
+    font-size:17px;
+    font-weight:800;
+
+    line-height:1.3;
+}
+
+.stream-creator-row{
+    width:100%;
+
+    display:flex;
+    align-items:center;
+
+    gap:10px;
+}
+
+.creator-avatar{
+    width:38px;
+    height:38px;
+
+    min-width:38px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    overflow:hidden;
+
+    border-radius:50%;
+
+    border:1.5px solid #d4a62a;
+
+    background:#f3f3f3;
+
+    color:#4b3326;
+
+    font-size:17px;
+}
+
+.creator-avatar img{
+    width:100%;
+    height:100%;
+
+    object-fit:cover;
+
+    border-radius:50%;
+}
+
+.creator-details{
+    min-width:0;
+
+    display:flex;
+    flex-direction:column;
+
+    gap:2px;
+}
+
+.stream-creator{
+    color:#4b3326;
+
+    font-size:13px;
+    font-weight:800;
+
+    white-space:nowrap;
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
+}
+
+.stream-category{
+    color:#d4a62a;
+
+    font-size:11px;
+    font-weight:800;
+}
+
+
+/* =========================================
+   EMPTY STATE
+========================================= */
+
+.no-streams{
+    width:100%;
+
+    padding:35px 20px;
+
+    text-align:center;
+
+    color:#6a574c;
+
+    border:1px dashed #d8c7bb;
+
+    border-radius:18px;
+
+    font-size:14px;
+
+    line-height:1.5;
+}
+/* =========================================
+    BOTTOM NAV
+    SAME ICONS AS STREAM
+ ========================================= */
+
+ .bottom-nav{
+     position:fixed;
+
+     left:0;
+     bottom:0;
+
+     width:100%;
+     height:70px;
+
+     display:flex;
+     align-items:center;
+     justify-content:space-around;
+
+     padding:5px 7px;
+
+     background:#fff;
+
+     /* NO MUSTARD TOP SPOT */
+     border-top:none !important;
+
+     box-shadow:
+         0 -5px 20px
+         rgba(75,51,38,.08);
+
+     z-index:1000;
+ }
+
+ .bottom-nav a{
+     flex:1;
+
+     min-width:0;
+
+     height:58px;
+
+     display:flex;
+     flex-direction:column;
+
+     align-items:center;
+     justify-content:center;
+
+     gap:2px;
+
+     border-radius:12px;
+
+     color:#4b3326;
+
+     text-decoration:none;
+
+     font-size:23px;
+
+     background:transparent !important;
+
+     border:none !important;
+
+     box-shadow:none !important;
+
+     outline:none !important;
+
+     -webkit-tap-highlight-color:transparent;
+ }
+
+
+ /* =========================================
+    ACTIVE EXPLORE
+    NO MUSTARD EFFECT
+ ========================================= */
+
+ .bottom-nav a.active,
+ .bottom-nav a.active:hover,
+ .bottom-nav a.active:focus,
+ .bottom-nav a.active:active{
+
+     background:transparent !important;
+
+     border:none !important;
+
+     box-shadow:none !important;
+
+     outline:none !important;
+
+     color:#4b3326 !important;
+ }
+
+
+ .bottom-nav a.active::before,
+ .bottom-nav a.active::after{
+
+     content:none !important;
+
+     display:none !important;
+
+     background:none !important;
+
+     border:none !important;
+
+     box-shadow:none !important;
+ }
+
+
+ /* =========================================
+    NAV LABELS
+ ========================================= */
+
+ .bottom-nav a span{
+
+     font-size:10px;
+
+     font-weight:700;
+ }
+
+
+ /* =========================================
+    EXACT EXPLORE ICON FROM STREAM
+ ========================================= */
+
+ .explore-icon{
+
+     width:23px;
+     height:23px;
+
+     display:block;
+ }
+
+
+ /* =========================================
+    PROFILE ICON
+ ========================================= */
+
+ #bottomProfileIcon{
+
+     display:flex;
+
+     align-items:center;
+     justify-content:center;
+
+     width:25px;
+     height:25px;
+
+     overflow:hidden;
+
+     border-radius:50%;
+
+     color:#4b3326;
+
+     font-size:23px;
+
+     line-height:1;
+ }
+
+
+ #bottomProfileIcon img{
+
+     width:25px;
+     height:25px;
+
+     object-fit:cover;
+
+     border-radius:50%;
+
+     border:1.5px solid #d4a62a;
+
+     display:block;
+ }
+
+
+ /* =========================================
+    MOBILE
+ ========================================= */
+
+ @media(max-width:600px){
+
+     .navbar{
+
+         height:66px;
+
+         padding:0 15px;
+
+     }
+
+
+     .logo{
+
+         font-size:29px;
+
+     }
+
+
+     .container{
+
+         padding:20px 14px 25px;
+
+     }
+
+
+     .stream-card{
+
+         border-radius:17px;
+
+     }
+
+
+     .live-section-header h2{
+
+         font-size:23px;
+
+     }
+
+ }
+
+
+ /* =========================================
+    SMALL PHONES
+ ========================================= */
+
+ @media(max-width:360px){
+
+     .logo{
+
+         font-size:26px;
+
+     }
+
+
+     .container{
+
+         padding-left:12px;
+         padding-right:12px;
+
+     }
+
+
+     .creator-avatar{
+
+         width:36px;
+         height:36px;
+
+         min-width:36px;
+
+     }
+
+
+     .search-input{
+
+         height:46px;
+
+         font-size:14px;
+
+     }
+
+
+     .category{
+
+         padding:8px 13px;
+
+         font-size:13px;
+
+     }
+
+ }
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================
+     TOP NAV
+========================================= -->
+
+<header class="navbar">
+
+    <!-- EXACT CANVAS BRANDING FROM STREAM -->
+
+    <div class="logo">
+        Canvas
+    </div>
+
+    <!--
+        IMPORTANT:
+        NO TOP PROFILE ICON ON EXPLORE.
+    -->
+
+</header>
+
+
+<!-- =========================================
+     MAIN EXPLORE AREA
+========================================= -->
+
+<main class="container">
+
+
+    <!-- SEARCH -->
+
+    <div class="search-box">
+
+        <input
+            id="searchInput"
+            class="search-input"
+            type="search"
+            placeholder="Search live streams..."
+            autocomplete="off"
+            spellcheck="false"
+            aria-label="Search live streams"
+        >
+
+        <svg
+            class="search-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            aria-hidden="true"
+        >
+
+            <circle
+                cx="11"
+                cy="11"
+                r="7"
+                stroke="currentColor"
+                stroke-width="2.8"
+            />
+
+            <path
+                d="M16.5 16.5L21 21"
+                stroke="currentColor"
+                stroke-width="2.8"
+                stroke-linecap="round"
+            />
+
+        </svg>
+
+    </div>
+
+
+    <!-- =====================================
+         CATEGORIES
+    ====================================== -->
+
+    <div
+        id="categoryList"
+        class="categories"
+        aria-label="Stream categories"
+    >
+
+        <button
+            type="button"
+            class="category active"
+            data-category="All"
+        >
+            All
+        </button>
+
+        <button
+            type="button"
+            class="category"
+            data-category="Entertainment"
+        >
+            Entertainment
+        </button>
+
+        <button
+            type="button"
+            class="category"
+            data-category="Gaming"
+        >
+            Gaming
+        </button>
+
+        <button
+            type="button"
+            class="category"
+            data-category="Music"
+        >
+            Music
+        </button>
+
+        <button
+            type="button"
+            class="category"
+            data-category="Education"
+        >
+            Education
+        </button>
+
+        <button
+            type="button"
+            class="category"
+            data-category="Sports"
+        >
+            Sports
+        </button>
+
+        <button
+            type="button"
+            class="category"
+            data-category="Talk"
+        >
+            Talk
+        </button>
+
+    </div>
+
+
+    <!-- =====================================
+         LIVE NOW HEADER
+    ====================================== -->
+
+    <div class="live-section-header">
+
+        <h2>
+            Live Now
+        </h2>
+
+        <button
+            id="refreshButton"
+            type="button"
+            class="refresh-btn"
+            aria-label="Refresh live streams"
+        >
+            ↻
+        </button>
+
+    </div>
+
+
+    <!-- =====================================
+         STREAM LIST
+    ====================================== -->
+
+    <div
+        id="streamList"
+        class="stream-list"
+    >
+
+        <div
+            id="noStreams"
+            class="no-streams"
+        >
+            Loading live streams...
+        </div>
+
+    </div>
+
+
+</main>
+
+
+<!-- =========================================
+     BOTTOM NAV
+     EXACT STREAM ICONS
+========================================= -->
+
+<nav
+    class="bottom-nav"
+    aria-label="Main navigation"
+>
+
+
+    <!-- HOME -->
+
+    <a
+        href="stream.html"
+        aria-label="Home"
+    >
+
+        ⌂
+
+        <span>
+            Home
+        </span>
+
+    </a>
+
+
+    <!-- EXPLORE -->
+
+    <a
+        href="explore.html"
+        class="active"
+        aria-label="Explore"
+    >
+
+        <svg
+            class="explore-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+        >
+
+            <circle
+                cx="11"
+                cy="11"
+                r="7"
+                stroke="currentColor"
+                stroke-width="2.8"
+            />
+
+            <path
+                d="M16.5 16.5L21 21"
+                stroke="currentColor"
+                stroke-width="2.8"
+                stroke-linecap="round"
+            />
+
+        </svg>
+
+        <span>
+            Explore
+        </span>
+
+    </a>
+
+
+    <!-- GO LIVE -->
+
+    <a
+        href="golive.html"
+        aria-label="Go Live"
+    >
+
+        ⊙
+
+        <span>
+            Go Live
+        </span>
+
+    </a>
+
+
+    <!-- PROFILE -->
+
+    <a
+        href="profile.html"
+        id="bottomProfileIcon"
+        aria-label="Profile"
+    >
+
+        ⬤
+
+        <span>
+            Profile
+        </span>
+
+    </a>
+
+
+</nav>
+
+
+<script>
+
+/* =========================================
+   CANVAS EXPLORE
+   PART 2
+========================================= */
+
+const EXPLORE_API =
+    "https://canvas-kh9p.onrender.com";
+
+
+/* =========================================
+   ELEMENTS
+========================================= */
+
+const streamList =
+    document.getElementById(
+        "streamList"
+    );
+
+
+const searchInput =
+    document.getElementById(
+        "searchInput"
+    );
+
+
+const categoryList =
+    document.getElementById(
+        "categoryList"
+    );
+
+
+const refreshButton =
+    document.getElementById(
+        "refreshButton"
+    );
+
+
+/* =========================================
+   STATE
+========================================= */
+
+let allStreams = [];
+
+let selectedCategory = "All";
+
+let searchText = "";
+
+
+/* =========================================
+   SAFE TEXT
+========================================= */
+
+function escapeHtml(value){
+
+    const div =
+        document.createElement("div");
+
+    div.textContent =
+        String(value ?? "");
+
+    return div.innerHTML;
+}
+
+
+/* =========================================
+   NORMALIZE CATEGORY
+========================================= */
+
+function normalizeCategory(value){
+
+    return String(value || "")
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g," ");
+
+}
+
+
+/* =========================================
+   STREAM ID
+========================================= */
+
+function getStreamId(stream){
+
+    return (
+        stream.id ||
+        stream.stream_id ||
+        stream.streamId ||
+        stream._id ||
+        ""
+    );
+
+}
+
+
+/* =========================================
+   STREAM TITLE
+========================================= */
+
+function getTitle(stream){
+
+    return (
+        stream.title ||
+        stream.streamTitle ||
+        stream.stream_title ||
+        stream.name ||
+        "Canvas Live Stream"
+    );
+
+}
+
+
+/* =========================================
+   CREATOR
+========================================= */
+
+function getCreator(stream){
+
+    return (
+        stream.creator ||
+        stream.username ||
+        stream.userName ||
+        stream.displayName ||
+        stream.name ||
+        "Canvas Creator"
+    );
+
+}
+
+
+/* =========================================
+   CATEGORY
+========================================= */
+
+function getCategory(stream){
+
+    return (
+        stream.category ||
+        stream.streamCategory ||
+        stream.stream_category ||
+        (
+            stream.streamInfo &&
+            stream.streamInfo.category
+        ) ||
+        (
+            stream.metadata &&
+            stream.metadata.category
+        ) ||
+        "Entertainment"
+    );
+
+}
+
+
+/* =========================================
+   THUMBNAIL
+========================================= */
+
+function getThumbnail(stream){
+
+    return (
+        stream.thumbnail ||
+        stream.thumbnailUrl ||
+        stream.thumbnail_url ||
+        stream.image ||
+        stream.imageUrl ||
+        stream.image_url ||
+        ""
+    );
+
+}
+
+
+/* =========================================
+   CREATOR PHOTO
+========================================= */
+
+function getProfilePhoto(stream){
+
+    return (
+        stream.profile_picture ||
+        stream.profileImage ||
+        stream.profilePhoto ||
+        stream.avatar ||
+        stream.userPhoto ||
+        stream.user_photo ||
+        ""
+    );
+
+  }
+  /* =========================================
+   PROFILE ICON
+========================================= */
+
+function loadProfileIcon(){
+
+    let profile = {};
+
+    try{
+
+        const saved =
+            localStorage.getItem(
+                "canvasProfile"
+            );
+
+        if(saved){
+
+            profile =
+                JSON.parse(saved) || {};
+
+        }
+
+    }catch(error){
+
+        console.log(
+            "Profile storage error:",
+            error
+        );
+
+    }
+
+
+    const photo =
+        profile.photo ||
+        profile.profileImage ||
+        profile.profilePhoto ||
+        profile.image ||
+        profile.profile_picture ||
+        "";
+
+
+    const bottom =
+        document.getElementById(
+            "bottomProfileIcon"
+        );
+
+
+    if(!bottom){
+        return;
+    }
+
+
+    bottom.innerHTML =
+        photo
+
+            ? '<img src="' +
+              escapeHtml(photo) +
+              '" alt="Profile">' +
+              '<span>Profile</span>'
+
+            : '⬤<span>Profile</span>';
+
+
+    const image =
+        bottom.querySelector("img");
+
+
+    if(image){
+
+        image.addEventListener(
+            "error",
+            function(){
+
+                bottom.innerHTML =
+                    '⬤<span>Profile</span>';
+
+            }
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   FILTER STREAMS
+========================================= */
+
+function getFilteredStreams(){
+
+    const wantedCategory =
+        normalizeCategory(
+            selectedCategory
+        );
+
+
+    return allStreams.filter(
+        function(stream){
+
+            const streamCategory =
+                normalizeCategory(
+                    getCategory(stream)
+                );
+
+
+            const categoryMatch =
+                wantedCategory === "all" ||
+                streamCategory === wantedCategory;
+
+
+            const title =
+                String(
+                    getTitle(stream)
+                ).toLowerCase();
+
+
+            const creator =
+                String(
+                    getCreator(stream)
+                ).toLowerCase();
+
+
+            const searchMatch =
+                !searchText ||
+                title.includes(searchText) ||
+                creator.includes(searchText);
+
+
+            return (
+                categoryMatch &&
+                searchMatch
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================
+   REFRESH STATE
+========================================= */
+
+function setRefreshLoading(loading){
+
+    if(!refreshButton){
+        return;
+    }
+
+
+    if(loading){
+
+        refreshButton.disabled =
+            true;
+
+        refreshButton.classList.add(
+            "spinning"
+        );
+
+        refreshButton.setAttribute(
+            "aria-busy",
+            "true"
+        );
+
+    }else{
+
+        refreshButton.disabled =
+            false;
+
+        refreshButton.classList.remove(
+            "spinning"
+        );
+
+        refreshButton.removeAttribute(
+            "aria-busy"
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   CREATE STREAM CARD
+========================================= */
+
+function createStreamCard(stream){
+
+    const id =
+        getStreamId(stream);
+
+
+    if(!id){
+        return null;
+    }
+
+
+    const card =
+        document.createElement(
+            "article"
+        );
+
+
+    card.className =
+        "stream-card";
+
+
+    const thumbnail =
+        getThumbnail(stream);
+
+
+    const title =
+        getTitle(stream);
+
+
+    const creator =
+        getCreator(stream);
+
+
+    const category =
+        getCategory(stream);
+
+
+    const photo =
+        getProfilePhoto(stream);
+
+
+    let thumbnailHTML;
+
+
+    if(thumbnail){
+
+        thumbnailHTML =
+            '<img src="' +
+            escapeHtml(thumbnail) +
+            '" alt="Stream thumbnail">';
+
+    }else{
+
+        thumbnailHTML =
+            '<div class="stream-thumbnail-placeholder">' +
+            'Canvas Live' +
+            '</div>';
+
+    }
+
+
+    const avatarHTML =
+        photo
+
+            ? '<img src="' +
+              escapeHtml(photo) +
+              '" alt="Profile">'
+
+            : "⬤";
+
+
+    card.innerHTML =
+
+        '<div class="stream-thumbnail">' +
+
+            thumbnailHTML +
+
+            '<div class="stream-live-badge">' +
+                '🔴 LIVE' +
+            '</div>' +
+
+        '</div>' +
+
+        '<div class="stream-info">' +
+
+            '<div class="stream-title">' +
+                escapeHtml(title) +
+            '</div>' +
+
+            '<div class="stream-creator-row">' +
+
+                '<div class="creator-avatar">' +
+                    avatarHTML +
+                '</div>' +
+
+                '<div class="creator-details">' +
+
+                    '<div class="stream-creator">' +
+                        escapeHtml(creator) +
+                    '</div>' +
+
+                    '<div class="stream-category">' +
+                        escapeHtml(category) +
+                    '</div>' +
+
+                '</div>' +
+
+            '</div>' +
+
+        '</div>';
+
+
+    const avatar =
+        card.querySelector(
+            ".creator-avatar img"
+        );
+
+
+    if(avatar){
+
+        avatar.addEventListener(
+            "error",
+            function(){
+
+                this.remove();
+
+
+                const box =
+                    card.querySelector(
+                        ".creator-avatar"
+                    );
+
+
+                if(box){
+
+                    box.textContent =
+                        "⬤";
+
+                }
+
+            }
+        );
+
+    }
+
+
+    card.addEventListener(
+        "click",
+        function(){
+
+            try{
+
+                localStorage.setItem(
+                    "canvasSelectedStream",
+                    JSON.stringify(stream)
+                );
+
+
+                localStorage.setItem(
+                    "canvasCurrentStreamId",
+                    String(id)
+                );
+
+            }catch(error){
+
+                console.log(
+                    "Stream storage error:",
+                    error
+                );
+
+            }
+
+
+            window.location.href =
+                "watch.html?id=" +
+                encodeURIComponent(id);
+
+        }
+    );
+
+
+    return card;
+
+}
+
+
+/* =========================================
+   DISPLAY STREAMS
+========================================= */
+
+function displayStreams(streams){
+
+    if(!streamList){
+        return;
+    }
+
+
+    streamList.innerHTML = "";
+
+
+    if(
+        !Array.isArray(streams) ||
+        streams.length === 0
+    ){
+
+        const empty =
+            document.createElement(
+                "div"
+            );
+
+
+        empty.className =
+            "no-streams";
+
+
+        empty.textContent =
+            searchText ||
+            normalizeCategory(
+                selectedCategory
+            ) !== "all"
+
+                ? "No matching live streams."
+
+                : "No one is live right now.";
+
+
+        streamList.appendChild(
+            empty
+        );
+
+
+        return;
+
+    }
+
+
+    let visibleCards = 0;
+
+
+    streams.forEach(
+        function(stream){
+
+            const card =
+                createStreamCard(
+                    stream
+                );
+
+
+            if(card){
+
+                streamList.appendChild(
+                    card
+                );
+
+                visibleCards++;
+
+            }
+
+        }
+    );
+
+
+    if(visibleCards === 0){
+
+        const empty =
+            document.createElement(
+                "div"
+            );
+
+
+        empty.className =
+            "no-streams";
+
+
+        empty.textContent =
+            "No matching live streams.";
+
+
+        streamList.appendChild(
+            empty
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   LOAD LIVE STREAMS
+========================================= */
+
+async function loadLiveStreams(){
+
+    if(!streamList){
+        return;
+    }
+
+
+    setRefreshLoading(true);
+
+
+    try{
+
+        const response =
+            await fetch(
+
+                EXPLORE_API +
+                "/api/streams/live",
+
+                {
+                    method:"GET",
+
+                    headers:{
+                        "Accept":
+                            "application/json"
+                    },
+
+                    cache:"no-store"
+
+                }
+
+            );
+
+
+        let data = {};
+
+
+        try{
+
+            data =
+                await response.json();
+
+        }catch(error){
+
+            data = {};
+
+        }
+
+
+        if(!response.ok){
+
+            throw new Error(
+                data.message ||
+                "Unable to load live streams."
+            );
+
+        }
+
+
+        if(
+            Array.isArray(
+                data.streams
+            )
+        ){
+
+            allStreams =
+                data.streams;
+
+        }else if(
+            Array.isArray(data)
+        ){
+
+            allStreams =
+                data;
+
+        }else{
+
+            allStreams =
+                [];
+
+        }
+
+
+        displayStreams(
+            getFilteredStreams()
+        );
+
+
+        console.log(
+            "Canvas Explore streams loaded:",
+            allStreams
+        );
+
+    }
+
+    catch(error){
+
+        console.error(
+            "Canvas Explore loading error:",
+            error
+        );
+
+
+        allStreams = [];
+
+
+        streamList.innerHTML = "";
+
+
+        const box =
+            document.createElement(
+                "div"
+            );
+
+
+        box.className =
+            "no-streams";
+
+
+        box.textContent =
+            "Unable to load live streams. Please try again.";
+
+
+        streamList.appendChild(
+            box
+        );
+
+    }
+
+    finally{
+
+        /*
+         * IMPORTANT:
+         * Spinner always stops here.
+         *
+         * It stops when:
+         * - streams load
+         * - there are no streams
+         * - an error happens
+         */
+
+        setRefreshLoading(false);
+
+    }
+
+}
+
+
+/* =========================================
+   CATEGORY BUTTONS
+========================================= */
+
+function setupCategories(){
+
+    if(!categoryList){
+        return;
+    }
+
+
+    const buttons =
+        categoryList.querySelectorAll(
+            ".category"
+        );
+
+
+    buttons.forEach(
+        function(button){
+
+            button.addEventListener(
+                "click",
+                function(){
+
+                    selectedCategory =
+                        button.getAttribute(
+                            "data-category"
+                        ) || "All";
+
+
+                    buttons.forEach(
+                        function(item){
+
+                            item.classList.remove(
+                                "active"
+                            );
+
+                        }
+                    );
+
+
+                    button.classList.add(
+                        "active"
+                    );
+
+
+                    /*
+                     * Re-render immediately.
+                     * No server request needed.
+                     */
+
+                    displayStreams(
+                        getFilteredStreams()
+                    );
+
+                }
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================
+   SEARCH
+========================================= */
+
+function setupSearch(){
+
+    if(!searchInput){
+        return;
+    }
+
+
+    searchInput.addEventListener(
+        "input",
+        function(){
+
+            searchText =
+                String(
+                    searchInput.value || ""
+                )
+                .trim()
+                .toLowerCase();
+
+
+            displayStreams(
+                getFilteredStreams()
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================
+   REFRESH BUTTON
+========================================= */
+
+function setupRefresh(){
+
+    if(!refreshButton){
+        return;
+    }
+
+
+    refreshButton.addEventListener(
+        "click",
+        function(){
+
+            if(
+                refreshButton.disabled
+            ){
+                return;
+            }
+
+
+            loadLiveStreams();
+
+        }
+    );
+
+}
+
+
+/* =========================================
+   INITIALIZE
+========================================= */
+
+function initializeExplore(){
+
+    loadProfileIcon();
+
+    setupCategories();
+
+    setupSearch();
+
+    setupRefresh();
+
+    loadLiveStreams();
+
+}
+
+
+/* =========================================
+   START
+========================================= */
+
+if(
+    document.readyState ===
+    "loading"
+){
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        initializeExplore
+    );
+
+}else{
+
+    initializeExplore();
+
+}
+
+
+/* =========================================
+   PROFILE PHOTO UPDATE
+========================================= */
+
+window.addEventListener(
+    "storage",
+    function(event){
+
+        if(
+            event.key ===
+            "canvasProfile"
+        ){
+
+            loadProfileIcon();
+
+        }
+
+    }
+);
+
+
+/* =========================================
+   RETURN TO EXPLORE
+========================================= */
+
+document.addEventListener(
+    "visibilitychange",
+    function(){
+
+        if(
+            !document.hidden
+        ){
+
+            loadProfileIcon();
+
+            loadLiveStreams();
+
+        }
+
+    }
+);
+
+
+/* =========================================
+   NETWORK RECOVERY
+========================================= */
+
+window.addEventListener(
+    "online",
+    function(){
+
+        loadLiveStreams();
+
+    }
+);
+
+
+/* =========================================
+   PAGE SHOW
+========================================= */
+
+window.addEventListener(
+    "pageshow",
+    function(){
+
+        loadProfileIcon();
+
+        loadLiveStreams();
+
+    }
+);
+
+
+/* =========================================
+   AUTO REFRESH
+========================================= */
+
+let exploreRefreshTimer =
+    setInterval(
+        function(){
+
+            if(
+                !document.hidden &&
+                !refreshButton?.disabled
+            ){
+
+                loadLiveStreams();
+
+            }
+
+        },
+        10000
+    );
+
+
+/* =========================================
+   CLEANUP
+========================================= */
+
+window.addEventListener(
+    "pagehide",
+    function(){
+
+        if(
+            exploreRefreshTimer
+        ){
+
+            clearInterval(
+                exploreRefreshTimer
+            );
+
+            exploreRefreshTimer =
+                null;
+
+        }
+
+    }
+);
+
+
+console.log(
+    "Canvas Explore ready."
+);
+
+</script>
+
+</body>
+
+</html>
