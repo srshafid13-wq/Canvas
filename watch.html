@@ -1,0 +1,3770 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Canvas - Watch Live</title>
+
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+
+<style>
+
+/* =========================================
+   CANVAS WATCH
+========================================= */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html,
+body{
+    width:100%;
+    min-height:100%;
+}
+
+body{
+    background:#FAF9F6;
+    color:#4A3728;
+    font-family:Arial,sans-serif;
+    padding-bottom:82px;
+}
+
+/* =========================================
+   NAVBAR
+========================================= */
+
+.navbar{
+    width:100%;
+    height:70px;
+    display:flex;
+    align-items:center;
+    padding:0 24px;
+    background:#fff;
+    border-bottom:2px solid #d4a62a;
+}
+
+.logo{
+    font-size:32px;
+    font-weight:900;
+    color:#4b3326;
+}
+
+/* =========================================
+   MAIN
+========================================= */
+
+.watch-page{
+    width:100%;
+    max-width:900px;
+    margin:0 auto;
+    padding:22px 18px 30px;
+}
+
+/* =========================================
+   STREAM PREVIEW
+========================================= */
+
+.stream-preview{
+    position:relative;
+    width:100%;
+    aspect-ratio:16 / 9;
+    overflow:hidden;
+    background:#17120f;
+    border:2px solid #d4a62a;
+    border-radius:16px;
+}
+
+#liveVideo{
+    width:100%;
+    height:100%;
+    display:block;
+    object-fit:cover;
+    background:#17120f;
+}
+
+.video-placeholder{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    text-align:center;
+    color:#fff;
+    font-size:15px;
+    font-weight:700;
+    background:#17120f;
+}
+
+.video-placeholder.hidden{
+    display:none;
+}
+
+/* =========================================
+   LIVE BADGE
+========================================= */
+
+.live-badge{
+    position:absolute;
+    top:14px;
+    left:14px;
+    z-index:5;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-width:58px;
+    height:28px;
+    padding:0 11px;
+    border-radius:8px;
+    background:#d93025;
+    color:#fff;
+    font-size:12px;
+    font-weight:900;
+    letter-spacing:.5px;
+}
+
+/* =========================================
+   STREAM INFO
+========================================= */
+
+.stream-info{
+    width:100%;
+    margin-top:18px;
+}
+
+.watching-row{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    color:#6d5a4c;
+    font-size:14px;
+    font-weight:700;
+}
+
+.watching-row strong{
+    color:#4b3326;
+    font-weight:900;
+}
+
+/* =========================================
+   CREATOR
+========================================= */
+
+.creator-section{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:15px;
+    margin-top:18px;
+    padding:14px;
+    background:#fff;
+    border-radius:14px;
+    border:1px solid rgba(75,51,38,.10);
+}
+
+.creator-profile-link{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    min-width:0;
+    color:inherit;
+    text-decoration:none;
+}
+
+.creator-picture{
+    width:48px;
+    height:48px;
+    flex:0 0 48px;
+    border-radius:50%;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#4b3326;
+    border:2px solid #d4a62a;
+}
+
+.creator-picture img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+}
+
+.creator-picture-placeholder{
+    color:#fff;
+    font-size:21px;
+    font-weight:900;
+}
+
+.creator-details{
+    min-width:0;
+}
+
+.creator-name{
+    font-size:16px;
+    font-weight:900;
+    color:#4b3326;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.creator-username{
+    margin-top:3px;
+    color:#8b7667;
+    font-size:13px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+/* =========================================
+   FOLLOW BUTTON
+========================================= */
+
+.follow-button{
+    min-width:100px;
+    height:38px;
+    padding:0 17px;
+    border:none;
+    border-radius:10px;
+    background:#4b3326;
+    color:#fff;
+    font-size:14px;
+    font-weight:800;
+    cursor:pointer;
+    transition:opacity .15s ease,transform .15s ease;
+}
+
+.follow-button:hover{
+    opacity:.92;
+}
+
+.follow-button:active{
+    transform:scale(.97);
+}
+
+.follow-button.following{
+    background:#4b3326;
+    color:#fff;
+}
+
+/* =========================================
+   CHAT + ACTION AREA
+========================================= */
+
+.watch-actions{
+    width:100%;
+    margin-top:18px;
+}
+
+.chat-box{
+    width:100%;
+    height:270px;
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+    background:#fff;
+    border:1px solid rgba(75,51,38,.12);
+    border-radius:14px;
+}
+
+.chat-header{
+    min-height:46px;
+    display:flex;
+    align-items:center;
+    padding:0 15px;
+    border-bottom:1px solid rgba(75,51,38,.10);
+    font-size:15px;
+    font-weight:900;
+}
+
+.chat-messages{
+    flex:1;
+    overflow-y:auto;
+    padding:12px;
+}
+
+.chat-message{
+    margin-bottom:9px;
+    font-size:13px;
+    line-height:1.4;
+}
+
+.chat-username{
+    font-weight:900;
+    color:#4b3326;
+}
+
+.chat-text{
+    color:#5d4a3c;
+}
+
+.chat-empty{
+    height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    color:#9b887a;
+    font-size:13px;
+}
+
+.chat-input-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:10px;
+    border-top:1px solid rgba(75,51,38,.10);
+}
+
+.chat-input-row input{
+    flex:1;
+    min-width:0;
+    height:40px;
+    padding:0 12px;
+    border:1px solid #d8c8bc;
+    border-radius:10px;
+    outline:none;
+    background:#FAF9F6;
+    color:#4A3728;
+    font-size:14px;
+}
+
+.chat-input-row input:focus{
+    border-color:#4b3326;
+}
+
+.chat-input-row button{
+    width:42px;
+    height:40px;
+    flex:0 0 42px;
+    border:none;
+    border-radius:10px;
+    background:#4b3326;
+    color:#fff;
+    font-size:18px;
+    font-weight:900;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:opacity .15s ease,transform .15s ease;
+}
+
+.chat-input-row button:hover{
+    opacity:.92;
+}
+
+.chat-input-row button:active{
+    transform:scale(.96);
+}
+
+/* =========================================
+   SUPPORT / GIFTS
+========================================= */
+
+.support-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-top:14px;
+}
+
+.support-button{
+    height:42px;
+    padding:0 18px;
+    border:none;
+    border-radius:10px;
+    background:#4b3326;
+    color:#fff;
+    font-size:14px;
+    font-weight:800;
+    cursor:pointer;
+}
+
+.support-button:active{
+    transform:scale(.97);
+}
+
+.support-status{
+    display:none;
+    color:#6d5a4c;
+    font-size:13px;
+    font-weight:700;
+}
+
+.support-status.show{
+    display:block;
+}
+
+/* =========================================
+   BOTTOM NAV
+========================================= */
+
+.bottom-nav{
+    position:fixed;
+    left:0;
+    bottom:0;
+    width:100%;
+    height:70px;
+    display:flex;
+    align-items:center;
+    justify-content:space-around;
+    padding:5px 7px;
+    background:#fff;
+    border-top:none !important;
+    box-shadow:0 -5px 20px rgba(75,51,38,.08);
+    z-index:1000;
+}
+
+.bottom-nav a{
+    flex:1;
+    min-width:0;
+    height:58px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:2px;
+    border-radius:12px;
+    color:#4b3326;
+    text-decoration:none;
+    font-size:23px;
+    background:transparent !important;
+    border:none !important;
+    box-shadow:none !important;
+    outline:none !important;
+}
+
+.bottom-nav a.active,
+.bottom-nav a.active:hover,
+.bottom-nav a.active:focus,
+.bottom-nav a.active:active{
+    background:transparent !important;
+    border:none !important;
+    box-shadow:none !important;
+    outline:none !important;
+    color:#4b3326 !important;
+}
+
+.bottom-nav a.active::before,
+.bottom-nav a.active::after{
+    content:none !important;
+    display:none !important;
+    background:none !important;
+    border:none !important;
+    box-shadow:none !important;
+}
+
+.bottom-nav a span{
+    font-size:10px;
+    font-weight:700;
+}
+
+.explore-icon{
+    width:23px;
+    height:23px;
+    display:block;
+}
+
+#bottomProfileIcon img{
+    width:25px;
+    height:25px;
+    object-fit:cover;
+    border-radius:50%;
+    border:1.5px solid #d4a62a;
+}
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media(max-width:700px){
+
+    .navbar{
+        height:66px;
+        padding:0 18px;
+    }
+
+    .logo{
+        font-size:29px;
+    }
+
+    .watch-page{
+        padding:16px 12px 25px;
+    }
+
+    .creator-section{
+        padding:12px;
+    }
+
+    .chat-box{
+        height:250px;
+    }
+
+}
+
+@media(max-width:360px){
+
+    .logo{
+        font-size:26px;
+    }
+
+    .watch-page{
+        padding-left:9px;
+        padding-right:9px;
+    }
+
+    .follow-button{
+        min-width:88px;
+        padding:0 12px;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header class="navbar">
+
+    <div class="logo">
+        Canvas
+    </div>
+
+</header>
+
+<main class="watch-page">
+
+    <section class="stream-preview">
+
+        <video
+            id="liveVideo"
+            autoplay
+            playsinline
+            controls
+        ></video>
+
+        <div
+            id="videoPlaceholder"
+            class="video-placeholder"
+        >
+            Loading live stream...
+        </div>
+
+        <div class="live-badge">
+            LIVE
+        </div>
+
+    </section>
+
+    <section class="stream-info">
+
+        <div class="watching-row">
+
+            <span>
+                Watching
+                <strong id="watchingCount">0</strong>
+            </span>
+
+        </div>
+
+        <div class="creator-section">
+
+            <a
+                href="profile.html"
+                id="creatorProfileLink"
+                class="creator-profile-link"
+            >
+
+                <div class="creator-picture">
+
+                    <img
+                        id="creatorPhoto"
+                        src=""
+                        alt="Creator"
+                        style="display:none;"
+                    >
+
+                    <span
+                        id="creatorPhotoPlaceholder"
+                        class="creator-picture-placeholder"
+                    >
+                        ⬤
+                    </span>
+
+                </div>
+
+                <div class="creator-details">
+
+                    <div
+                        id="creatorName"
+                        class="creator-name"
+                    >
+                        Creator
+                    </div>
+
+                    <div
+                        id="creatorUsername"
+                        class="creator-username"
+                    >
+                        @creator
+                    </div>
+
+                </div>
+
+            </a>
+
+            <button
+                type="button"
+                id="followButton"
+                class="follow-button"
+            >
+                Follow
+            </button>
+
+        </div>
+
+    </section>
+
+    <section class="watch-actions">
+
+        <div class="chat-box">
+
+            <div class="chat-header">
+                Live Chat
+            </div>
+
+            <div
+                id="chatMessages"
+                class="chat-messages"
+            >
+
+                <div
+                    id="chatEmpty"
+                    class="chat-empty"
+                >
+                    No messages yet.
+                </div>
+
+            </div>
+
+            <form
+                id="chatForm"
+                class="chat-input-row"
+            >
+
+                <input
+                    id="chatInput"
+                    type="text"
+                    placeholder="Say something..."
+                    autocomplete="off"
+                >
+
+                <button
+                    id="chatSendButton"
+                    type="submit"
+                    aria-label="Send message"
+                >
+                    ➤
+                </button>
+
+            </form>
+
+        </div>
+
+        <div class="support-row">
+
+            <button
+                type="button"
+                id="supportButton"
+                class="support-button"
+            >
+                🎁 Support
+            </button>
+
+            <div
+                id="supportStatus"
+                class="support-status"
+            ></div>
+
+        </div>
+
+    </section>
+
+</main>
+
+<nav class="bottom-nav">
+
+    <a
+        href="stream.html"
+        aria-label="Home"
+    >
+        ⌂
+        <span>Home</span>
+    </a>
+
+    <a
+        href="explore.html"
+        aria-label="Explore"
+    >
+
+        <svg
+            class="explore-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+        >
+
+            <circle
+                cx="11"
+                cy="11"
+                r="7"
+                stroke="currentColor"
+                stroke-width="2.8"
+            />
+
+            <path
+                d="M16.5 16.5L21 21"
+                stroke="currentColor"
+                stroke-width="2.8"
+                stroke-linecap="round"
+            />
+
+        </svg>
+
+        <span>Explore</span>
+
+    </a>
+
+    <a
+        href="golive.html"
+        aria-label="Go Live"
+    >
+        ⊙
+        <span>Go Live</span>
+    </a>
+
+    <a
+        href="profile.html"
+        id="bottomProfileIcon"
+        aria-label="Profile"
+    >
+        ⬤
+        <span>Profile</span>
+    </a>
+
+</nav>
+
+<script>
+
+/* =========================================
+   CANVAS WATCH JAVASCRIPT
+   PART 1
+========================================= */
+
+const API_BASE = "https://canvas-kh9p.onrender.com";
+
+const liveVideo =
+    document.getElementById("liveVideo");
+
+const videoPlaceholder =
+    document.getElementById("videoPlaceholder");
+
+const watchingCount =
+    document.getElementById("watchingCount");
+
+const creatorProfileLink =
+    document.getElementById("creatorProfileLink");
+
+const creatorPhoto =
+    document.getElementById("creatorPhoto");
+
+const creatorPhotoPlaceholder =
+    document.getElementById("creatorPhotoPlaceholder");
+
+const creatorName =
+    document.getElementById("creatorName");
+
+const creatorUsername =
+    document.getElementById("creatorUsername");
+
+const followButton =
+    document.getElementById("followButton");
+
+const chatForm =
+    document.getElementById("chatForm");
+
+const chatInput =
+    document.getElementById("chatInput");
+
+const chatMessages =
+    document.getElementById("chatMessages");
+
+const chatEmpty =
+    document.getElementById("chatEmpty");
+
+const supportButton =
+    document.getElementById("supportButton");
+
+const supportStatus =
+    document.getElementById("supportStatus");
+
+let currentStream = null;
+let currentStreamId = null;
+
+let currentCreatorId = null;
+let currentCreatorUsername = "";
+let currentCreatorProfileUrl = "";
+
+let socket = null;
+let socketConnected = false;
+
+let refreshTimer = null;
+
+let currentViewerCount = 0;
+
+let isFollowing = false;
+let followBusy = false;
+
+let renderedChatIds = new Set();
+let renderedChatFallbacks = new Set();
+
+let pendingChatMessages = [];
+
+let chatLoaded = false;
+let leavingStream = false;
+
+/* =========================================
+   AUTH HELPERS
+========================================= */
+
+function getAuthToken(){
+
+    return localStorage.getItem(
+        "canvasAuthToken"
+    ) || "";
+
+}
+
+function authHeaders(){
+
+    const token = getAuthToken();
+
+    return token
+        ? {
+            "Content-Type":"application/json",
+            "Authorization":"Bearer " + token
+        }
+        : {
+            "Content-Type":"application/json"
+        };
+
+}
+
+function getValue(obj, keys, fallback=""){
+
+    if(!obj) return fallback;
+
+    for(const key of keys){
+
+        if(
+            obj[key] !== undefined &&
+            obj[key] !== null &&
+            obj[key] !== ""
+        ){
+            return obj[key];
+        }
+
+    }
+
+    return fallback;
+
+}
+
+  </script>
+  <script>
+
+/* =========================================
+   CREATOR / STREAM HELPERS
+========================================= */
+
+function getCreatorObjects(stream){
+
+    const objects = [];
+
+    if(stream?.creator)
+        objects.push(stream.creator);
+
+    if(stream?.user)
+        objects.push(stream.user);
+
+    if(stream?.profile)
+        objects.push(stream.profile);
+
+    if(stream?.owner)
+        objects.push(stream.owner);
+
+    objects.push(stream);
+
+    return objects.filter(Boolean);
+}
+
+function getCreatorId(stream){
+
+    const objects = getCreatorObjects(stream);
+
+    for(const obj of objects){
+
+        const value = getValue(
+            obj,
+            [
+                "id",
+                "userId",
+                "user_id",
+                "creatorId",
+                "creator_id",
+                "ownerId",
+                "owner_id"
+            ],
+            ""
+        );
+
+        if(value !== "")
+            return value;
+
+    }
+
+    return "";
+}
+
+function getCreatorNameValue(stream){
+
+    const objects = getCreatorObjects(stream);
+
+    for(const obj of objects){
+
+        const value = getValue(
+            obj,
+            [
+                "name",
+                "displayName",
+                "display_name",
+                "fullName",
+                "full_name",
+                "creatorName",
+                "creator_name"
+            ],
+            ""
+        );
+
+        if(value)
+            return value;
+
+    }
+
+    return "Creator";
+}
+
+function getCreatorUsernameValue(stream){
+
+    const objects = getCreatorObjects(stream);
+
+    for(const obj of objects){
+
+        let value = getValue(
+            obj,
+            [
+                "username",
+                "userName",
+                "user_name",
+                "creatorUsername",
+                "creator_username"
+            ],
+            ""
+        );
+
+        if(value){
+
+            value = String(value)
+                .replace(/^@+/, "")
+                .trim();
+
+            if(value)
+                return value;
+
+        }
+
+    }
+
+    return "";
+
+}
+
+function getCreatorPhoto(stream){
+
+    const objects = getCreatorObjects(stream);
+
+    for(const obj of objects){
+
+        const value = getValue(
+            obj,
+            [
+                "profilePhoto",
+                "profile_photo",
+                "profilePicture",
+                "profile_picture",
+                "avatar",
+                "avatarUrl",
+                "avatar_url",
+                "photo",
+                "photoUrl",
+                "photo_url",
+                "image",
+                "imageUrl",
+                "image_url"
+            ],
+            ""
+        );
+
+        if(value)
+            return value;
+
+    }
+
+    return "";
+
+}
+
+function getStreamId(stream){
+
+    if(!stream)
+        return "";
+
+    return getValue(
+        stream,
+        [
+            "id",
+            "streamId",
+            "stream_id",
+            "liveStreamId",
+            "live_stream_id"
+        ],
+        ""
+    );
+
+}
+
+/* =========================================
+   CREATOR PROFILE LINK
+========================================= */
+
+function updateCreatorProfileLink(){
+
+    if(!creatorProfileLink)
+        return;
+
+    if(currentCreatorProfileUrl){
+
+        creatorProfileLink.href =
+            currentCreatorProfileUrl;
+
+        return;
+
+    }
+
+    if(currentCreatorUsername){
+
+        creatorProfileLink.href =
+            "profile.html?username=" +
+            encodeURIComponent(
+                currentCreatorUsername
+            );
+
+        return;
+
+    }
+
+    if(currentCreatorId){
+
+        creatorProfileLink.href =
+            "profile.html?id=" +
+            encodeURIComponent(
+                currentCreatorId
+            );
+
+        return;
+
+    }
+
+    creatorProfileLink.href =
+        "profile.html";
+
+}
+
+/* =========================================
+   RENDER CREATOR
+========================================= */
+
+function renderCreator(stream){
+
+    const name =
+        getCreatorNameValue(stream);
+
+    const username =
+        getCreatorUsernameValue(stream);
+
+    const photo =
+        getCreatorPhoto(stream);
+
+    currentCreatorId =
+        getCreatorId(stream);
+
+    currentCreatorUsername =
+        username;
+
+    currentCreatorProfileUrl =
+        getValue(
+            stream?.creator ||
+            stream?.user ||
+            stream?.profile ||
+            stream,
+            [
+                "profileUrl",
+                "profile_url",
+                "creatorProfileUrl",
+                "creator_profile_url"
+            ],
+            ""
+        );
+
+    if(creatorName){
+
+        creatorName.textContent =
+            name || "Creator";
+
+    }
+
+    if(creatorUsername){
+
+        creatorUsername.textContent =
+            username
+                ? "@" + username
+                : "@creator";
+
+    }
+
+    if(creatorPhoto){
+
+        if(photo){
+
+            creatorPhoto.src = photo;
+            creatorPhoto.style.display =
+                "block";
+
+            if(creatorPhotoPlaceholder)
+                creatorPhotoPlaceholder.style.display =
+                    "none";
+
+        }else{
+
+            creatorPhoto.removeAttribute("src");
+            creatorPhoto.style.display =
+                "none";
+
+            if(creatorPhotoPlaceholder)
+                creatorPhotoPlaceholder.style.display =
+                    "flex";
+
+        }
+
+    }
+
+    updateCreatorProfileLink();
+
+}
+
+/* =========================================
+   RENDER STREAM
+========================================= */
+
+function renderStream(stream){
+
+    if(!stream)
+        return;
+
+    currentStream = stream;
+
+    currentStreamId =
+        getStreamId(stream);
+
+    renderCreator(stream);
+
+    /*
+       The old "Live Stream" title under
+       the video has intentionally been
+       removed from the page.
+    */
+
+    const count = getValue(
+        stream,
+        [
+            "viewerCount",
+            "viewer_count",
+            "watching",
+            "watchingCount",
+            "watching_count",
+            "viewers"
+        ],
+        null
+    );
+
+    if(count !== null){
+
+        const number =
+            Number(count);
+
+        if(Number.isFinite(number)){
+
+            currentViewerCount =
+                Math.max(0, number);
+
+            updateWatchingCount(
+                currentViewerCount
+            );
+
+        }
+
+    }
+
+}
+
+/* =========================================
+   VIDEO SETUP
+========================================= */
+
+function setupVideo(stream){
+
+    if(!liveVideo)
+        return;
+
+    const videoUrl = getValue(
+        stream,
+        [
+            "videoUrl",
+            "video_url",
+            "streamUrl",
+            "stream_url",
+            "playbackUrl",
+            "playback_url",
+            "hlsUrl",
+            "hls_url",
+            "url"
+        ],
+        ""
+    );
+
+    if(!videoUrl){
+
+        liveVideo.removeAttribute("src");
+        liveVideo.load();
+
+        if(videoPlaceholder){
+
+            videoPlaceholder.textContent =
+                "Live video is unavailable.";
+
+            videoPlaceholder.classList.remove(
+                "hidden"
+            );
+
+        }
+
+        return;
+
+    }
+
+    if(
+        liveVideo.src !==
+        new URL(videoUrl, location.href).href
+    ){
+
+        liveVideo.src = videoUrl;
+        liveVideo.load();
+
+    }
+
+    liveVideo.play()
+        .catch(() => {});
+
+    if(videoPlaceholder)
+        videoPlaceholder.classList.add(
+            "hidden"
+        );
+
+}
+
+/* =========================================
+   STREAM ERROR / END
+========================================= */
+
+function showStreamError(message){
+
+    if(videoPlaceholder){
+
+        videoPlaceholder.textContent =
+            message ||
+            "Unable to load this stream.";
+
+        videoPlaceholder.classList.remove(
+            "hidden"
+        );
+
+    }
+
+}
+
+function showStreamEnded(){
+
+    if(videoPlaceholder){
+
+        videoPlaceholder.textContent =
+            "This live stream has ended.";
+
+        videoPlaceholder.classList.remove(
+            "hidden"
+        );
+
+    }
+
+    if(liveVideo){
+
+        liveVideo.pause();
+
+    }
+
+}
+
+/* =========================================
+   LOAD STREAM
+========================================= */
+
+function getRequestedStreamId(){
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+    return (
+        params.get("streamId") ||
+        params.get("stream_id") ||
+        params.get("id") ||
+        params.get("stream") ||
+        ""
+    );
+
+}
+
+async function loadStream(){
+
+    const streamId =
+        getRequestedStreamId();
+
+    if(!streamId){
+
+        showStreamError(
+            "Stream information is unavailable."
+        );
+
+        return null;
+
+    }
+
+    try{
+
+        const response =
+            await fetch(
+                API_BASE +
+                "/api/streams/" +
+                encodeURIComponent(streamId),
+                {
+                    method:"GET",
+                    headers:authHeaders()
+                }
+            );
+
+        if(!response.ok){
+
+            throw new Error(
+                "Stream request failed"
+            );
+
+        }
+
+        const data =
+            await response.json();
+
+        const stream =
+            data?.stream ||
+            data?.data ||
+            data;
+
+        if(!stream){
+
+            throw new Error(
+                "Stream not found"
+            );
+
+        }
+
+        renderStream(stream);
+        setupVideo(stream);
+
+        await loadFollowState();
+        await loadExistingChat();
+
+        return stream;
+
+    }catch(error){
+
+        console.error(
+            "Canvas stream load error:",
+            error
+        );
+
+        /*
+           Try the active-stream endpoint as
+           a compatibility fallback.
+        */
+
+        try{
+
+            const response =
+                await fetch(
+                    API_BASE +
+                    "/api/stream/" +
+                    encodeURIComponent(streamId),
+                    {
+                        method:"GET",
+                        headers:authHeaders()
+                    }
+                );
+
+            if(response.ok){
+
+                const data =
+                    await response.json();
+
+                const stream =
+                    data?.stream ||
+                    data?.data ||
+                    data;
+
+                if(stream){
+
+                    renderStream(stream);
+                    setupVideo(stream);
+
+                    await loadFollowState();
+                    await loadExistingChat();
+
+                    return stream;
+
+                }
+
+            }
+
+        }catch(fallbackError){
+
+            console.error(
+                "Canvas fallback stream error:",
+                fallbackError
+            );
+
+        }
+
+        showStreamError(
+            "Stream information is unavailable."
+        );
+
+        return null;
+
+    }
+
+}
+
+/* =========================================
+   REFRESH STREAM
+========================================= */
+
+async function refreshStream(){
+
+    if(
+        leavingStream ||
+        !currentStreamId
+    )
+        return;
+
+    try{
+
+        const response =
+            await fetch(
+                API_BASE +
+                "/api/streams/" +
+                encodeURIComponent(
+                    currentStreamId
+                ),
+                {
+                    method:"GET",
+                    headers:authHeaders()
+                }
+            );
+
+        if(!response.ok)
+            return;
+
+        const data =
+            await response.json();
+
+        const stream =
+            data?.stream ||
+            data?.data ||
+            data;
+
+        if(!stream)
+            return;
+
+        renderStream(stream);
+
+        const active =
+            getValue(
+                stream,
+                [
+                    "isLive",
+                    "is_live",
+                    "active",
+                    "live",
+                    "status"
+                ],
+                true
+            );
+
+        if(
+            active === false ||
+            active === "ended" ||
+            active === "offline"
+        ){
+
+            showStreamEnded();
+
+        }
+
+    }catch(error){
+
+        console.error(
+            "Stream refresh error:",
+            error
+        );
+
+    }
+
+}
+
+function startStreamRefresh(){
+
+    if(refreshTimer)
+        clearInterval(refreshTimer);
+
+    refreshTimer =
+        setInterval(
+            refreshStream,
+            10000
+        );
+
+}
+
+  </script>
+  <script>
+
+/* =========================================
+   CHAT HELPERS
+========================================= */
+
+function getChatText(message){
+
+    return getValue(
+        message,
+        [
+            "text",
+            "message",
+            "content",
+            "body"
+        ],
+        ""
+    );
+
+}
+
+function getChatUsername(message){
+
+    const username =
+        getValue(
+            message,
+            [
+                "username",
+                "userName",
+                "user_name",
+                "senderUsername",
+                "sender_username"
+            ],
+            ""
+        );
+
+    if(username)
+        return String(username).replace(/^@+/, "");
+
+    const name =
+        getValue(
+            message,
+            [
+                "name",
+                "displayName",
+                "display_name",
+                "senderName",
+                "sender_name"
+            ],
+            ""
+        );
+
+    return name || "User";
+
+}
+
+function getChatMessageId(message){
+
+    return getValue(
+        message,
+        [
+            "id",
+            "messageId",
+            "message_id",
+            "chatId",
+            "chat_id"
+        ],
+        ""
+    );
+
+}
+
+function getChatFallbackKey(message){
+
+    return [
+        getChatUsername(message),
+        getChatText(message),
+        getValue(
+            message,
+            [
+                "createdAt",
+                "created_at",
+                "timestamp",
+                "time"
+            ],
+            ""
+        )
+    ].join("|");
+
+}
+
+function scrollChatToBottom(){
+
+    if(!chatMessages)
+        return;
+
+    chatMessages.scrollTop =
+        chatMessages.scrollHeight;
+
+}
+
+/* =========================================
+   ADD CHAT MESSAGE
+========================================= */
+
+function addChatMessage(message){
+
+    if(!message)
+        return;
+
+    const text =
+        getChatText(message);
+
+    if(!text)
+        return;
+
+    const messageId =
+        getChatMessageId(message);
+
+    const fallbackKey =
+        getChatFallbackKey(message);
+
+    if(messageId){
+
+        if(renderedChatIds.has(
+            String(messageId)
+        )){
+            return;
+        }
+
+        renderedChatIds.add(
+            String(messageId)
+        );
+
+    }else{
+
+        if(renderedChatFallbacks.has(
+            fallbackKey
+        )){
+            return;
+        }
+
+        renderedChatFallbacks.add(
+            fallbackKey
+        );
+
+    }
+
+    if(chatEmpty)
+        chatEmpty.remove();
+
+    const row =
+        document.createElement("div");
+
+    row.className =
+        "chat-message";
+
+    const username =
+        document.createElement("span");
+
+    username.className =
+        "chat-username";
+
+    username.textContent =
+        getChatUsername(message) + ": ";
+
+    const textNode =
+        document.createElement("span");
+
+    textNode.className =
+        "chat-text";
+
+    textNode.textContent =
+        text;
+
+    row.appendChild(username);
+    row.appendChild(textNode);
+
+    if(chatMessages)
+        chatMessages.appendChild(row);
+
+    scrollChatToBottom();
+
+}
+
+/* =========================================
+   CURRENT USER NAME
+========================================= */
+
+async function getCurrentUserName(){
+
+    const storedAccount =
+        localStorage.getItem(
+            "canvasAccount"
+        );
+
+    if(storedAccount){
+
+        try{
+
+            const account =
+                JSON.parse(storedAccount);
+
+            const value =
+                getValue(
+                    account,
+                    [
+                        "username",
+                        "userName",
+                        "user_name",
+                        "name",
+                        "displayName",
+                        "display_name"
+                    ],
+                    ""
+                );
+
+            if(value)
+                return String(value)
+                    .replace(/^@+/, "");
+
+        }catch(error){
+
+            console.warn(
+                "Invalid canvasAccount:",
+                error
+            );
+
+        }
+
+    }
+
+    const storedProfile =
+        localStorage.getItem(
+            "canvasProfile"
+        );
+
+    if(storedProfile){
+
+        try{
+
+            const profile =
+                JSON.parse(storedProfile);
+
+            const value =
+                getValue(
+                    profile,
+                    [
+                        "username",
+                        "userName",
+                        "user_name",
+                        "name",
+                        "displayName",
+                        "display_name"
+                    ],
+                    ""
+                );
+
+            if(value)
+                return String(value)
+                    .replace(/^@+/, "");
+
+        }catch(error){
+
+            console.warn(
+                "Invalid canvasProfile:",
+                error
+            );
+
+        }
+
+    }
+
+    try{
+
+        const response =
+            await fetch(
+                API_BASE + "/api/me",
+                {
+                    method:"GET",
+                    headers:authHeaders()
+                }
+            );
+
+        if(response.ok){
+
+            const data =
+                await response.json();
+
+            const user =
+                data?.user ||
+                data?.profile ||
+                data;
+
+            const value =
+                getValue(
+                    user,
+                    [
+                        "username",
+                        "userName",
+                        "user_name",
+                        "name",
+                        "displayName",
+                        "display_name"
+                    ],
+                    ""
+                );
+
+            if(value)
+                return String(value)
+                    .replace(/^@+/, "");
+
+        }
+
+    }catch(error){
+
+        console.warn(
+            "Unable to load current user:",
+            error
+        );
+
+    }
+
+    return "User";
+
+}
+
+/* =========================================
+   INCOMING SOCKET CHAT
+========================================= */
+
+function handleIncomingChat(message){
+
+    if(!message)
+        return;
+
+    const streamId =
+        getValue(
+            message,
+            [
+                "streamId",
+                "stream_id",
+                "liveStreamId",
+                "live_stream_id"
+            ],
+            ""
+        );
+
+    if(
+        streamId &&
+        currentStreamId &&
+        String(streamId) !==
+        String(currentStreamId)
+    ){
+
+        return;
+
+    }
+
+    addChatMessage(message);
+
+}
+
+/* =========================================
+   LOAD EXISTING CHAT
+========================================= */
+
+async function loadExistingChat(){
+
+    if(
+        chatLoaded ||
+        !currentStreamId
+    )
+        return;
+
+    chatLoaded = true;
+
+    const endpoints = [
+
+        API_BASE +
+        "/api/streams/" +
+        encodeURIComponent(
+            currentStreamId
+        ) +
+        "/chat",
+
+        API_BASE +
+        "/api/stream/" +
+        encodeURIComponent(
+            currentStreamId
+        ) +
+        "/chat"
+
+    ];
+
+    for(const endpoint of endpoints){
+
+        try{
+
+            const response =
+                await fetch(
+                    endpoint,
+                    {
+                        method:"GET",
+                        headers:authHeaders()
+                    }
+                );
+
+            if(!response.ok)
+                continue;
+
+            const data =
+                await response.json();
+
+            const messages =
+                Array.isArray(data)
+                    ? data
+                    : (
+                        data?.messages ||
+                        data?.chat ||
+                        data?.data ||
+                        []
+                    );
+
+            if(Array.isArray(messages)){
+
+                messages.forEach(
+                    addChatMessage
+                );
+
+            }
+
+            break;
+
+        }catch(error){
+
+            console.warn(
+                "Chat history load failed:",
+                error
+            );
+
+        }
+
+    }
+
+}
+
+/* =========================================
+   SEND CHAT MESSAGE
+========================================= */
+
+async function sendChatMessage(){
+
+    if(!chatInput)
+        return;
+
+    const text =
+        chatInput.value.trim();
+
+    if(!text)
+        return;
+
+    if(!currentStreamId){
+
+        return;
+
+    }
+
+    const username =
+        await getCurrentUserName();
+
+    const message = {
+
+        streamId:
+            currentStreamId,
+
+        stream_id:
+            currentStreamId,
+
+        username:
+            username,
+
+        text:
+            text,
+
+        message:
+            text
+
+    };
+
+    /*
+       Send through Socket.IO when connected.
+       This keeps real-time chat working.
+    */
+
+    let socketSent = false;
+
+    if(
+        socket &&
+        socketConnected
+    ){
+
+        try{
+
+            socket.emit(
+                "chat-message",
+                message
+            );
+
+            socketSent = true;
+
+        }catch(error){
+
+            console.warn(
+                "Socket chat send failed:",
+                error
+            );
+
+        }
+
+    }
+
+    /*
+       Also send through the API when available.
+       This makes chat survive refreshes and
+       works when Socket.IO is unavailable.
+    */
+
+    let apiSent = false;
+
+    const endpoints = [
+
+        API_BASE +
+        "/api/streams/" +
+        encodeURIComponent(
+            currentStreamId
+        ) +
+        "/chat",
+
+        API_BASE +
+        "/api/stream/" +
+        encodeURIComponent(
+            currentStreamId
+        ) +
+        "/chat"
+
+    ];
+
+    for(const endpoint of endpoints){
+
+        try{
+
+            const response =
+                await fetch(
+                    endpoint,
+                    {
+                        method:"POST",
+                        headers:authHeaders(),
+                        body:JSON.stringify(
+                            message
+                        )
+                    }
+                );
+
+            if(response.ok){
+
+                apiSent = true;
+                break;
+
+            }
+
+        }catch(error){
+
+            console.warn(
+                "API chat send failed:",
+                error
+            );
+
+        }
+
+    }
+
+    /*
+       Render locally only if the server did
+       not send the message back through Socket.IO.
+       The fallback key prevents duplicates.
+    */
+
+    if(
+        !socketSent &&
+        !apiSent
+    ){
+
+        addChatMessage(message);
+
+    }else if(apiSent && !socketConnected){
+
+        addChatMessage(message);
+
+    }
+
+    chatInput.value = "";
+
+    chatInput.focus();
+
+    scrollChatToBottom();
+
+}
+
+/* =========================================
+   CHAT FORM
+========================================= */
+
+if(chatForm){
+
+    chatForm.addEventListener(
+        "submit",
+        function(event){
+
+            event.preventDefault();
+
+            sendChatMessage();
+
+        }
+    );
+
+}
+
+if(chatInput){
+
+    chatInput.addEventListener(
+        "keydown",
+        function(event){
+
+            if(
+                event.key === "Enter" &&
+                !event.shiftKey
+            ){
+
+                event.preventDefault();
+
+                sendChatMessage();
+
+            }
+
+        }
+    );
+
+}
+
+/* =========================================
+   FOLLOW STATE
+========================================= */
+
+async function loadFollowState(){
+
+    if(!followButton)
+        return;
+
+    if(!currentCreatorId &&
+       !currentCreatorUsername){
+
+        updateFollowButton(false);
+        return;
+
+    }
+
+    const token =
+        getAuthToken();
+
+    if(!token){
+
+        updateFollowButton(false);
+        return;
+
+    }
+
+    const identifiers = [];
+
+    if(currentCreatorId){
+
+        identifiers.push(
+            encodeURIComponent(
+                currentCreatorId
+            )
+        );
+
+    }
+
+    if(currentCreatorUsername){
+
+        identifiers.push(
+            encodeURIComponent(
+                currentCreatorUsername
+            )
+        );
+
+    }
+
+    const endpoints = [];
+
+    identifiers.forEach(identifier => {
+
+        endpoints.push(
+            API_BASE +
+            "/api/follow/" +
+            identifier
+        );
+
+    });
+
+    for(const endpoint of endpoints){
+
+        try{
+
+            const response =
+                await fetch(
+                    endpoint,
+                    {
+                        method:"GET",
+                        headers:authHeaders()
+                    }
+                );
+
+            if(!response.ok)
+                continue;
+
+            const data =
+                await response.json();
+
+            const following =
+                data?.following ??
+                data?.isFollowing ??
+                data?.is_following ??
+                false;
+
+            isFollowing =
+                Boolean(following);
+
+            updateFollowButton(
+                isFollowing
+            );
+
+            return;
+
+        }catch(error){
+
+            console.warn(
+                "Follow state error:",
+                error
+            );
+
+        }
+
+    }
+
+    updateFollowButton(
+        isFollowing
+    );
+
+}
+
+/* =========================================
+   FOLLOW BUTTON UI
+========================================= */
+
+function updateFollowButton(
+    following
+){
+
+    if(!followButton)
+        return;
+
+    followButton.classList.toggle(
+        "following",
+        Boolean(following)
+    );
+
+    followButton.textContent =
+        following
+            ? "Following"
+            : "Follow";
+
+    followButton.disabled =
+        followBusy;
+
+}
+
+/* =========================================
+   TOGGLE FOLLOW
+========================================= */
+
+async function toggleFollow(){
+
+    if(
+        followBusy ||
+        !currentCreatorId &&
+        !currentCreatorUsername
+    )
+        return;
+
+    const token =
+        getAuthToken();
+
+    if(!token){
+
+        window.location.href =
+            "profile.html";
+
+        return;
+
+    }
+
+    followBusy = true;
+
+    updateFollowButton(
+        isFollowing
+    );
+
+    const target =
+        currentCreatorId ||
+        currentCreatorUsername;
+
+    const encoded =
+        encodeURIComponent(
+            target
+        );
+
+    try{
+
+        let response;
+
+        if(isFollowing){
+
+            response =
+                await fetch(
+                    API_BASE +
+                    "/api/follow/" +
+                    encoded,
+                    {
+                        method:"DELETE",
+                        headers:authHeaders()
+                    }
+                );
+
+        }else{
+
+            response =
+                await fetch(
+                    API_BASE +
+                    "/api/follow/" +
+                    encoded,
+                    {
+                        method:"POST",
+                        headers:authHeaders(),
+                        body:JSON.stringify({
+                            creatorId:
+                                currentCreatorId,
+                            creatorUsername:
+                                currentCreatorUsername
+                        })
+                    }
+                );
+
+        }
+
+        if(response.ok){
+
+            isFollowing =
+                !isFollowing;
+
+        }
+
+    }catch(error){
+
+        console.error(
+            "Follow error:",
+            error
+        );
+
+    }finally{
+
+        followBusy = false;
+
+        updateFollowButton(
+            isFollowing
+        );
+
+    }
+
+}
+
+if(followButton){
+
+    followButton.addEventListener(
+        "click",
+        toggleFollow
+    );
+
+}
+
+  </script>
+  <script>
+
+/* =========================================
+   SUPPORT
+========================================= */
+
+function showSupportStatus(message){
+
+    if(!supportStatus)
+        return;
+
+    supportStatus.textContent =
+        message || "";
+
+    supportStatus.classList.toggle(
+        "show",
+        Boolean(message)
+    );
+
+    if(message){
+
+        setTimeout(() => {
+
+            if(supportStatus){
+
+                supportStatus.classList.remove(
+                    "show"
+                );
+
+            }
+
+        }, 3000);
+
+    }
+
+}
+
+async function sendSupport(){
+
+    if(!currentStreamId){
+
+        showSupportStatus(
+            "Stream information is unavailable."
+        );
+
+        return;
+
+    }
+
+    const token =
+        getAuthToken();
+
+    if(!token){
+
+        showSupportStatus(
+            "Please log in to support."
+        );
+
+        return;
+
+    }
+
+    if(supportButton)
+        supportButton.disabled = true;
+
+    try{
+
+        const response =
+            await fetch(
+                API_BASE +
+                "/api/streams/" +
+                encodeURIComponent(
+                    currentStreamId
+                ) +
+                "/support",
+                {
+                    method:"POST",
+                    headers:authHeaders(),
+                    body:JSON.stringify({
+
+                        streamId:
+                            currentStreamId,
+
+                        creatorId:
+                            currentCreatorId,
+
+                        creatorUsername:
+                            currentCreatorUsername
+
+                    })
+                }
+            );
+
+        if(response.ok){
+
+            showSupportStatus(
+                "Support sent ❤️"
+            );
+
+        }else{
+
+            /*
+               Keep the button functional even
+               when the optional support endpoint
+               is unavailable.
+            */
+
+            showSupportStatus(
+                "Support is unavailable right now."
+            );
+
+        }
+
+    }catch(error){
+
+        console.error(
+            "Support error:",
+            error
+        );
+
+        showSupportStatus(
+            "Support is unavailable right now."
+        );
+
+    }finally{
+
+        if(supportButton)
+            supportButton.disabled = false;
+
+    }
+
+}
+
+if(supportButton){
+
+    supportButton.addEventListener(
+        "click",
+        sendSupport
+    );
+
+}
+
+/* =========================================
+   VIEWER COUNT
+========================================= */
+
+function updateWatchingCount(count){
+
+    if(!watchingCount)
+        return;
+
+    const number =
+        Number(count);
+
+    if(!Number.isFinite(number))
+        return;
+
+    currentViewerCount =
+        Math.max(
+            0,
+            Math.floor(number)
+        );
+
+    watchingCount.textContent =
+        String(currentViewerCount);
+
+}
+
+/* =========================================
+   SOCKET.IO
+========================================= */
+
+function connectSocket(){
+
+    if(
+        socket ||
+        !currentStreamId ||
+        typeof io !== "function"
+    ){
+        return;
+    }
+
+    try{
+
+        socket =
+            io(
+                API_BASE,
+                {
+                    transports:[
+                        "websocket",
+                        "polling"
+                    ],
+                    reconnection:true,
+                    reconnectionAttempts:Infinity,
+                    reconnectionDelay:1000
+                }
+            );
+
+        socket.on(
+            "connect",
+            function(){
+
+                socketConnected = true;
+
+                /*
+                   Join the exact stream room.
+                   Multiple event names are kept for
+                   compatibility with the Canvas server.
+                */
+
+                socket.emit(
+                    "join-stream",
+                    {
+                        streamId:
+                            currentStreamId
+                    }
+                );
+
+                socket.emit(
+                    "joinStream",
+                    {
+                        streamId:
+                            currentStreamId
+                    }
+                );
+
+                socket.emit(
+                    "watch-stream",
+                    {
+                        streamId:
+                            currentStreamId
+                    }
+                );
+
+            }
+        );
+
+        socket.on(
+            "disconnect",
+            function(){
+
+                socketConnected = false;
+
+            }
+        );
+
+        socket.on(
+            "connect_error",
+            function(error){
+
+                socketConnected = false;
+
+                console.warn(
+                    "Canvas Socket.IO connection error:",
+                    error
+                );
+
+            }
+        );
+
+        /* ================================
+           CHAT EVENTS
+        ================================= */
+
+        socket.on(
+            "chat-message",
+            handleIncomingChat
+        );
+
+        socket.on(
+            "chatMessage",
+            handleIncomingChat
+        );
+
+        socket.on(
+            "new-chat-message",
+            handleIncomingChat
+        );
+
+        socket.on(
+            "newChatMessage",
+            handleIncomingChat
+        );
+
+        socket.on(
+            "message",
+            function(message){
+
+                if(
+                    message &&
+                    (
+                        message.text ||
+                        message.message ||
+                        message.content
+                    )
+                ){
+
+                    handleIncomingChat(
+                        message
+                    );
+
+                }
+
+            }
+        );
+
+        /* ================================
+           VIEWER EVENTS
+        ================================= */
+
+        socket.on(
+            "viewer-count",
+            function(data){
+
+                const count =
+                    typeof data === "number"
+                        ? data
+                        : getValue(
+                            data,
+                            [
+                                "count",
+                                "viewerCount",
+                                "viewer_count",
+                                "watching",
+                                "viewers"
+                            ],
+                            null
+                        );
+
+                if(count !== null){
+
+                    updateWatchingCount(
+                        count
+                    );
+
+                }
+
+            }
+        );
+
+        socket.on(
+            "viewerCount",
+            function(data){
+
+                const count =
+                    typeof data === "number"
+                        ? data
+                        : getValue(
+                            data,
+                            [
+                                "count",
+                                "viewerCount",
+                                "viewer_count",
+                                "watching",
+                                "viewers"
+                            ],
+                            null
+                        );
+
+                if(count !== null){
+
+                    updateWatchingCount(
+                        count
+                    );
+
+                }
+
+            }
+        );
+
+        socket.on(
+            "watcher-count",
+            function(data){
+
+                const count =
+                    typeof data === "number"
+                        ? data
+                        : getValue(
+                            data,
+                            [
+                                "count",
+                                "viewerCount",
+                                "viewer_count",
+                                "watching",
+                                "viewers"
+                            ],
+                            null
+                        );
+
+                if(count !== null){
+
+                    updateWatchingCount(
+                        count
+                    );
+
+                }
+
+            }
+        );
+
+        socket.on(
+            "stream-viewers",
+            function(data){
+
+                const count =
+                    getValue(
+                        data,
+                        [
+                            "count",
+                            "viewerCount",
+                            "viewer_count",
+                            "viewers"
+                        ],
+                        null
+                    );
+
+                if(count !== null){
+
+                    updateWatchingCount(
+                        count
+                    );
+
+                }
+
+            }
+        );
+
+        /* ================================
+           STREAM STATUS
+        ================================= */
+
+        socket.on(
+            "stream-ended",
+            function(data){
+
+                const streamId =
+                    getValue(
+                        data,
+                        [
+                            "streamId",
+                            "stream_id",
+                            "id"
+                        ],
+                        ""
+                    );
+
+                if(
+                    !streamId ||
+                    !currentStreamId ||
+                    String(streamId) ===
+                    String(currentStreamId)
+                ){
+
+                    showStreamEnded();
+
+                }
+
+            }
+        );
+
+        socket.on(
+            "streamEnded",
+            function(data){
+
+                const streamId =
+                    getValue(
+                        data,
+                        [
+                            "streamId",
+                            "stream_id",
+                            "id"
+                        ],
+                        ""
+                    );
+
+                if(
+                    !streamId ||
+                    !currentStreamId ||
+                    String(streamId) ===
+                    String(currentStreamId)
+                ){
+
+                    showStreamEnded();
+
+                }
+
+            }
+        );
+
+        socket.on(
+            "stream-update",
+            function(data){
+
+                const stream =
+                    data?.stream ||
+                    data?.data ||
+                    data;
+
+                if(stream){
+
+                    renderStream(
+                        stream
+                    );
+
+                }
+
+            }
+        );
+
+        socket.on(
+            "streamUpdate",
+            function(data){
+
+                const stream =
+                    data?.stream ||
+                    data?.data ||
+                    data;
+
+                if(stream){
+
+                    renderStream(
+                        stream
+                    );
+
+                }
+
+            }
+        );
+
+    }catch(error){
+
+        console.error(
+            "Canvas Socket.IO setup error:",
+            error
+        );
+
+        socket = null;
+        socketConnected = false;
+
+    }
+
+}
+
+/* =========================================
+   JOIN STREAM
+========================================= */
+
+function joinCurrentStream(){
+
+    if(
+        !socket ||
+        !socketConnected ||
+        !currentStreamId
+    )
+        return;
+
+    const payload = {
+        streamId:
+            currentStreamId
+    };
+
+    try{
+
+        socket.emit(
+            "join-stream",
+            payload
+        );
+
+    }catch(error){
+
+        console.warn(
+            "Unable to join stream:",
+            error
+        );
+
+    }
+
+}
+
+/* =========================================
+   LEAVE STREAM
+========================================= */
+
+function leaveCurrentStream(){
+
+    if(
+        !socket ||
+        !currentStreamId
+    )
+        return;
+
+    const payload = {
+        streamId:
+            currentStreamId
+    };
+
+    try{
+
+        socket.emit(
+            "leave-stream",
+            payload
+        );
+
+        socket.emit(
+            "leaveStream",
+            payload
+        );
+
+    }catch(error){
+
+        console.warn(
+            "Unable to leave stream:",
+            error
+        );
+
+    }
+
+}
+
+/* =========================================
+   PROFILE PHOTO FOR BOTTOM NAV
+========================================= */
+
+function findLocalProfilePhoto(){
+
+    const keys = [
+        "canvasProfile",
+        "canvasAccount"
+    ];
+
+    for(const key of keys){
+
+        const raw =
+            localStorage.getItem(key);
+
+        if(!raw)
+            continue;
+
+        try{
+
+            const data =
+                JSON.parse(raw);
+
+            const photo =
+                getValue(
+                    data,
+                    [
+                        "profilePhoto",
+                        "profile_photo",
+                        "profilePicture",
+                        "profile_picture",
+                        "avatar",
+                        "avatarUrl",
+                        "avatar_url",
+                        "photo",
+                        "photoUrl",
+                        "photo_url",
+                        "image",
+                        "imageUrl",
+                        "image_url"
+                    ],
+                    ""
+                );
+
+            if(photo)
+                return photo;
+
+        }catch(error){
+
+            console.warn(
+                "Profile storage error:",
+                error
+            );
+
+        }
+
+    }
+
+    return "";
+
+}
+
+/* =========================================
+   UPDATE BOTTOM PROFILE ICON
+========================================= */
+
+function updateBottomProfileIcon(){
+
+    const profileLink =
+        document.getElementById(
+            "bottomProfileIcon"
+        );
+
+    if(!profileLink)
+        return;
+
+    const photo =
+        findLocalProfilePhoto();
+
+    if(!photo)
+        return;
+
+    const existing =
+        profileLink.querySelector("img");
+
+    if(existing){
+
+        existing.src = photo;
+        return;
+
+    }
+
+    const image =
+        document.createElement("img");
+
+    image.src = photo;
+    image.alt = "Profile";
+
+    image.onerror =
+        function(){
+
+            image.remove();
+
+        };
+
+    profileLink.replaceChildren(
+        image
+    );
+
+    const label =
+        document.createElement("span");
+
+    label.textContent =
+        "Profile";
+
+    profileLink.appendChild(
+        label
+    );
+
+}
+
+  </script>
+  <script>
+
+/* =========================================
+   CANVAS WATCH INITIALIZATION
+========================================= */
+
+async function initializeCanvasWatch(){
+
+    leavingStream = false;
+
+    /*
+       Make sure the creator link always behaves
+       like a normal profile link.
+    */
+
+    if(creatorProfileLink){
+
+        creatorProfileLink.addEventListener(
+            "click",
+            function(){
+
+                updateCreatorProfileLink();
+
+            }
+        );
+
+    }
+
+    updateBottomProfileIcon();
+
+    /*
+       Load the stream first so creator information,
+       viewer count, follow state and chat all use
+       the same stream.
+    */
+
+    const stream =
+        await loadStream();
+
+    if(stream){
+
+        /*
+           Socket connection must happen after the
+           stream ID is known.
+        */
+
+        connectSocket();
+
+        /*
+           Give Socket.IO a moment to establish the
+           connection, then explicitly join the room.
+        */
+
+        setTimeout(
+            joinCurrentStream,
+            500
+        );
+
+        startStreamRefresh();
+
+    }
+
+}
+
+/* =========================================
+   DOM READY
+========================================= */
+
+if(
+    document.readyState ===
+    "loading"
+){
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        initializeCanvasWatch,
+        {
+            once:true
+        }
+    );
+
+}else{
+
+    initializeCanvasWatch();
+
+}
+
+/* =========================================
+   PAGE SHOW
+========================================= */
+
+window.addEventListener(
+    "pageshow",
+    function(){
+
+        leavingStream = false;
+
+        updateBottomProfileIcon();
+
+        /*
+           If the page was restored from browser
+           cache, make sure the stream is still
+           connected and current.
+        */
+
+        if(
+            currentStreamId &&
+            !socket
+        ){
+
+            connectSocket();
+
+            setTimeout(
+                joinCurrentStream,
+                500
+            );
+
+        }
+
+    }
+);
+
+/* =========================================
+   VISIBILITY CHANGE
+========================================= */
+
+document.addEventListener(
+    "visibilitychange",
+    function(){
+
+        if(
+            document.visibilityState ===
+            "visible"
+        ){
+
+            leavingStream = false;
+
+            updateBottomProfileIcon();
+
+            if(currentStreamId){
+
+                refreshStream();
+
+                if(!socket){
+
+                    connectSocket();
+
+                }
+
+                setTimeout(
+                    joinCurrentStream,
+                    300
+                );
+
+            }
+
+        }
+
+    }
+);
+
+/* =========================================
+   BEFORE UNLOAD
+========================================= */
+
+window.addEventListener(
+    "beforeunload",
+    function(){
+
+        leavingStream = true;
+
+        if(refreshTimer){
+
+            clearInterval(
+                refreshTimer
+            );
+
+            refreshTimer = null;
+
+        }
+
+        leaveCurrentStream();
+
+    }
+);
+
+/* =========================================
+   PAGE HIDE
+========================================= */
+
+window.addEventListener(
+    "pagehide",
+    function(){
+
+        leavingStream = true;
+
+        if(refreshTimer){
+
+            clearInterval(
+                refreshTimer
+            );
+
+            refreshTimer = null;
+
+        }
+
+        leaveCurrentStream();
+
+    }
+);
+
+/* =========================================
+   VIDEO EVENTS
+========================================= */
+
+if(liveVideo){
+
+    liveVideo.addEventListener(
+        "playing",
+        function(){
+
+            if(videoPlaceholder){
+
+                videoPlaceholder.classList.add(
+                    "hidden"
+                );
+
+            }
+
+        }
+    );
+
+    liveVideo.addEventListener(
+        "loadeddata",
+        function(){
+
+            if(videoPlaceholder){
+
+                videoPlaceholder.classList.add(
+                    "hidden"
+                );
+
+            }
+
+        }
+    );
+
+    liveVideo.addEventListener(
+        "error",
+        function(){
+
+            /*
+               Do not destroy the stream state when
+               the video element temporarily fails.
+               The refresh system can recover it.
+            */
+
+            if(!currentStream){
+
+                showStreamError(
+                    "Live video is unavailable."
+                );
+
+            }
+
+        }
+    );
+
+}
+
+/* =========================================
+   CREATOR PROFILE SAFETY
+========================================= */
+
+function openCreatorProfile(){
+
+    /*
+       This is used only when a creator username
+       or ID has actually been loaded.
+    */
+
+    if(currentCreatorProfileUrl){
+
+        window.location.href =
+            currentCreatorProfileUrl;
+
+        return;
+
+    }
+
+    if(currentCreatorUsername){
+
+        window.location.href =
+            "profile.html?username=" +
+            encodeURIComponent(
+                currentCreatorUsername
+            );
+
+        return;
+
+    }
+
+    if(currentCreatorId){
+
+        window.location.href =
+            "profile.html?id=" +
+            encodeURIComponent(
+                currentCreatorId
+            );
+
+        return;
+
+    }
+
+    window.location.href =
+        "profile.html";
+
+}
+
+/*
+   Keep the creator area clickable even if the
+   browser or another CSS rule interferes with
+   the anchor.
+*/
+
+if(creatorProfileLink){
+
+    creatorProfileLink.addEventListener(
+        "click",
+        function(event){
+
+            /*
+               If creator information is available,
+               explicitly route to that creator.
+            */
+
+            if(
+                currentCreatorProfileUrl ||
+                currentCreatorUsername ||
+                currentCreatorId
+            ){
+
+                event.preventDefault();
+
+                openCreatorProfile();
+
+            }
+
+        }
+    );
+
+}
+
+/* =========================================
+   PREVENT FOLLOW FROM OPENING PROFILE
+========================================= */
+
+if(followButton){
+
+    followButton.addEventListener(
+        "click",
+        function(event){
+
+            /*
+               Follow remains its own action and must
+               never trigger the creator profile link.
+            */
+
+            event.stopPropagation();
+
+        }
+    );
+
+}
+
+/* =========================================
+   ESCAPE KEY
+========================================= */
+
+document.addEventListener(
+    "keydown",
+    function(event){
+
+        if(event.key !== "Escape")
+            return;
+
+        if(
+            document.activeElement ===
+            chatInput
+        ){
+
+            chatInput.blur();
+
+        }
+
+    }
+);
+
+/* =========================================
+   FINAL PROFILE ICON SYNC
+========================================= */
+
+setTimeout(
+    updateBottomProfileIcon,
+    100
+);
+
+setTimeout(
+    updateBottomProfileIcon,
+    1000
+);
+
+  </script>
+  <script>
+
+/* =========================================
+   FINAL CANVAS PROFILE SYNC
+========================================= */
+
+(function(){
+
+    function syncProfile(){
+
+        try{
+
+            updateBottomProfileIcon();
+
+        }catch(error){
+
+            console.warn(
+                "Canvas profile icon sync error:",
+                error
+            );
+
+        }
+
+    }
+
+    syncProfile();
+
+    window.addEventListener(
+        "storage",
+        function(event){
+
+            if(
+                event.key === "canvasProfile" ||
+                event.key === "canvasAccount"
+            ){
+
+                syncProfile();
+
+            }
+
+        }
+    );
+
+})();
+
+/* =========================================
+   FINAL STREAM SAFETY
+========================================= */
+
+window.addEventListener(
+    "online",
+    function(){
+
+        if(
+            currentStreamId &&
+            !leavingStream
+        ){
+
+            refreshStream();
+
+            if(!socket){
+
+                connectSocket();
+
+            }
+
+            setTimeout(
+                joinCurrentStream,
+                500
+            );
+
+        }
+
+    }
+);
+
+/* =========================================
+   CLEAN SOCKET ON COMPLETE EXIT
+========================================= */
+
+window.addEventListener(
+    "unload",
+    function(){
+
+        try{
+
+            leaveCurrentStream();
+
+            if(socket){
+
+                socket.disconnect();
+
+            }
+
+        }catch(error){
+
+            console.warn(
+                "Canvas socket cleanup error:",
+                error
+            );
+
+        }
+
+    }
+);
+
+</script>
+
+<script src="js/script.js"></script>
+
+</body>
+
+</html>
