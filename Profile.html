@@ -1,0 +1,4910 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Canvas Profile</title>
+
+<style>
+
+/* =========================================
+   CANVAS PROFILE
+   EXISTING DESIGN PRESERVED
+========================================= */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    background:#fff;
+    color:#4b3326;
+    font-family:Arial,Helvetica,sans-serif;
+    min-height:100vh;
+    padding-bottom:90px;
+}
+
+.navbar{
+    height:72px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 22px;
+    background:#fff;
+    border-bottom:1px solid #eee;
+}
+
+.logo{
+    font-size:34px;
+    font-weight:800;
+    color:#6F4E37;
+}
+
+.back{
+    width:40px;
+    height:40px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#6F4E37;
+    font-size:34px;
+    text-decoration:none;
+}
+
+.header-space{
+    width:40px;
+}
+
+.profile-container{
+    width:100%;
+    max-width:650px;
+    margin:auto;
+    padding:30px 22px 110px;
+}
+
+.profile-title{
+    font-size:30px;
+    font-weight:800;
+    margin-bottom:8px;
+}
+
+.profile-subtitle{
+    color:#777;
+    font-size:16px;
+    line-height:1.5;
+    margin-bottom:30px;
+}
+
+/* =========================================
+   AVATAR
+========================================= */
+
+.avatar-section{
+    text-align:center;
+    margin-bottom:30px;
+}
+
+.avatar{
+    width:110px;
+    height:110px;
+    margin:auto;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:50%;
+    overflow:hidden;
+
+    background:#f1f1f1;
+    border:3px solid #D4A017;
+
+    color:#6F4E37;
+    font-size:48px;
+}
+
+.avatar img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+/* =========================================
+   PHOTO ACTIONS
+========================================= */
+
+.photo-actions{
+    display:flex;
+    justify-content:center;
+    gap:18px;
+    margin-top:12px;
+}
+
+.photo-button{
+    color:#6F4E37;
+    font-size:15px;
+    font-weight:700;
+    cursor:pointer;
+}
+
+.delete-photo-button{
+    border:0;
+    background:none;
+    color:#b44a3c;
+    font-size:15px;
+    font-weight:700;
+    cursor:pointer;
+    display:none;
+}
+
+#photoInput{
+    display:none;
+}
+
+/* =========================================
+   FORM
+========================================= */
+
+.form-group{
+    margin-bottom:20px;
+}
+
+.form-group label{
+    display:block;
+    margin-bottom:8px;
+    color:#4b3326;
+    font-size:15px;
+    font-weight:700;
+}
+
+.form-group input,
+.form-group textarea{
+    width:100%;
+    padding:14px;
+
+    border:1px solid #ddd;
+    border-radius:12px;
+
+    background:#fafafa;
+    color:#333;
+
+    font-size:16px;
+    outline:none;
+}
+
+.form-group textarea{
+    height:100px;
+    resize:none;
+}
+
+.form-group input:focus,
+.form-group textarea:focus{
+    border-color:#D4A017;
+    background:#fff;
+}
+
+.save-button{
+    width:100%;
+    padding:15px;
+
+    border:0;
+    border-radius:12px;
+
+    background:#6F4E37;
+    color:#fff;
+
+    font-size:17px;
+    font-weight:700;
+
+    cursor:pointer;
+}
+
+/* =========================================
+   PROFILE VIEW
+========================================= */
+
+#profileView{
+    display:none;
+    text-align:center;
+}
+
+.profile-name{
+    margin-top:18px;
+    color:#4b3326;
+    font-size:28px;
+    font-weight:800;
+}
+
+.profile-username{
+    margin-top:5px;
+    color:#777;
+    font-size:18px;
+}
+
+.profile-bio{
+    max-width:400px;
+    margin:18px auto;
+    color:#555;
+    font-size:17px;
+    line-height:1.5;
+}
+
+/* =========================================
+   FOLLOW BUTTON
+========================================= */
+
+.follow-button{
+    display:none;
+
+    margin:16px auto 5px;
+
+    min-width:150px;
+    padding:12px 24px;
+
+    border:0;
+    border-radius:10px;
+
+    background:#4b3326;
+    color:#fff;
+
+    font-size:15px;
+    font-weight:700;
+
+    cursor:pointer;
+}
+
+.follow-button:active{
+    transform:scale(.98);
+}
+
+.follow-button.following{
+    background:#fff;
+    color:#4b3326;
+    border:1px solid #4b3326;
+}
+
+/* =========================================
+   STATS
+========================================= */
+
+.stats{
+    display:flex;
+    justify-content:center;
+    gap:60px;
+
+    margin:25px 0;
+    padding-bottom:25px;
+
+    border-bottom:1px solid #eee;
+}
+
+.stat strong{
+    display:block;
+    color:#4b3326;
+    font-size:24px;
+}
+
+.stat span{
+    display:block;
+    margin-top:5px;
+    color:#777;
+    font-size:15px;
+}
+
+/* =========================================
+   ACCOUNT
+========================================= */
+
+.account-section{
+    margin-top:25px;
+    text-align:left;
+}
+
+.account-title{
+    margin-bottom:20px;
+    font-size:28px;
+}
+
+.account-item{
+    padding:16px 0;
+    border-bottom:1px solid #eee;
+}
+
+.account-label{
+    margin-bottom:6px;
+    color:#777;
+    font-size:14px;
+}
+
+.account-value{
+    color:#333;
+    font-size:17px;
+    word-break:break-word;
+}
+
+.edit-button,
+.password-button,
+.logout-button{
+    width:100%;
+    padding:14px;
+    margin-top:12px;
+
+    border-radius:10px;
+
+    font-size:15px;
+    font-weight:700;
+
+    cursor:pointer;
+}
+
+.edit-button{
+    border:1px solid #6F4E37;
+    background:#fff;
+    color:#6F4E37;
+}
+
+.password-button{
+    border:1px solid #D4A017;
+    background:#fff;
+    color:#6F4E37;
+}
+
+.logout-button{
+    border:1px solid #ddd;
+    background:#fff;
+    color:#777;
+}
+
+/* =========================================
+   PASSWORD
+========================================= */
+
+#passwordSection{
+    display:none;
+
+    margin-top:25px;
+    padding-top:20px;
+
+    border-top:1px solid #eee;
+}
+
+.password-title{
+    margin-bottom:18px;
+    font-size:20px;
+}
+
+/* =========================================
+   BOTTOM NAV
+========================================= */
+
+.bottom-nav{
+    position:fixed;
+
+    left:0;
+    bottom:0;
+
+    width:100%;
+    height:75px;
+
+    display:flex;
+
+    background:#fff;
+    border-top:2px solid #d4a62a;
+
+    z-index:1000;
+}
+
+.bottom-nav a{
+    flex:1;
+    height:100%;
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+
+    gap:4px;
+
+    color:#8a6b58;
+
+    font-size:23px;
+    text-decoration:none;
+}
+
+.bottom-nav a span{
+    font-size:11px;
+    font-weight:700;
+}
+
+.bottom-nav a.active{
+    color:#4b3326;
+}
+
+/* =========================================
+   EXACT PROFILE PHOTO NAV SIZE
+========================================= */
+
+#bottomProfileImage{
+    width:23px;
+    height:23px;
+
+    object-fit:cover;
+    border-radius:50%;
+
+    border:1.5px solid #d4a62a;
+}
+
+/* =========================================
+   EXPLORE SVG
+========================================= */
+
+.explore-nav-icon{
+    width:23px;
+    height:23px;
+
+    display:block;
+}
+
+.explore-nav-icon svg{
+    width:100%;
+    height:100%;
+    display:block;
+}
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media(max-width:600px){
+
+    .navbar{
+        height:68px;
+        padding:0 16px;
+    }
+
+    .logo{
+        font-size:30px;
+    }
+
+    .profile-container{
+        padding:30px 22px 110px;
+    }
+
+    .profile-title{
+        font-size:28px;
+    }
+
+    .stats{
+        gap:55px;
+    }
+
+    .bottom-nav{
+        height:70px;
+    }
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header class="navbar">
+
+    <a
+        href="stream.html"
+        class="back"
+    >‹</a>
+
+    <div class="logo">
+        Canvas
+    </div>
+
+    <div class="header-space"></div>
+
+</header>
+
+
+<main class="profile-container">
+
+
+<!-- =====================================
+     CREATE / EDIT PROFILE
+===================================== -->
+
+<section id="createProfile">
+
+    <h1
+        class="profile-title"
+        id="formTitle"
+    >
+        Create your profile
+    </h1>
+
+    <p
+        class="profile-subtitle"
+        id="formSubtitle"
+    >
+        Set up your Canvas profile and let people know who you are.
+    </p>
+
+
+    <div class="avatar-section">
+
+        <div
+            class="avatar"
+            id="avatarPreview"
+        ></div>
+
+
+        <div class="photo-actions">
+
+            <label
+                class="photo-button"
+                for="photoInput"
+            >
+                Choose profile picture
+            </label>
+
+            <button
+                type="button"
+                class="delete-photo-button"
+                id="deletePhotoButton"
+                onclick="deleteProfilePhoto()"
+            >
+                Delete picture
+            </button>
+
+        </div>
+
+
+        <input
+            type="file"
+            id="photoInput"
+            accept="image/*"
+        >
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label for="displayName">
+            Display name
+        </label>
+
+        <input
+            type="text"
+            id="displayName"
+            placeholder="Your name"
+            maxlength="30"
+        >
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label for="username">
+            Username
+        </label>
+
+        <input
+            type="text"
+            id="username"
+            placeholder="@username"
+            maxlength="100"
+        >
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label for="bio">
+            Bio
+        </label>
+
+        <textarea
+            id="bio"
+            placeholder="Tell people about yourself..."
+            maxlength="150"
+        ></textarea>
+
+    </div>
+
+
+    <button
+        type="button"
+        class="save-button"
+        onclick="saveProfile()"
+    >
+        Save Profile
+    </button>
+
+</section>
+
+
+<!-- =====================================
+     PROFILE VIEW
+===================================== -->
+
+<section id="profileView">
+
+    <div
+        class="avatar"
+        id="profileAvatar"
+    ></div>
+
+
+    <h1
+        class="profile-name"
+        id="profileName"
+    >
+        Canvas Creator
+    </h1>
+
+
+    <p
+        class="profile-username"
+        id="profileUsername"
+    >
+        @username
+    </p>
+
+
+    <p
+        class="profile-bio"
+        id="profileBio"
+    >
+        No bio yet.
+    </p>
+
+
+    <!-- FOLLOW ONLY WHEN VIEWING SOMEONE ELSE -->
+
+    <button
+        type="button"
+        id="followButton"
+        class="follow-button"
+        onclick="toggleFollow()"
+    >
+        Follow
+    </button>
+
+
+    <!-- FOLLOWER / FOLLOWING -->
+
+    <div class="stats">
+
+        <div class="stat">
+
+            <strong id="followersCount">
+                0
+            </strong>
+
+            <span>
+                Followers
+            </span>
+
+        </div>
+
+
+        <div class="stat">
+
+            <strong id="followingCount">
+                0
+            </strong>
+
+            <span>
+                Following
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <!-- OWN ACCOUNT ONLY -->
+
+    <section
+        class="account-section"
+        id="accountSection"
+    >
+
+        <h2 class="account-title">
+            Account
+        </h2>
+
+
+        <div class="account-item">
+
+            <div class="account-label">
+                Email
+            </div>
+
+            <div
+                class="account-value"
+                id="accountEmail"
+            >
+                Not available
+            </div>
+
+        </div>
+
+
+        <div class="account-item">
+
+            <div class="account-label">
+                Password
+            </div>
+
+            <div class="account-value">
+                ••••••••
+            </div>
+
+        </div>
+
+
+        <button
+            class="edit-button"
+            onclick="editProfile()"
+        >
+            Edit Profile
+        </button>
+
+
+        <button
+            class="password-button"
+            onclick="togglePasswordSection()"
+        >
+            Change Password
+        </button>
+
+
+        <button
+            class="logout-button"
+            onclick="logout()"
+        >
+            Log Out
+        </button>
+
+
+        <div id="passwordSection">
+
+            <h2 class="password-title">
+                Change Password
+            </h2>
+
+
+            <div class="form-group">
+
+                <label>
+                    Current password
+                </label>
+
+                <input
+                    type="password"
+                    id="currentPassword"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    New password
+                </label>
+
+                <input
+                    type="password"
+                    id="newPassword"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Confirm password
+                </label>
+
+                <input
+                    type="password"
+                    id="confirmNewPassword"
+                >
+
+            </div>
+
+
+            <button
+                class="save-button"
+                onclick="changePassword()"
+            >
+                Save New Password
+            </button>
+
+        </div>
+
+    </section>
+
+</section>
+
+</main>
+
+
+<!-- =====================================
+     CANVAS BOTTOM NAV
+===================================== -->
+
+<nav class="bottom-nav">
+
+    <a href="stream.html">
+
+        ⌂
+
+        <span>
+            Home
+        </span>
+
+    </a>
+
+
+    <a href="explore.html">
+
+        <span class="explore-nav-icon">
+
+            <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+            >
+
+                <circle
+                    cx="11"
+                    cy="11"
+                    r="6.5"
+                    stroke="currentColor"
+                    stroke-width="2"
+                />
+
+                <path
+                    d="M16 16L21 21"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                />
+
+            </svg>
+
+        </span>
+
+        <span>
+            Explore
+        </span>
+
+    </a>
+
+
+    <a href="golive.html">
+
+        ⊙
+
+        <span>
+            Go Live
+        </span>
+
+    </a>
+
+
+    <a
+        href="profile.html"
+        class="active"
+    >
+
+        <span id="bottomProfileIcon"></span>
+
+        <span>
+            Profile
+        </span>
+
+    </a>
+
+      </nav>
+      <script>
+
+/* =========================================
+   CANVAS PROFILE — PART 2
+   AUTH + PROFILE CORE
+========================================= */
+
+const API = "https://canvas-kh9p.onrender.com";
+
+let selectedPhoto = "";
+let currentProfile = null;
+let viewingOwnProfile = true;
+let viewingUsername = "";
+
+
+/* =========================================
+   EXACT CANVAS DEFAULT PROFILE PICTURE
+========================================= */
+
+const DEFAULT_AVATAR = `
+<svg
+    viewBox="0 0 100 100"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-label="Default profile picture"
+>
+    <circle
+        cx="50"
+        cy="50"
+        r="50"
+        fill="#F1E4D2"
+    />
+
+    <circle
+        cx="50"
+        cy="37"
+        r="17"
+        fill="#6F4E37"
+    />
+
+    <path
+        d="M20 86
+           C23 66 34 56 50 56
+           C66 56 77 66 80 86
+           Z"
+        fill="#6F4E37"
+    />
+</svg>
+`;
+
+
+/* =========================================
+   AUTH TOKEN
+========================================= */
+
+function getToken(){
+
+    return (
+        localStorage.getItem("canvasAuthToken") ||
+        localStorage.getItem("canvasToken") ||
+        localStorage.getItem("authToken") ||
+        ""
+    ).trim();
+
+}
+
+
+/* =========================================
+   AUTH HEADERS
+========================================= */
+
+function authHeaders(){
+
+    const token = getToken();
+
+    const headers = {
+        "Content-Type":"application/json"
+    };
+
+    if(token){
+
+        headers.Authorization =
+            "Bearer " + token;
+
+    }
+
+    return headers;
+
+}
+
+
+/* =========================================
+   LOGIN CHECK
+========================================= */
+
+function isLoggedIn(){
+
+    return !!getToken();
+
+}
+
+
+/* =========================================
+   LOGIN GATE
+========================================= */
+
+function requireLogin(){
+
+    if(!isLoggedIn()){
+
+        window.location.replace("login.html");
+
+        return false;
+
+    }
+
+    return true;
+
+}
+
+
+/* =========================================
+   ACCOUNT FROM LOCAL STORAGE
+========================================= */
+
+function getAccount(){
+
+    try{
+
+        return JSON.parse(
+            localStorage.getItem("canvasAccount") || "{}"
+        );
+
+    }catch(error){
+
+        return {};
+
+    }
+
+}
+
+
+/* =========================================
+   SAVED OWN PROFILE
+========================================= */
+
+function getSavedProfile(){
+
+    try{
+
+        return JSON.parse(
+            localStorage.getItem("canvasProfile") || "{}"
+        );
+
+    }catch(error){
+
+        return {};
+
+    }
+
+}
+
+
+/* =========================================
+   NORMALIZE USERNAME
+========================================= */
+
+function cleanUsername(username){
+
+    return String(username || "")
+        .trim()
+        .replace(/^@+/,"");
+
+}
+
+
+/* =========================================
+   CURRENT USERNAME
+   DO NOT USE CACHED PROFILE AS AUTH SOURCE
+========================================= */
+
+function getLoggedInUsername(){
+
+    const account = getAccount();
+
+    return cleanUsername(
+        account.username ||
+        account.user_name ||
+        account.userName ||
+        ""
+    );
+
+}
+
+
+/* =========================================
+   CURRENT USER ID
+========================================= */
+
+function getLoggedInUserId(){
+
+    const account = getAccount();
+
+    return (
+        account.id ||
+        account.user_id ||
+        account.userId ||
+        ""
+    );
+
+}
+
+
+/* =========================================
+   PROFILE PHOTO READER
+========================================= */
+
+function getPhoto(profile){
+
+    if(!profile){
+
+        return "";
+
+    }
+
+    return (
+        profile.photo ||
+        profile.profile_picture ||
+        profile.profilePicture ||
+        profile.profileImage ||
+        profile.profilePhoto ||
+        profile.image ||
+        ""
+    );
+
+}
+
+
+/* =========================================
+   SAFE NUMBER
+========================================= */
+
+function safeNumber(value){
+
+    const number = Number(value);
+
+    if(!Number.isFinite(number)){
+
+        return 0;
+
+    }
+
+    return Math.max(0, Math.floor(number));
+
+}
+
+
+/* =========================================
+   SET DEFAULT / REAL AVATAR
+========================================= */
+
+function setAvatar(element, photo){
+
+    if(!element){
+
+        return;
+
+    }
+
+    element.innerHTML = "";
+
+    if(photo){
+
+        const image = document.createElement("img");
+
+        image.src = photo;
+        image.alt = "Profile picture";
+
+        image.onerror = function(){
+
+            this.remove();
+
+            element.innerHTML =
+                DEFAULT_AVATAR;
+
+        };
+
+        element.appendChild(image);
+
+    }else{
+
+        element.innerHTML =
+            DEFAULT_AVATAR;
+
+    }
+
+}
+
+
+/* =========================================
+   BOTTOM PROFILE ICON
+========================================= */
+
+function updateBottomIcon(profile){
+
+    const icon =
+        document.getElementById(
+            "bottomProfileIcon"
+        );
+
+    if(!icon){
+
+        return;
+
+    }
+
+    icon.innerHTML = "";
+
+    const photo =
+        getPhoto(profile);
+
+    if(photo){
+
+        const image =
+            document.createElement("img");
+
+        image.id =
+            "bottomProfileImage";
+
+        image.src =
+            photo;
+
+        image.alt =
+            "Profile";
+
+        image.onerror = function(){
+
+            this.remove();
+
+            icon.innerHTML =
+                DEFAULT_AVATAR;
+
+        };
+
+        icon.appendChild(image);
+
+    }else{
+
+        icon.innerHTML =
+            DEFAULT_AVATAR;
+
+    }
+
+}
+
+
+/* =========================================
+   NORMALIZE PROFILE RESPONSE
+========================================= */
+
+function normalizeProfile(data){
+
+    const source =
+        data &&
+        (
+            data.profile ||
+            data.user ||
+            data
+        ) || {};
+
+    return {
+
+        id:
+            source.id ||
+            source.user_id ||
+            source.userId ||
+            "",
+
+        name:
+            source.name ||
+            source.display_name ||
+            source.displayName ||
+            "Canvas Creator",
+
+        username:
+            cleanUsername(
+                source.username ||
+                source.user_name ||
+                source.userName ||
+                ""
+            ),
+
+        email:
+            source.email || "",
+
+        bio:
+            source.bio || "",
+
+        photo:
+            getPhoto(source),
+
+        followers_count:
+            safeNumber(
+                source.followers_count ??
+                source.followers ??
+                source.follower_count ??
+                0
+            ),
+
+        following_count:
+            safeNumber(
+                source.following_count ??
+                source.following ??
+                source.followingCount ??
+                0
+            )
+
+    };
+
+}
+
+
+/* =========================================
+   SAVE ONLY THE LOGGED-IN USER PROFILE
+========================================= */
+
+function saveLocalProfile(profile){
+
+    if(!profile){
+
+        return;
+
+    }
+
+    localStorage.setItem(
+        "canvasProfile",
+        JSON.stringify({
+
+            id:profile.id || "",
+
+            name:profile.name || "",
+
+            username:
+                cleanUsername(
+                    profile.username
+                ),
+
+            email:
+                profile.email || "",
+
+            bio:
+                profile.bio || "",
+
+            photo:
+                getPhoto(profile),
+
+            followers_count:
+                safeNumber(
+                    profile.followers_count
+                ),
+
+            following_count:
+                safeNumber(
+                    profile.following_count
+                )
+
+        })
+    );
+
+}
+
+
+/* =========================================
+   SHOW CREATE PROFILE
+========================================= */
+
+function showCreateProfile(){
+
+    document.getElementById(
+        "profileView"
+    ).style.display = "none";
+
+    document.getElementById(
+        "createProfile"
+    ).style.display = "block";
+
+    viewingOwnProfile = true;
+
+    const followButton =
+        document.getElementById(
+            "followButton"
+        );
+
+    if(followButton){
+
+        followButton.style.display =
+            "none";
+
+    }
+
+}
+
+
+/* =========================================
+   SHOW PROFILE
+========================================= */
+
+function showProfile(
+    profile,
+    isOwn = true
+){
+
+    if(!profile){
+
+        return;
+
+    }
+
+    currentProfile =
+        profile;
+
+    viewingOwnProfile =
+        !!isOwn;
+
+    document.getElementById(
+        "createProfile"
+    ).style.display = "none";
+
+    document.getElementById(
+        "profileView"
+    ).style.display = "block";
+
+
+    /* NAME */
+
+    document.getElementById(
+        "profileName"
+    ).textContent =
+        profile.name ||
+        "Canvas Creator";
+
+
+    /* USERNAME */
+
+    document.getElementById(
+        "profileUsername"
+    ).textContent =
+        "@" +
+        (
+            cleanUsername(
+                profile.username
+            ) ||
+            "username"
+        );
+
+
+    /* BIO */
+
+    document.getElementById(
+        "profileBio"
+    ).textContent =
+        profile.bio ||
+        "No bio yet.";
+
+
+    /* AVATAR */
+
+    setAvatar(
+        document.getElementById(
+            "profileAvatar"
+        ),
+        getPhoto(profile)
+    );
+
+
+    /* COUNTS */
+
+    setFollowCounts(
+        profile.followers_count,
+        profile.following_count
+    );
+
+
+    /* =====================================
+       OWN PROFILE
+    ===================================== */
+
+    const accountSection =
+        document.getElementById(
+            "accountSection"
+        );
+
+    const followButton =
+        document.getElementById(
+            "followButton"
+        );
+
+
+    if(isOwn){
+
+        if(accountSection){
+
+            accountSection.style.display =
+                "block";
+
+        }
+
+        if(followButton){
+
+            followButton.style.display =
+                "none";
+
+        }
+
+        document.getElementById(
+            "accountEmail"
+        ).textContent =
+            profile.email ||
+            getAccount().email ||
+            "Not available";
+
+
+        updateBottomIcon(
+            profile
+        );
+
+    }
+
+
+    /* =====================================
+       OTHER USER PROFILE
+    ===================================== */
+
+    else{
+
+        if(accountSection){
+
+            accountSection.style.display =
+                "none";
+
+        }
+
+        if(followButton){
+
+            followButton.style.display =
+                "block";
+
+        }
+
+    }
+
+}
+
+
+/* =========================================
+   FOLLOW COUNTS
+   NUMBERS ONLY
+========================================= */
+
+function setFollowCounts(
+    followers,
+    following
+){
+
+    const followersElement =
+        document.getElementById(
+            "followersCount"
+        );
+
+    const followingElement =
+        document.getElementById(
+            "followingCount"
+        );
+
+
+    if(followersElement){
+
+        followersElement.textContent =
+            String(
+                safeNumber(followers)
+            );
+
+    }
+
+
+    if(followingElement){
+
+        followingElement.textContent =
+            String(
+                safeNumber(following)
+            );
+
+    }
+
+}
+
+
+/* =========================================
+   READ USERNAME FROM URL
+========================================= */
+
+function getRequestedUsername(){
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+    return cleanUsername(
+        params.get("username") ||
+        ""
+    );
+
+}
+
+
+/* =========================================
+   CHECK IF PROFILE IS OWN PROFILE
+========================================= */
+
+function isOwnUsername(username){
+
+    const requested =
+        cleanUsername(username)
+            .toLowerCase();
+
+    const loggedIn =
+        getLoggedInUsername()
+            .toLowerCase();
+
+    return (
+        !!requested &&
+        !!loggedIn &&
+        requested === loggedIn
+    );
+
+}
+
+
+/* =========================================
+   FETCH MY PROFILE
+========================================= */
+
+async function fetchMyProfile(){
+
+    const response =
+        await fetch(
+            API + "/api/profile",
+            {
+                method:"GET",
+                headers:authHeaders(),
+                cache:"no-store"
+            }
+        );
+
+    if(response.status === 401){
+
+        logoutLocal();
+
+        return null;
+
+    }
+
+
+    if(response.status === 404){
+
+        return {
+            notCreated:true
+        };
+
+    }
+
+
+    let data = {};
+
+    try{
+
+        data =
+            await response.json();
+
+    }catch(error){
+
+        data = {};
+
+    }
+
+
+    if(!response.ok){
+
+        throw new Error(
+            data.message ||
+            "Unable to load your profile."
+        );
+
+    }
+
+
+    if(!data.success){
+
+        throw new Error(
+            data.message ||
+            "Unable to load your profile."
+        );
+
+    }
+
+
+    return normalizeProfile(
+        data
+    );
+
+}
+
+
+/* =========================================
+   FETCH PUBLIC PROFILE
+========================================= */
+
+async function fetchPublicProfile(
+    username
+){
+
+    const clean =
+        cleanUsername(username);
+
+    if(!clean){
+
+        throw new Error(
+            "Username is missing."
+        );
+
+    }
+
+
+    const response =
+        await fetch(
+            API +
+            "/api/profile/" +
+            encodeURIComponent(clean),
+            {
+                method:"GET",
+                cache:"no-store"
+            }
+        );
+
+
+    let data = {};
+
+    try{
+
+        data =
+            await response.json();
+
+    }catch(error){
+
+        data = {};
+
+    }
+
+
+    if(!response.ok){
+
+        throw new Error(
+            data.message ||
+            "Profile not found."
+        );
+
+    }
+
+
+    if(!data.success){
+
+        throw new Error(
+            data.message ||
+            "Profile not found."
+        );
+
+    }
+
+
+    return normalizeProfile(
+        data
+    );
+
+}
+
+
+/* =========================================
+   LOAD PROFILE
+========================================= */
+
+async function loadProfile(){
+
+    if(!requireLogin()){
+
+        return;
+
+    }
+
+
+    const requestedUsername =
+        getRequestedUsername();
+
+
+    /* =====================================
+       SOMEONE ELSE / PUBLIC PROFILE
+    ===================================== */
+
+    if(requestedUsername){
+
+        viewingUsername =
+            requestedUsername;
+
+
+        const own =
+            isOwnUsername(
+                requestedUsername
+            );
+
+
+        try{
+
+            let profile;
+
+
+            if(own){
+
+                profile =
+                    await fetchMyProfile();
+
+            }else{
+
+                profile =
+                    await fetchPublicProfile(
+                        requestedUsername
+                    );
+
+            }
+
+
+            if(
+                profile &&
+                profile.notCreated
+            ){
+
+                if(own){
+
+                    showCreateProfile();
+
+                }else{
+
+                    alert(
+                        "This profile has not been created yet."
+                    );
+
+                }
+
+                return;
+
+            }
+
+
+            if(!profile){
+
+                return;
+
+            }
+
+
+            showProfile(
+                profile,
+                own
+            );
+
+
+            if(own){
+
+                saveLocalProfile(
+                    profile
+                );
+
+            }
+
+
+            if(!own){
+
+                await loadFollowState(
+                    profile.username
+                );
+
+            }
+
+        }catch(error){
+
+            console.error(
+                "Profile loading error:",
+                error
+            );
+
+            alert(
+                error.message ||
+                "Unable to load profile."
+            );
+
+        }
+
+        return;
+
+    }
+
+
+    /* =====================================
+       NO USERNAME IN URL = MY PROFILE
+    ===================================== */
+
+    viewingUsername =
+        getLoggedInUsername();
+
+
+    try{
+
+        const profile =
+            await fetchMyProfile();
+
+
+        if(
+            profile &&
+            profile.notCreated
+        ){
+
+            const account =
+                getAccount();
+
+
+            document.getElementById(
+                "displayName"
+            ).value =
+                account.name ||
+                "";
+
+
+            document.getElementById(
+                "username"
+            ).value =
+                cleanUsername(
+                    account.username ||
+                    ""
+                );
+
+
+            showCreateProfile();
+
+            return;
+
+        }
+
+
+        if(!profile){
+
+            return;
+
+        }
+
+
+        saveLocalProfile(
+            profile
+        );
+
+
+        showProfile(
+            profile,
+            true
+        );
+
+
+    }catch(error){
+
+        console.error(
+            "My profile loading error:",
+            error
+        );
+
+
+        /*
+           IMPORTANT:
+           Do NOT display an old cached
+           profile as another logged-in user.
+        */
+
+        document.getElementById(
+            "profileView"
+        ).style.display =
+            "none";
+
+
+        alert(
+            error.message ||
+            "Unable to load your profile."
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   INITIAL AVATAR STATE
+========================================= */
+
+function resetProfileAvatars(){
+
+    setAvatar(
+        document.getElementById(
+            "avatarPreview"
+        ),
+        ""
+    );
+
+    setAvatar(
+        document.getElementById(
+            "profileAvatar"
+        ),
+        ""
+    );
+
+    updateBottomIcon(
+        {}
+    );
+
+}
+
+
+/* =========================================
+   PAGE START
+========================================= */
+
+async function initializeProfilePage(){
+
+    if(!requireLogin()){
+
+        return;
+
+    }
+
+
+    resetProfileAvatars();
+
+    await loadProfile();
+
+}
+
+
+/* =========================================
+   BACK/FORWARD CACHE PROTECTION
+========================================= */
+
+window.addEventListener(
+    "pageshow",
+    function(){
+
+        if(!isLoggedIn()){
+
+            window.location.replace(
+                "login.html"
+            );
+
+        }
+
+    }
+);
+
+
+/* =========================================
+   DOM READY
+========================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function(){
+
+        initializeProfilePage();
+
+    }
+);
+
+  </script>
+  <script>
+
+/* =========================================
+   CANVAS PROFILE — PART 3
+   PHOTO + SAVE + EDIT
+========================================= */
+
+
+/* =========================================
+   PROFILE PHOTO INPUT
+========================================= */
+
+function setupPhotoInput(){
+
+    const input =
+        document.getElementById(
+            "photoInput"
+        );
+
+    const deleteButton =
+        document.getElementById(
+            "deletePhotoButton"
+        );
+
+    if(!input){
+
+        return;
+
+    }
+
+
+    input.addEventListener(
+        "change",
+        function(event){
+
+            const file =
+                event.target.files &&
+                event.target.files[0];
+
+
+            if(!file){
+
+                return;
+
+            }
+
+
+            if(!file.type.startsWith("image/")){
+
+                alert(
+                    "Please choose an image file."
+                );
+
+                input.value = "";
+
+                return;
+
+            }
+
+
+            /*
+               Keep profile pictures reasonable
+               for the API/database.
+            */
+
+            if(file.size > 8 * 1024 * 1024){
+
+                alert(
+                    "Profile picture must be smaller than 8 MB."
+                );
+
+                input.value = "";
+
+                return;
+
+            }
+
+
+            const reader =
+                new FileReader();
+
+
+            reader.onload = function(){
+
+                selectedPhoto =
+                    reader.result || "";
+
+
+                setAvatar(
+                    document.getElementById(
+                        "avatarPreview"
+                    ),
+                    selectedPhoto
+                );
+
+
+                if(deleteButton){
+
+                    deleteButton.style.display =
+                        selectedPhoto
+                            ? "inline-block"
+                            : "none";
+
+                }
+
+            };
+
+
+            reader.onerror = function(){
+
+                alert(
+                    "Unable to read this picture."
+                );
+
+            };
+
+
+            reader.readAsDataURL(file);
+
+        }
+    );
+
+}
+
+
+/* =========================================
+   DELETE PROFILE PHOTO
+========================================= */
+
+async function deleteProfilePhoto(){
+
+    if(!requireLogin()){
+
+        return;
+
+    }
+
+
+    const confirmed =
+        confirm(
+            "Delete your profile picture?"
+        );
+
+
+    if(!confirmed){
+
+        return;
+
+    }
+
+
+    selectedPhoto = "";
+
+
+    const input =
+        document.getElementById(
+            "photoInput"
+        );
+
+    const deleteButton =
+        document.getElementById(
+            "deletePhotoButton"
+        );
+
+
+    if(input){
+
+        input.value = "";
+
+    }
+
+
+    setAvatar(
+        document.getElementById(
+            "avatarPreview"
+        ),
+        ""
+    );
+
+
+    if(deleteButton){
+
+        deleteButton.style.display =
+            "none";
+
+    }
+
+
+    try{
+
+        const response =
+            await fetch(
+                API +
+                "/api/profile/picture",
+                {
+                    method:"DELETE",
+                    headers:authHeaders(),
+                    cache:"no-store"
+                }
+            );
+
+
+        let data = {};
+
+        try{
+
+            data =
+                await response.json();
+
+        }catch(error){
+
+            data = {};
+
+        }
+
+
+        if(response.status === 401){
+
+            logoutLocal();
+
+            return;
+
+        }
+
+
+        if(!response.ok){
+
+            throw new Error(
+                data.message ||
+                "Could not delete profile picture."
+            );
+
+        }
+
+
+        if(
+            data.success === false
+        ){
+
+            throw new Error(
+                data.message ||
+                "Could not delete profile picture."
+            );
+
+        }
+
+
+        /*
+           Update only our own cached profile.
+        */
+
+        if(
+            currentProfile &&
+            viewingOwnProfile
+        ){
+
+            currentProfile.photo = "";
+
+            saveLocalProfile(
+                currentProfile
+            );
+
+        }
+
+
+        setAvatar(
+            document.getElementById(
+                "profileAvatar"
+            ),
+            ""
+        );
+
+
+        updateBottomIcon(
+            {}
+        );
+
+
+        alert(
+            "Profile picture deleted."
+        );
+
+
+    }catch(error){
+
+        console.error(
+            "Delete profile picture error:",
+            error
+        );
+
+
+        /*
+           Restore previous photo if the
+           server deletion failed.
+        */
+
+        const previousPhoto =
+            currentProfile &&
+            getPhoto(currentProfile);
+
+
+        if(previousPhoto){
+
+            selectedPhoto =
+                previousPhoto;
+
+        }
+
+
+        setAvatar(
+            document.getElementById(
+                "avatarPreview"
+            ),
+            previousPhoto || ""
+        );
+
+
+        if(deleteButton && previousPhoto){
+
+            deleteButton.style.display =
+                "inline-block";
+
+        }
+
+
+        alert(
+            error.message ||
+            "Could not delete profile picture."
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   SAVE PROFILE
+========================================= */
+
+async function saveProfile(){
+
+    if(!requireLogin()){
+
+        return;
+
+    }
+
+
+    const nameInput =
+        document.getElementById(
+            "displayName"
+        );
+
+    const usernameInput =
+        document.getElementById(
+            "username"
+        );
+
+    const bioInput =
+        document.getElementById(
+            "bio"
+        );
+
+
+    const name =
+        String(
+            nameInput.value || ""
+        ).trim();
+
+
+    const username =
+        cleanUsername(
+            usernameInput.value
+        );
+
+
+    const bio =
+        String(
+            bioInput.value || ""
+        ).trim();
+
+
+    /* =====================================
+       VALIDATION
+    ===================================== */
+
+    if(!name){
+
+        alert(
+            "Please enter your display name."
+        );
+
+        nameInput.focus();
+
+        return;
+
+    }
+
+
+    if(!username){
+
+        alert(
+            "Please enter a username."
+        );
+
+        usernameInput.focus();
+
+        return;
+
+    }
+
+
+    if(
+        !/^[a-zA-Z0-9_.]+$/.test(
+            username
+        )
+    ){
+
+        alert(
+            "Username can only contain letters, numbers, underscores and dots."
+        );
+
+        usernameInput.focus();
+
+        return;
+
+    }
+
+
+    if(username.length < 3){
+
+        alert(
+            "Username must be at least 3 characters."
+        );
+
+        usernameInput.focus();
+
+        return;
+
+    }
+
+
+    const saveButton =
+        document.querySelector(
+            "#createProfile .save-button"
+        );
+
+
+    if(saveButton){
+
+        saveButton.disabled = true;
+        saveButton.textContent =
+            "Saving...";
+
+    }
+
+
+    try{
+
+        const profileData = {
+
+            name:name,
+
+            username:username,
+
+            bio:bio,
+
+            profile_picture:
+                selectedPhoto || ""
+
+        };
+
+
+        const response =
+            await fetch(
+                API + "/api/profile",
+                {
+                    method:"PUT",
+                    headers:authHeaders(),
+                    body:JSON.stringify(
+                        profileData
+                    ),
+                    cache:"no-store"
+                }
+            );
+
+
+        let data = {};
+
+        try{
+
+            data =
+                await response.json();
+
+        }catch(error){
+
+            data = {};
+
+        }
+
+
+        if(response.status === 401){
+
+            logoutLocal();
+
+            return;
+
+        }
+
+
+        if(!response.ok){
+
+            throw new Error(
+                data.message ||
+                "Could not save profile."
+            );
+
+        }
+
+
+        if(data.success === false){
+
+            throw new Error(
+                data.message ||
+                "Could not save profile."
+            );
+
+        }
+
+
+        let profile =
+            normalizeProfile(
+                data
+            );
+
+
+        /*
+           Some backend responses may not
+           return the picture we just selected.
+        */
+
+        if(
+            !getPhoto(profile) &&
+            selectedPhoto
+        ){
+
+            profile.photo =
+                selectedPhoto;
+
+        }
+
+
+        /*
+           Preserve counts if the PUT response
+           does not return them.
+        */
+
+        if(
+            currentProfile &&
+            Number.isFinite(
+                Number(
+                    currentProfile.followers_count
+                )
+            )
+        ){
+
+            if(
+                !Number.isFinite(
+                    Number(
+                        profile.followers_count
+                    )
+                )
+            ){
+
+                profile.followers_count =
+                    currentProfile.followers_count;
+
+            }
+
+        }
+
+
+        if(
+            currentProfile &&
+            Number.isFinite(
+                Number(
+                    currentProfile.following_count
+                )
+            )
+        ){
+
+            if(
+                !Number.isFinite(
+                    Number(
+                        profile.following_count
+                    )
+                )
+            ){
+
+                profile.following_count =
+                    currentProfile.following_count;
+
+            }
+
+        }
+
+
+        currentProfile =
+            profile;
+
+
+        /*
+           This is YOUR profile,
+           so it is safe to update
+           canvasProfile.
+        */
+
+        saveLocalProfile(
+            profile
+        );
+
+
+        showProfile(
+            profile,
+            true
+        );
+
+
+        selectedPhoto =
+            getPhoto(profile);
+
+
+        const input =
+            document.getElementById(
+                "photoInput"
+            );
+
+        if(input){
+
+            input.value = "";
+
+        }
+
+
+        const deleteButton =
+            document.getElementById(
+                "deletePhotoButton"
+            );
+
+        if(deleteButton){
+
+            deleteButton.style.display =
+                selectedPhoto
+                    ? "inline-block"
+                    : "none";
+
+        }
+
+
+        alert(
+            "Profile saved successfully."
+        );
+
+
+    }catch(error){
+
+        console.error(
+            "Save profile error:",
+            error
+        );
+
+
+        alert(
+            error.message ||
+            "Could not save profile."
+        );
+
+
+    }finally{
+
+        if(saveButton){
+
+            saveButton.disabled = false;
+
+            saveButton.textContent =
+                "Save Profile";
+
+        }
+
+    }
+
+}
+
+
+/* =========================================
+   EDIT PROFILE
+========================================= */
+
+function editProfile(){
+
+    if(!viewingOwnProfile){
+
+        return;
+
+    }
+
+
+    const profile =
+        currentProfile ||
+        getSavedProfile();
+
+
+    if(!profile){
+
+        showCreateProfile();
+
+        return;
+
+    }
+
+
+    document.getElementById(
+        "profileView"
+    ).style.display =
+        "none";
+
+
+    document.getElementById(
+        "createProfile"
+    ).style.display =
+        "block";
+
+
+    document.getElementById(
+        "formTitle"
+    ).textContent =
+        "Edit your profile";
+
+
+    document.getElementById(
+        "formSubtitle"
+    ).textContent =
+        "Update your Canvas profile.";
+
+
+    document.getElementById(
+        "displayName"
+    ).value =
+        profile.name || "";
+
+
+    document.getElementById(
+        "username"
+    ).value =
+        cleanUsername(
+            profile.username
+        );
+
+
+    document.getElementById(
+        "bio"
+    ).value =
+        profile.bio || "";
+
+
+    selectedPhoto =
+        getPhoto(profile);
+
+
+    setAvatar(
+        document.getElementById(
+            "avatarPreview"
+        ),
+        selectedPhoto
+    );
+
+
+    const deleteButton =
+        document.getElementById(
+            "deletePhotoButton"
+        );
+
+
+    if(deleteButton){
+
+        deleteButton.style.display =
+            selectedPhoto
+                ? "inline-block"
+                : "none";
+
+    }
+
+}
+
+
+/* =========================================
+   PASSWORD SECTION
+========================================= */
+
+function togglePasswordSection(){
+
+    if(!viewingOwnProfile){
+
+        return;
+
+    }
+
+
+    const section =
+        document.getElementById(
+            "passwordSection"
+        );
+
+
+    if(!section){
+
+        return;
+
+    }
+
+
+    if(
+        section.style.display ===
+        "block"
+    ){
+
+        section.style.display =
+            "none";
+
+    }else{
+
+        section.style.display =
+            "block";
+
+    }
+
+}
+
+
+/* =========================================
+   RESET PROFILE FORM
+========================================= */
+
+function resetProfileForm(){
+
+    const title =
+        document.getElementById(
+            "formTitle"
+        );
+
+    const subtitle =
+        document.getElementById(
+            "formSubtitle"
+        );
+
+
+    if(title){
+
+        title.textContent =
+            "Create your profile";
+
+    }
+
+
+    if(subtitle){
+
+        subtitle.textContent =
+            "Set up your Canvas profile and let people know who you are.";
+
+    }
+
+}
+
+
+/* =========================================
+   PASSWORD CHANGE
+========================================= */
+
+async function changePassword(){
+
+    if(!requireLogin()){
+
+        return;
+
+    }
+
+
+    const current =
+        document.getElementById(
+            "currentPassword"
+        ).value;
+
+
+    const newPassword =
+        document.getElementById(
+            "newPassword"
+        ).value;
+
+
+    const confirmPassword =
+        document.getElementById(
+            "confirmNewPassword"
+        ).value;
+
+
+    if(!current){
+
+        alert(
+            "Enter your current password."
+        );
+
+        return;
+
+    }
+
+
+    if(!newPassword){
+
+        alert(
+            "Enter a new password."
+        );
+
+        return;
+
+    }
+
+
+    if(newPassword.length < 8){
+
+        alert(
+            "New password must be at least 8 characters."
+        );
+
+        return;
+
+    }
+
+
+    if(newPassword !== confirmPassword){
+
+        alert(
+            "New passwords do not match."
+        );
+
+        return;
+
+    }
+
+
+    try{
+
+        const response =
+            await fetch(
+                API +
+                "/api/change-password",
+                {
+                    method:"PUT",
+                    headers:authHeaders(),
+                    body:JSON.stringify({
+
+                        currentPassword:
+                            current,
+
+                        newPassword:
+                            newPassword
+
+                    }),
+                    cache:"no-store"
+                }
+            );
+
+
+        let data = {};
+
+        try{
+
+            data =
+                await response.json();
+
+        }catch(error){
+
+            data = {};
+
+        }
+
+
+        if(response.status === 401){
+
+            logoutLocal();
+
+            return;
+
+        }
+
+
+        if(!response.ok){
+
+            throw new Error(
+                data.message ||
+                "Could not change password."
+            );
+
+        }
+
+
+        if(data.success === false){
+
+            throw new Error(
+                data.message ||
+                "Could not change password."
+            );
+
+        }
+
+
+        document.getElementById(
+            "currentPassword"
+        ).value = "";
+
+
+        document.getElementById(
+            "newPassword"
+        ).value = "";
+
+
+        document.getElementById(
+            "confirmNewPassword"
+        ).value = "";
+
+
+        document.getElementById(
+            "passwordSection"
+        ).style.display =
+            "none";
+
+
+        alert(
+            "Password changed successfully."
+        );
+
+
+    }catch(error){
+
+        console.error(
+            "Password change error:",
+            error
+        );
+
+
+        alert(
+            error.message ||
+            "Could not change password."
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   PHOTO INITIALIZATION
+========================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function(){
+
+        setupPhotoInput();
+
+    }
+);
+
+  </script>
+  <script>
+
+/* =========================================
+   CANVAS PROFILE — PART 4
+   FOLLOW / FOLLOWING SYSTEM
+========================================= */
+
+
+/* =========================================
+   FOLLOW STATE
+========================================= */
+
+let followRefreshTimer = null;
+
+let currentFollowState = false;
+
+let followRequestRunning = false;
+
+
+/* =========================================
+   NUMBER HELPERS
+========================================= */
+
+function readCount(data, names, fallback = 0){
+
+    if(!data || typeof data !== "object"){
+
+        return fallback;
+
+    }
+
+
+    for(const name of names){
+
+        if(
+            data[name] !== undefined &&
+            data[name] !== null
+        ){
+
+            const number =
+                Number(data[name]);
+
+
+            if(
+                Number.isFinite(number) &&
+                number >= 0
+            ){
+
+                return number;
+
+            }
+
+        }
+
+    }
+
+
+    return fallback;
+
+}
+
+
+/* =========================================
+   FOLLOW STATE HELPERS
+========================================= */
+
+function readFollowingState(data){
+
+    if(!data || typeof data !== "object"){
+
+        return false;
+
+    }
+
+
+    const possibleValues = [
+
+        data.following,
+
+        data.isFollowing,
+
+        data.is_following,
+
+        data.followed,
+
+        data.followedByMe,
+
+        data.followed_by_me
+
+    ];
+
+
+    for(const value of possibleValues){
+
+        if(
+            typeof value === "boolean"
+        ){
+
+            return value;
+
+        }
+
+    }
+
+
+    return false;
+
+}
+
+
+/* =========================================
+   UPDATE FOLLOW BUTTON
+========================================= */
+
+function updateFollowButton(){
+
+    const button =
+        document.getElementById(
+            "followButton"
+        );
+
+
+    if(!button){
+
+        return;
+
+    }
+
+
+    if(viewingOwnProfile){
+
+        button.style.display =
+            "none";
+
+        return;
+
+    }
+
+
+    button.style.display =
+        "inline-flex";
+
+
+    button.disabled =
+        followRequestRunning;
+
+
+    if(currentFollowState){
+
+        button.textContent =
+            "Following";
+
+        button.classList.add(
+            "following"
+        );
+
+    }else{
+
+        button.textContent =
+            "Follow";
+
+        button.classList.remove(
+            "following"
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   FOLLOW COUNTS
+========================================= */
+
+function updateViewedCounts(
+    followers,
+    following
+){
+
+    const followersElement =
+        document.getElementById(
+            "followersCount"
+        );
+
+
+    const followingElement =
+        document.getElementById(
+            "followingCount"
+        );
+
+
+    if(followersElement){
+
+        followersElement.textContent =
+            String(
+                Math.max(
+                    0,
+                    Number(followers) || 0
+                )
+            );
+
+    }
+
+
+    if(followingElement){
+
+        followingElement.textContent =
+            String(
+                Math.max(
+                    0,
+                    Number(following) || 0
+                )
+            );
+
+    }
+
+
+    if(currentProfile){
+
+        currentProfile.followers_count =
+            Math.max(
+                0,
+                Number(followers) || 0
+            );
+
+
+        currentProfile.following_count =
+            Math.max(
+                0,
+                Number(following) || 0
+            );
+
+    }
+
+}
+
+
+/* =========================================
+   GET FOLLOW STATUS
+========================================= */
+
+async function loadFollowState(username){
+
+    if(!username){
+
+        return;
+
+    }
+
+
+    if(
+        !isLoggedIn() ||
+        isOwnUsername(username)
+    ){
+
+        currentFollowState = false;
+
+        updateFollowButton();
+
+        return;
+
+    }
+
+
+    try{
+
+        const response =
+            await fetch(
+                API +
+                "/api/follow/" +
+                encodeURIComponent(
+                    username
+                ) +
+                "/status",
+                {
+                    method:"GET",
+                    headers:authHeaders(),
+                    cache:"no-store"
+                }
+            );
+
+
+        if(response.status === 401){
+
+            logoutLocal();
+
+            return;
+
+        }
+
+
+        let data = {};
+
+        try{
+
+            data =
+                await response.json();
+
+        }catch(error){
+
+            data = {};
+
+        }
+
+
+        if(response.ok){
+
+            currentFollowState =
+                readFollowingState(
+                    data
+                );
+
+        }
+
+
+    }catch(error){
+
+        console.error(
+            "Follow status error:",
+            error
+        );
+
+    }
+
+
+    updateFollowButton();
+
+}
+
+
+/* =========================================
+   LOAD CREATOR COUNTS
+========================================= */
+
+async function refreshViewedProfile(){
+
+    if(
+        viewingOwnProfile ||
+        !viewingUsername
+    ){
+
+        return;
+
+    }
+
+
+    try{
+
+        const response =
+            await fetch(
+                API +
+                "/api/profile/" +
+                encodeURIComponent(
+                    viewingUsername
+                ),
+                {
+                    method:"GET",
+                    headers:{
+                        "Accept":
+                            "application/json"
+                    },
+                    cache:"no-store"
+                }
+            );
+
+
+        if(!response.ok){
+
+            return;
+
+        }
+
+
+        let data = {};
+
+        try{
+
+            data =
+                await response.json();
+
+        }catch(error){
+
+            return;
+
+        }
+
+
+        const profile =
+            normalizeProfile(
+                data
+            );
+
+
+        if(!profile){
+
+            return;
+
+        }
+
+
+        const followers =
+            readCount(
+                profile,
+                [
+                    "followers_count",
+                    "followersCount",
+                    "followers"
+                ],
+                0
+            );
+
+
+        const following =
+            readCount(
+                profile,
+                [
+                    "following_count",
+                    "followingCount",
+                    "following"
+                ],
+                0
+            );
+
+
+        updateViewedCounts(
+            followers,
+            following
+        );
+
+
+        currentProfile =
+            {
+                ...currentProfile,
+                ...profile,
+                followers_count:
+                    followers,
+                following_count:
+                    following
+            };
+
+
+        /*
+           Public creator profile is NOT saved
+           into canvasProfile.
+        */
+
+    }catch(error){
+
+        console.error(
+            "Profile refresh error:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   START LIVE COUNT REFRESH
+========================================= */
+
+function startFollowRefresh(){
+
+    stopFollowRefresh();
+
+
+    if(
+        viewingOwnProfile ||
+        !viewingUsername ||
+        !isLoggedIn()
+    ){
+
+        return;
+
+    }
+
+
+    followRefreshTimer =
+        setInterval(
+            async function(){
+
+                await refreshViewedProfile();
+
+                await loadFollowState(
+                    viewingUsername
+                );
+
+            },
+            5000
+        );
+
+}
+
+
+/* =========================================
+   STOP LIVE COUNT REFRESH
+========================================= */
+
+function stopFollowRefresh(){
+
+    if(followRefreshTimer){
+
+        clearInterval(
+            followRefreshTimer
+        );
+
+        followRefreshTimer =
+            null;
+
+    }
+
+}
+
+
+/* =========================================
+   FOLLOW CREATOR
+========================================= */
+
+async function followUser(){
+
+    if(!requireLogin()){
+
+        return;
+
+    }
+
+
+    if(
+        !viewingUsername ||
+        isOwnUsername(
+            viewingUsername
+        )
+    ){
+
+        return;
+
+    }
+
+
+    if(followRequestRunning){
+
+        return;
+
+    }
+
+
+    followRequestRunning = true;
+
+    updateFollowButton();
+
+
+    try{
+
+        const response =
+            await fetch(
+                API +
+                "/api/follow/" +
+                encodeURIComponent(
+                    viewingUsername
+                ),
+                {
+                    method:"POST",
+                    headers:authHeaders(),
+                    body:JSON.stringify({}),
+                    cache:"no-store"
+                }
+            );
+
+
+        let data = {};
+
+        try{
+
+            data =
+                await response.json();
+
+        }catch(error){
+
+            data = {};
+
+        }
+
+
+        if(response.status === 401){
+
+            logoutLocal();
+
+            return;
+
+        }
+
+
+        if(!response.ok){
+
+            throw new Error(
+                data.message ||
+                "Could not follow this user."
+            );
+
+        }
+
+
+        if(data.success === false){
+
+            throw new Error(
+                data.message ||
+                "Could not follow this user."
+            );
+
+        }
+
+
+        currentFollowState =
+            true;
+
+
+        /*
+           If backend returns the new
+           creator follower count,
+           use it immediately.
+        */
+
+        const returnedFollowers =
+            readCount(
+                data,
+                [
+                    "followers_count",
+                    "followersCount",
+                    "followers"
+                ],
+                -1
+            );
+
+
+        if(returnedFollowers >= 0){
+
+            const following =
+                readCount(
+                    currentProfile,
+                    [
+                        "following_count",
+                        "followingCount"
+                    ],
+                    0
+                );
+
+
+            updateViewedCounts(
+                returnedFollowers,
+                following
+            );
+
+        }
+
+
+        updateFollowButton();
+
+
+        /*
+           Refresh the creator profile from
+           the database so the displayed count
+           is the real count.
+        */
+
+        await refreshViewedProfile();
+
+
+        await loadFollowState(
+            viewingUsername
+        );
+
+
+        /*
+           Refresh our own profile too.
+           This updates our Following count.
+        */
+
+        await refreshOwnProfileAfterFollow();
+
+
+    }catch(error){
+
+        console.error(
+            "Follow error:",
+            error
+        );
+
+
+        alert(
+            error.message ||
+            "Could not follow this user."
+        );
+
+    }finally{
+
+        followRequestRunning =
+            false;
+
+        updateFollowButton();
+
+    }
+
+}
+
+
+/* =========================================
+   UNFOLLOW CREATOR
+========================================= */
+
+async function unfollowUser(){
+
+    if(!requireLogin()){
+
+        return;
+
+    }
+
+
+    if(
+        !viewingUsername ||
+        isOwnUsername(
+            viewingUsername
+        )
+    ){
+
+        return;
+
+    }
+
+
+    if(followRequestRunning){
+
+        return;
+
+    }
+
+
+    followRequestRunning = true;
+
+    updateFollowButton();
+
+
+    try{
+
+        const response =
+            await fetch(
+                API +
+                "/api/follow/" +
+                encodeURIComponent(
+                    viewingUsername
+                ),
+                {
+                    method:"DELETE",
+                    headers:authHeaders(),
+                    cache:"no-store"
+                }
+            );
+
+
+        let data = {};
+
+        try{
+
+            data =
+                await response.json();
+
+        }catch(error){
+
+            data = {};
+
+        }
+
+
+        if(response.status === 401){
+
+            logoutLocal();
+
+            return;
+
+        }
+
+
+        if(!response.ok){
+
+            throw new Error(
+                data.message ||
+                "Could not unfollow this user."
+            );
+
+        }
+
+
+        if(data.success === false){
+
+            throw new Error(
+                data.message ||
+                "Could not unfollow this user."
+            );
+
+        }
+
+
+        currentFollowState =
+            false;
+
+
+        updateFollowButton();
+
+
+        /*
+           Reload real database counts.
+        */
+
+        await refreshViewedProfile();
+
+
+        await loadFollowState(
+            viewingUsername
+        );
+
+
+        /*
+           Refresh our own Following count.
+        */
+
+        await refreshOwnProfileAfterFollow();
+
+
+    }catch(error){
+
+        console.error(
+            "Unfollow error:",
+            error
+        );
+
+
+        alert(
+            error.message ||
+            "Could not unfollow this user."
+        );
+
+    }finally{
+
+        followRequestRunning =
+            false;
+
+        updateFollowButton();
+
+    }
+
+}
+
+
+/* =========================================
+   MAIN FOLLOW BUTTON
+========================================= */
+
+async function toggleFollow(){
+
+    if(currentFollowState){
+
+        await unfollowUser();
+
+    }else{
+
+        await followUser();
+
+    }
+
+}
+
+
+/* =========================================
+   REFRESH OUR OWN PROFILE COUNTS
+========================================= */
+
+async function refreshOwnProfileAfterFollow(){
+
+    if(!isLoggedIn()){
+
+        return;
+
+    }
+
+
+    try{
+
+        const response =
+            await fetch(
+                API +
+                "/api/profile",
+                {
+                    method:"GET",
+                    headers:authHeaders(),
+                    cache:"no-store"
+                }
+            );
+
+
+        if(response.status === 401){
+
+            logoutLocal();
+
+            return;
+
+        }
+
+
+        if(!response.ok){
+
+            return;
+
+        }
+
+
+        let data = {};
+
+        try{
+
+            data =
+                await response.json();
+
+        }catch(error){
+
+            return;
+
+        }
+
+
+        const profile =
+            normalizeProfile(
+                data
+            );
+
+
+        if(!profile){
+
+            return;
+
+        }
+
+
+        /*
+           This is our own profile, so it is
+           safe to update local own-profile data.
+        */
+
+        saveLocalProfile(
+            profile
+        );
+
+
+        /*
+           If currently viewing our profile,
+           update its visible numbers too.
+        */
+
+        if(viewingOwnProfile){
+
+            currentProfile =
+                profile;
+
+
+            setFollowCounts(
+                profile
+            );
+
+        }
+
+
+        /*
+           Keep our bottom-nav profile picture
+           synchronized.
+        */
+
+        updateBottomIcon(
+            profile
+        );
+
+
+    }catch(error){
+
+        console.error(
+            "Own profile refresh error:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   FOLLOW BUTTON CLICK
+========================================= */
+
+document.addEventListener(
+    "click",
+    function(event){
+
+        const button =
+            event.target.closest(
+                "#followButton"
+            );
+
+
+        if(!button){
+
+            return;
+
+        }
+
+
+        event.preventDefault();
+
+        toggleFollow();
+
+    }
+);
+
+
+/* =========================================
+   PAGE VISIBILITY
+========================================= */
+
+document.addEventListener(
+    "visibilitychange",
+    function(){
+
+        if(
+            document.hidden
+        ){
+
+            stopFollowRefresh();
+
+        }else{
+
+            if(
+                !viewingOwnProfile &&
+                viewingUsername &&
+                isLoggedIn()
+            ){
+
+                refreshViewedProfile();
+
+                loadFollowState(
+                    viewingUsername
+                );
+
+                startFollowRefresh();
+
+            }
+
+        }
+
+    }
+);
+
+
+/* =========================================
+   CLEANUP
+========================================= */
+
+window.addEventListener(
+    "pagehide",
+    function(){
+
+        stopFollowRefresh();
+
+    }
+);
+
+      </script>
+     <script>
+
+/* =========================================
+   CANVAS PROFILE — PART 5
+   FINAL PROFILE CONTROLS + INIT
+========================================= */
+
+
+/* =========================================
+   LOGOUT
+========================================= */
+
+async function logout(){
+
+    const confirmed =
+        confirm(
+            "Log out of Canvas?"
+        );
+
+
+    if(!confirmed){
+
+        return;
+
+    }
+
+
+    try{
+
+        if(isLoggedIn()){
+
+            await fetch(
+                API + "/api/logout",
+                {
+                    method:"POST",
+                    headers:authHeaders(),
+                    cache:"no-store"
+                }
+            );
+
+        }
+
+    }catch(error){
+
+        console.warn(
+            "Logout request failed:",
+            error
+        );
+
+    }
+
+
+    logoutLocal();
+
+}
+
+
+/* =========================================
+   LOCAL LOGOUT
+========================================= */
+
+function logoutLocal(){
+
+    stopFollowRefresh();
+
+
+    /*
+       Remove every known authentication key.
+       This prevents an old account from appearing
+       after another person logs in.
+    */
+
+    localStorage.removeItem(
+        "canvasAuthToken"
+    );
+
+    localStorage.removeItem(
+        "canvasToken"
+    );
+
+    localStorage.removeItem(
+        "authToken"
+    );
+
+    localStorage.removeItem(
+        "canvasAccount"
+    );
+
+    localStorage.removeItem(
+        "canvasProfile"
+    );
+
+
+    currentProfile = null;
+
+    selectedPhoto = "";
+
+    currentFollowState = false;
+
+    viewingOwnProfile = false;
+
+    viewingUsername = "";
+
+
+    /*
+       Always send logged-out users to login.
+    */
+
+    window.location.href =
+        "login.html";
+
+}
+
+
+/* =========================================
+   LOAD OWN PROFILE FOR BOTTOM NAV
+========================================= */
+
+async function loadOwnBottomProfile(){
+
+    if(!isLoggedIn()){
+
+        return;
+
+    }
+
+
+    try{
+
+        const response =
+            await fetch(
+                API + "/api/profile",
+                {
+                    method:"GET",
+                    headers:authHeaders(),
+                    cache:"no-store"
+                }
+            );
+
+
+        if(response.status === 401){
+
+            logoutLocal();
+
+            return;
+
+        }
+
+
+        if(!response.ok){
+
+            return;
+
+        }
+
+
+        let data = {};
+
+        try{
+
+            data =
+                await response.json();
+
+        }catch(error){
+
+            return;
+
+        }
+
+
+        const profile =
+            normalizeProfile(
+                data
+            );
+
+
+        if(profile){
+
+            /*
+               This is definitely the logged-in
+               user's profile.
+            */
+
+            saveLocalProfile(
+                profile
+            );
+
+
+            updateBottomIcon(
+                profile
+            );
+
+        }
+
+    }catch(error){
+
+        console.warn(
+            "Bottom profile load error:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   PROFILE NAVIGATION
+========================================= */
+
+function goToProfile(){
+
+    if(!isLoggedIn()){
+
+        window.location.href =
+            "login.html";
+
+        return;
+
+    }
+
+
+    /*
+       No username means:
+       show the currently logged-in user's
+       profile, never a cached creator.
+    */
+
+    window.location.href =
+        "profile.html";
+
+}
+
+
+/* =========================================
+   BOTTOM NAV ACTIVE STATE
+========================================= */
+
+function updateBottomNavigation(){
+
+    const links =
+        document.querySelectorAll(
+            ".bottom-nav a"
+        );
+
+
+    links.forEach(
+        function(link){
+
+            link.classList.remove(
+                "active"
+            );
+
+        }
+    );
+
+
+    const profileLink =
+        document.querySelector(
+            '.bottom-nav a[href="profile.html"]'
+        );
+
+
+    if(profileLink){
+
+        profileLink.classList.add(
+            "active"
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   KEEP PROFILE PHOTO CONSISTENT
+========================================= */
+
+function syncAllProfilePictures(){
+
+    const profile =
+        currentProfile ||
+        getSavedProfile();
+
+
+    const photo =
+        profile
+            ? getPhoto(profile)
+            : "";
+
+
+    setAvatar(
+        document.getElementById(
+            "avatarPreview"
+        ),
+        photo
+    );
+
+
+    setAvatar(
+        document.getElementById(
+            "profileAvatar"
+        ),
+        photo
+    );
+
+
+    updateBottomIcon(
+        profile || {}
+    );
+
+}
+
+
+/* =========================================
+   OVERRIDE INITIALIZATION
+   PART 2 CREATED THE ORIGINAL FUNCTION.
+   THIS VERSION ALSO LOADS THE OWN AVATAR
+   BEFORE SHOWING THE PROFILE.
+========================================= */
+
+initializeProfilePage =
+    async function(){
+
+        /*
+           Profile page always requires login.
+        */
+
+        if(!isLoggedIn()){
+
+            window.location.href =
+                "login.html";
+
+            return;
+
+        }
+
+
+        updateBottomNavigation();
+
+
+        resetProfileAvatars();
+
+
+        /*
+           Get the actual logged-in user's
+           profile from the server.
+        */
+
+        await loadOwnBottomProfile();
+
+
+        /*
+           Now load either:
+           profile.html
+           OR
+           profile.html?username=creator
+        */
+
+        await loadProfile();
+
+
+        syncAllProfilePictures();
+
+
+        /*
+           If viewing another creator,
+           keep follow state/counts current.
+        */
+
+        if(
+            !viewingOwnProfile &&
+            viewingUsername
+        ){
+
+            await loadFollowState(
+                viewingUsername
+            );
+
+
+            startFollowRefresh();
+
+        }
+
+    };
+
+
+/* =========================================
+   BACK BUTTON
+========================================= */
+
+function goBack(){
+
+    if(
+        document.referrer &&
+        document.referrer !==
+        window.location.href
+    ){
+
+        history.back();
+
+    }else{
+
+        window.location.href =
+            "stream.html";
+
+    }
+
+}
+
+
+/* =========================================
+   ACCOUNT EMAIL DISPLAY
+========================================= */
+
+function updateAccountEmail(){
+
+    const emailElement =
+        document.getElementById(
+            "accountEmail"
+        );
+
+
+    if(!emailElement){
+
+        return;
+
+    }
+
+
+    const account =
+        getSavedAccount();
+
+
+    if(
+        account &&
+        account.email
+    ){
+
+        emailElement.textContent =
+            account.email;
+
+    }else if(
+        currentProfile &&
+        currentProfile.email
+    ){
+
+        emailElement.textContent =
+            currentProfile.email;
+
+    }else{
+
+        emailElement.textContent =
+            "Email unavailable";
+
+    }
+
+}
+
+
+/* =========================================
+   SAFE LOGIN CHECK ON PAGE RESTORE
+========================================= */
+
+window.addEventListener(
+    "pageshow",
+    function(){
+
+        if(!isLoggedIn()){
+
+            if(
+                !window.location.pathname
+                    .toLowerCase()
+                    .endsWith(
+                        "login.html"
+                    )
+            ){
+
+                window.location.href =
+                    "login.html";
+
+            }
+
+            return;
+
+        }
+
+
+        updateBottomNavigation();
+
+        updateAccountEmail();
+
+        loadOwnBottomProfile();
+
+    }
+);
+
+
+/* =========================================
+   FINAL DOM READY
+========================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function(){
+
+        /*
+           These listeners are intentionally
+           attached here because all profile HTML
+           already exists above the scripts.
+        */
+
+        const deleteButton =
+            document.getElementById(
+                "deletePhotoButton"
+            );
+
+
+        if(deleteButton){
+
+            deleteButton.addEventListener(
+                "click",
+                deleteProfilePhoto
+            );
+
+        }
+
+
+        const saveButton =
+            document.querySelector(
+                "#createProfile .save-button"
+            );
+
+
+        if(saveButton){
+
+            saveButton.addEventListener(
+                "click",
+                saveProfile
+            );
+
+        }
+
+
+        const editButton =
+            document.getElementById(
+                "editProfileButton"
+            );
+
+
+        if(editButton){
+
+            editButton.addEventListener(
+                "click",
+                editProfile
+            );
+
+        }
+
+
+        const passwordButton =
+            document.getElementById(
+                "changePasswordButton"
+            );
+
+
+        if(passwordButton){
+
+            passwordButton.addEventListener(
+                "click",
+                togglePasswordSection
+            );
+
+        }
+
+
+        const passwordSaveButton =
+            document.getElementById(
+                "savePasswordButton"
+            );
+
+
+        if(passwordSaveButton){
+
+            passwordSaveButton.addEventListener(
+                "click",
+                changePassword
+            );
+
+        }
+
+
+        const logoutButton =
+            document.getElementById(
+                "logoutButton"
+            );
+
+
+        if(logoutButton){
+
+            logoutButton.addEventListener(
+                "click",
+                logout
+            );
+
+        }
+
+
+        const backButton =
+            document.getElementById(
+                "backButton"
+            );
+
+
+        if(backButton){
+
+            backButton.addEventListener(
+                "click",
+                goBack
+            );
+
+        }
+
+
+        updateAccountEmail();
+
+
+        /*
+           Start the final profile loading flow.
+        */
+
+        initializeProfilePage();
+
+    }
+);
+
+
+/* =========================================
+   PREVENT STALE CREATOR PROFILE
+========================================= */
+
+window.addEventListener(
+    "beforeunload",
+    function(){
+
+        stopFollowRefresh();
+
+    }
+);
+
+</script>
+
+</body>
+</html> 
