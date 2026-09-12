@@ -436,44 +436,55 @@ async function initializeDatabase() {
         `);
 
 
-        /* =====================================
-           FOLLOW SYSTEM
-        ===================================== */
+      /* =========================================================
+   FOLLOW SYSTEM
+========================================================= */
 
-        await pool.query(`
-            CREATE TABLE IF NOT EXISTS follows (
+await pool.query(`
+    CREATE TABLE IF NOT EXISTS follows (
+        id SERIAL PRIMARY KEY,
 
-                id SERIAL PRIMARY KEY,
+        follower_id INTEGER NOT NULL
+            REFERENCES users(id)
+            ON DELETE CASCADE,
 
-                follower_id INTEGER NOT NULL
-                    REFERENCES users(id)
-                    ON DELETE CASCADE,
+        following_id INTEGER NOT NULL
+            REFERENCES users(id)
+            ON DELETE CASCADE,
 
-                following_id INTEGER NOT NULL
-                    REFERENCES users(id)
-                    ON DELETE CASCADE,
+        created_at TIMESTAMP
+            DEFAULT CURRENT_TIMESTAMP,
 
-                created_at
-                    TIMESTAMP
-                    DEFAULT CURRENT_TIMESTAMP,
+        CONSTRAINT follows_unique_relationship
+            UNIQUE (follower_id, following_id)
+    )
+`);
 
-                CONSTRAINT
-                    follows_unique_relationship
 
-                UNIQUE (
-                    follower_id,
-                    following_id
-                ),
+/*
+   Older Canvas databases may already have the
+   self-follow restriction. Remove it so users
+   can follow themselves too.
+*/
 
-                CONSTRAINT
-                    follows_no_self_follow
+await pool.query(`
+    ALTER TABLE follows
+    DROP CONSTRAINT IF EXISTS follows_no_self_follow
+`);
 
-                CHECK (
-                    follower_id <> following_id
-                )
 
-            );
-        `);
+await pool.query(`
+    CREATE INDEX IF NOT EXISTS
+    idx_follows_follower
+    ON follows(follower_id)
+`);
+
+
+await pool.query(`
+    CREATE INDEX IF NOT EXISTS
+    idx_follows_following
+    ON follows(following_id)
+`);
 
 
         /* =====================================
@@ -2121,27 +2132,105 @@ app.get(
 );
 
 
-/* =========================================
-   ACCOUNT FOLLOW SUMMARY
-   GET /api/account/follows
-========================================= */
+/* =========================================================
+   ACCOUNT FOLLOW STATE
+   GET /api/account/follows/:username
+========================================================= */
 
 app.get(
-    "/api/account/follows",
+    "/api/account/follows/:username",
     authenticateUser,
     async (req, res) => {
 
         try {
 
-            const counts =
-                await getFollowCounts(
-                    req.user.id
+            if (!pool) {
+
+                return res.status(503).json({
+                    success: false,
+                    message: "Database is not configured"
+                });
+
+            }
+
+            const username =
+                String(req.params.username || "")
+                    .trim()
+                    .replace(/^@+/, "")
+                    .toLowerCase();
+
+
+            const target =
+                await getUserByUsername(username);
+
+
+            if (!target) {
+
+                return res.status(404).json({
+                    success: false,
+                    message: "User not found"
+                });
+
+            }
+
+
+            /*
+               IMPORTANT:
+               Do NOT block self-follow here.
+
+               The same relationship query is used
+               whether the target is another user or
+               the currently logged-in user.
+            */
+
+            const result =
+                await pool.query(
+                    `
+                    SELECT id
+                    FROM follows
+                    WHERE
+                        follower_id = $1
+                        AND following_id = $2
+                    LIMIT 1
+                    `,
+                    [
+                        req.user.id,
+                        target.id
+                    ]
                 );
 
 
-            return res.json({
+            const following =
+                result.rows.length > 0;
+
+
+            const counts =
+                await getFollowCounts(
+                    target.id
+                );
+
+
+            res.json({
 
                 success: true,
+
+                following,
+
+                isFollowing:
+                    following,
+
+                is_following:
+                    following,
+
+                isSelf:
+                    Number(target.id) ===
+                    Number(req.user.id),
+
+                userId:
+                    target.id,
+
+                username:
+                    target.username,
 
                 followers_count:
                     counts.followers_count,
@@ -2155,17 +2244,17 @@ app.get(
         } catch (error) {
 
             console.error(
-                "Get account follows failed:",
-                error.message
+                "GET account follow state error:",
+                error
             );
 
 
-            return res.status(500).json({
+            res.status(500).json({
 
                 success: false,
 
                 message:
-                    "Unable to load follow information."
+                    "Failed to check follow state"
 
             });
 
@@ -2334,97 +2423,68 @@ app.get(
 
     }
 );
-
-
-/* =========================================
+/* =========================================================
    FOLLOW USER
    POST /api/follow/:username
-========================================= */
+========================================================= */
 
 app.post(
     "/api/follow/:username",
     authenticateUser,
     async (req, res) => {
 
-        if (!pool) {
-
-            return res.status(500).json({
-
-                success: false,
-
-                message:
-                    "Database is not configured."
-
-            });
-
-        }
-
-
-        const username =
-            cleanUsername(
-                req.params.username
-            );
-
-
         try {
 
+            if (!pool) {
+
+                return res.status(503).json({
+                    success: false,
+                    message: "Database is not configured"
+                });
+
+            }
+
+
+            const username =
+                String(req.params.username || "")
+                    .trim()
+                    .replace(/^@+/, "")
+                    .toLowerCase();
+
+
             const target =
-                await getUserByUsername(
-                    username
-                );
+                await getUserByUsername(username);
 
 
             if (!target) {
 
                 return res.status(404).json({
-
                     success: false,
-
-                    message:
-                        "User not found."
-
+                    message: "User not found"
                 });
 
             }
 
 
-            if (
-                Number(target.id) ===
-                Number(req.user.id)
-            ) {
+            /*
+               Self-follow IS intentionally allowed.
 
-                return res.status(400).json({
-
-                    success: false,
-
-                    message:
-                        "You cannot follow yourself."
-
-                });
-
-            }
+               Do not add a self-follow restriction here.
+            */
 
 
             await pool.query(
                 `
                 INSERT INTO follows
-                (
-                    follower_id,
-                    following_id
-                )
-
+                    (
+                        follower_id,
+                        following_id,
+                        created_at
+                    )
                 VALUES
-                (
-                    $1,
-                    $2
-                )
-
+                    ($1, $2, CURRENT_TIMESTAMP)
                 ON CONFLICT
-                (
-                    follower_id,
-                    following_id
-                )
-
+                    (follower_id, following_id)
                 DO NOTHING
                 `,
                 [
@@ -2440,16 +2500,9 @@ app.post(
                 );
 
 
-            /*
-             * Notify everyone watching this
-             * creator's stream that the
-             * follower count changed.
-             */
-
             io.emit(
                 "follow-count-update",
                 {
-
                     username:
                         target.username,
 
@@ -2457,19 +2510,27 @@ app.post(
                         target.id,
 
                     followers_count:
-                        counts.followers_count
+                        counts.followers_count,
 
+                    following_count:
+                        counts.following_count
                 }
             );
 
 
-            return res.json({
+            res.json({
 
                 success: true,
 
                 following: true,
 
                 isFollowing: true,
+
+                is_following: true,
+
+                isSelf:
+                    Number(target.id) ===
+                    Number(req.user.id),
 
                 followers_count:
                     counts.followers_count,
@@ -2483,17 +2544,17 @@ app.post(
         } catch (error) {
 
             console.error(
-                "Follow user failed:",
-                error.message
+                "POST follow error:",
+                error
             );
 
 
-            return res.status(500).json({
+            res.status(500).json({
 
                 success: false,
 
                 message:
-                    "Unable to follow user."
+                    "Failed to follow user"
 
             });
 
@@ -2501,7 +2562,6 @@ app.post(
 
     }
 );
-
 
 /* =========================================
    UNFOLLOW USER
@@ -2621,14 +2681,136 @@ app.delete(
                 "Unfollow user failed:",
                 error.message
             );
+/* =========================================================
+   UNFOLLOW USER
+   DELETE /api/follow/:username
+========================================================= */
+
+app.delete(
+    "/api/follow/:username",
+    authenticateUser,
+    async (req, res) => {
+
+        try {
+
+            if (!pool) {
+
+                return res.status(503).json({
+                    success: false,
+                    message: "Database is not configured"
+                });
+
+            }
 
 
-            return res.status(500).json({
+            const username =
+                String(req.params.username || "")
+                    .trim()
+                    .replace(/^@+/, "")
+                    .toLowerCase();
+
+
+            const target =
+                await getUserByUsername(username);
+
+
+            if (!target) {
+
+                return res.status(404).json({
+                    success: false,
+                    message: "User not found"
+                });
+
+            }
+
+
+            /*
+               Self-unfollow is allowed.
+
+               There is intentionally NO check preventing
+               req.user.id from matching target.id.
+            */
+
+            const result =
+                await pool.query(
+                    `
+                    DELETE FROM follows
+                    WHERE
+                        follower_id = $1
+                        AND following_id = $2
+                    RETURNING id
+                    `,
+                    [
+                        req.user.id,
+                        target.id
+                    ]
+                );
+
+
+            const counts =
+                await getFollowCounts(
+                    target.id
+                );
+
+
+            io.emit(
+                "follow-count-update",
+                {
+                    username:
+                        target.username,
+
+                    userId:
+                        target.id,
+
+                    followers_count:
+                        counts.followers_count,
+
+                    following_count:
+                        counts.following_count
+                }
+            );
+
+
+            res.json({
+
+                success: true,
+
+                following: false,
+
+                isFollowing: false,
+
+                is_following: false,
+
+                removed:
+                    result.rows.length > 0,
+
+                isSelf:
+                    Number(target.id) ===
+                    Number(req.user.id),
+
+                followers_count:
+                    counts.followers_count,
+
+                following_count:
+                    counts.following_count
+
+            });
+
+
+        } catch (error) {
+
+            console.error(
+                "DELETE follow error:",
+                error
+            );
+
+
+            res.status(500).json({
 
                 success: false,
 
                 message:
-                    "Unable to unfollow user."
+                    "Failed to unfollow user"
 
             });
 
@@ -2956,36 +3138,60 @@ function getViewerCount(streamId) {
     return room.size;
 }
 
-
 function broadcastViewerCount(streamId) {
 
     const id = String(streamId);
 
     const count = getViewerCount(id);
 
+    const payload = {
+        streamId: id,
+        viewerCount: count,
+        viewers: count,
+        watching: count,
+        watchingCount: count
+    };
+
     io.to("stream:" + id).emit(
         "viewer-count",
-        {
-            streamId: id,
-            viewerCount: count,
-            viewers: count,
-            watching: count,
-            watchingCount: count
-        }
+        payload
     );
 
     io.to("stream:" + id).emit(
         "watching-count",
-        {
-            streamId: id,
-            viewerCount: count,
-            viewers: count,
-            watching: count,
-            watchingCount: count
-        }
+        payload
     );
 }
 
+
+/* =========================================
+   REMOVE VIEWER FROM STREAM ROOM
+========================================= */
+
+function removeViewerFromRoom(streamId, socketId) {
+
+    const id = String(streamId || "");
+
+    if (!id || !socketId) {
+        return;
+    }
+
+    const room = viewerRooms.get(id);
+
+    if (!room) {
+        return;
+    }
+
+    room.delete(socketId);
+
+    if (room.size === 0) {
+
+        viewerRooms.delete(id);
+
+    }
+
+    broadcastViewerCount(id);
+}
 
 /* =========================================================
    CHAT STORAGE
@@ -3322,162 +3528,184 @@ io.on("connection", async (socket) => {
     });
 
 
-    /* =====================================================
-       SEND CHAT
-    ===================================================== */
+  /* =========================================
+   CANVAS CHAT MESSAGE HANDLER
+========================================= */
 
-    socket.on("send-chat", async (data = {}) => {
+async function handleChatMessage(socket, data = {}) {
 
-        try {
+    const streamId = String(
+        data.streamId ||
+        data.stream_id ||
+        data.id ||
+        socket.currentStreamId ||
+        ""
+    );
 
-            const streamId = String(
-                data.streamId ||
-                data.stream_id ||
-                socket.currentStreamId ||
-                ""
-            );
-
-            let messageText =
-                data.message ??
-                data.text ??
-                data.content ??
-                "";
-
-            messageText =
-                String(messageText)
-                .trim()
-                .slice(0, 500);
+    if (!streamId) {
+        return;
+    }
 
 
-            if (!streamId || !messageText) {
-                return;
-            }
+    /* ==============================
+       MAKE SURE USER IS IN THIS STREAM
+    ============================== */
+
+    if (
+        socket.currentStreamId &&
+        String(socket.currentStreamId) !== streamId
+    ) {
+        return;
+    }
 
 
-            if (
-                socket.currentStreamId &&
-                String(socket.currentStreamId) !== streamId
-            ) {
-                return;
-            }
+    /* ==============================
+       MESSAGE TEXT
+    ============================== */
+
+    const messageText = String(
+        data.message ||
+        data.text ||
+        data.content ||
+        ""
+    ).trim();
+
+    if (!messageText) {
+        return;
+    }
+
+    if (messageText.length > 500) {
+        return;
+    }
 
 
-            const user =
-                socket.user || null;
+    /* ==============================
+       ACTUAL LOGGED-IN USER
+    ============================== */
+
+    const user = socket.user || null;
+
+    const username = String(
+        user?.username ||
+        data.username ||
+        data.userName ||
+        "Viewer"
+    )
+    .trim()
+    .slice(0, 50);
 
 
-            let username =
-                user?.username ||
-                data.username ||
-                data.userName ||
-                "Viewer";
+    const displayName = String(
+        user?.name ||
+        data.name ||
+        data.displayName ||
+        username
+    )
+    .trim()
+    .slice(0, 80);
 
 
-            username =
-                String(username)
-                .trim()
-                .slice(0, 50);
+    const userId =
+        user?.id ||
+        data.userId ||
+        data.user_id ||
+        null;
 
 
-            let displayName =
-                user?.name ||
-                data.name ||
-                data.displayName ||
-                username;
+    /* ==============================
+       CREATE MESSAGE
+    ============================== */
 
+    const message = {
 
-            displayName =
-                String(displayName)
-                .trim()
-                .slice(0, 80);
-
-
-            const message = {
-
-                id:
-                    crypto.randomUUID
+        id:
+            data.id ||
+            (
+                crypto.randomUUID
                     ? crypto.randomUUID()
-                    : crypto.randomBytes(16).toString("hex"),
+                    : crypto.randomBytes(16).toString("hex")
+            ),
 
-                streamId,
+        streamId,
 
-                userId:
-                    user?.id ||
-                    data.userId ||
-                    data.user_id ||
-                    null,
+        userId,
 
-                username,
+        username,
 
-                name: displayName,
+        name: displayName,
 
-                message: messageText,
+        message: messageText,
 
-                text: messageText,
+        text: messageText,
 
-                createdAt:
-                    new Date().toISOString()
+        createdAt:
+            data.createdAt ||
+            new Date().toISOString()
 
-            };
+    };
 
 
-            addChatMessage(
-                streamId,
-                message
-            );
+    /* ==============================
+       SAVE RECENT CHAT
+    ============================== */
+
+    addChatMessage(
+        streamId,
+        message
+    );
 
 
-            io.to(
-                "stream:" + streamId
-            ).emit(
-                "chat-message",
-                message
-            );
+    /* ==============================
+       BROADCAST TO EVERYONE
+       WATCHING THIS STREAM
+    ============================== */
+
+    io.to("stream:" + streamId).emit(
+        "chat-message",
+        message
+    );
+
+    io.to("stream:" + streamId).emit(
+        "new-chat-message",
+        message
+    );
+
+}
 
 
-            /*
-               Compatibility event for older Watch versions.
-            */
+/* =========================================
+   WATCH SENDS chat-message
+========================================= */
 
-            io.to(
-                "stream:" + streamId
-            ).emit(
-                "new-chat-message",
-                message
-            );
+socket.on(
+    "chat-message",
+    async (data = {}) => {
 
-
-        } catch (error) {
-
-            console.error(
-                "send-chat error:",
-                error
-            );
-
-            socket.emit(
-                "chat-error",
-                {
-                    message: "Unable to send message"
-                }
-            );
-        }
-
-    });
-
-
-    /* =====================================================
-       CHAT MESSAGE ALIAS
-    ===================================================== */
-
-    socket.on("chat-message", async (data = {}) => {
-
-        socket.emit(
-            "chat-message-received",
+        await handleChatMessage(
+            socket,
             data
         );
 
-    });
+    }
+);
 
+
+/* =========================================
+   COMPATIBILITY: send-chat
+========================================= */
+
+socket.on(
+    "send-chat",
+    async (data = {}) => {
+
+        await handleChatMessage(
+            socket,
+            data
+        );
+
+    }
+);  
+                
 
     /* =====================================================
        STREAM STATUS
@@ -3508,78 +3736,48 @@ io.on("connection", async (socket) => {
 
     });
 
+/* =====================================================
+   DISCONNECT
+===================================================== */
 
-    /* =====================================================
-       DISCONNECT
-    ===================================================== */
+socket.on("disconnect", (reason) => {
 
-    socket.on("disconnect", (reason) => {
+    try {
 
-        try {
-
-            const streamId =
-                socket.currentStreamId
-                    ? String(socket.currentStreamId)
-                    : "";
-
-
-            if (streamId) {
-
-                const room =
-                    viewerRooms.get(streamId);
-
-                if (room) {
-
-                    room.delete(socket.id);
-
-                    if (room.size === 0) {
-                        viewerRooms.delete(streamId);
-                    }
-
-                }
-
-                broadcastViewerCount(
-                    streamId
-                );
-
-            }
+        const streamId =
+            socket.currentStreamId
+                ? String(socket.currentStreamId)
+                : "";
 
 
-            console.log(
-                "Canvas Socket disconnected:",
-                socket.id,
-                reason
+        if (streamId) {
+
+            removeViewerFromRoom(
+                streamId,
+                socket.id
             );
 
-        } catch (error) {
+            socket.currentStreamId = null;
 
-            console.error(
-                "Socket disconnect cleanup error:",
-                error
-            );
         }
 
-    });
 
-});
-
-
-/* =========================================================
-   SOCKET ERROR PROTECTION
-========================================================= */
-
-io.engine.on(
-    "connection_error",
-    (error) => {
-console.error(
-            "Socket.IO connection error:",
-            error.message
+        console.log(
+            "Canvas Socket disconnected:",
+            socket.id,
+            reason
         );
 
+    } catch (error) {
+
+        console.error(
+            "Socket disconnect cleanup error:",
+            error
+        );
     }
-);
 
-
+});
+    
 /* =========================================================
    STREAM VIEWER COUNT REST ENDPOINT
 ========================================================= */
@@ -3877,6 +4075,32 @@ app.post(
                     {
                         streamId,
                         status: "ended"
+                    }
+                );
+
+                io.to(
+                    "stream:" + streamId
+                ).emit(
+                    "viewer-count",
+                    {
+                        streamId,
+                        viewerCount: 0,
+                        viewers: 0,
+                        watching: 0,
+                        watchingCount: 0
+                    }
+                );
+
+                io.to(
+                    "stream:" + streamId
+                ).emit(
+                    "watching-count",
+                    {
+                        streamId,
+                        viewerCount: 0,
+                        viewers: 0,
+                        watching: 0,
+                        watchingCount: 0
                     }
                 );
 
