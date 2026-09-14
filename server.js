@@ -4188,90 +4188,111 @@ io.on(
 
             }
         );
-              /* =====================================================
-           CHAT MESSAGE
-           FIX: Watch currently emits "chat-message".
-           Previously this only echoed to the sender.
-        ===================================================== */
+        /* =====================================================
+   CHAT MESSAGE
+   FIX: Use authenticated sender identity and
+   broadcast through the shared chat pipeline.
+===================================================== */
 
-        socket.on(
-            "chat-message",
-            async (data = {}) => {
+socket.on(
+    "chat-message",
+    async (data = {}) => {
 
-                try {
+        try {
 
-                    const streamId =
-                        String(
-                            data.streamId ||
-                            data.stream_id ||
-                            socket.currentStreamId ||
-                            ""
-                        );
-
-
-                    if (!streamId) {
-                        return;
-                    }
+            const streamId =
+                String(
+                    data.streamId ||
+                    data.stream_id ||
+                    socket.currentStreamId ||
+                    ""
+                );
 
 
-                    if (
-                        socket.currentStreamId &&
-                        String(
-                            socket.currentStreamId
-                        ) !== streamId
-                    ) {
-
-                        return;
-
-                    }
+            if (!streamId) {
+                return;
+            }
 
 
-                    /*
-                     * Process through the exact same
-                     * storage + broadcast pipeline.
-                     */
+            if (
+                socket.currentStreamId &&
+                String(
+                    socket.currentStreamId
+                ) !== streamId
+            ) {
 
-                    const message =
-                        await saveAndBroadcastChat(
-                            streamId,
-                            data,
-                            socket.user
-                        );
-
-
-                    if (!message) {
-
-                        socket.emit(
-                            "chat-error",
-                            {
-                                message:
-                                    "Unable to send message"
-                            }
-                        );
-
-                    }
-
-                } catch (error) {
-
-                    console.error(
-                        "chat-message error:",
-                        error
-                    );
-
-
-                    socket.emit(
-                        "chat-error",
-                        {
-                            message:
-                                "Unable to send message"
-                        }
-                    );
-
-                }
+                return;
 
             }
-        );
 
+
+            /*
+             * Sender MUST come from the authenticated
+             * Socket.IO user.
+             *
+             * Do NOT trust data.username or data.name.
+             */
+
+            if (!socket.user) {
+
+                socket.emit(
+                    "chat-error",
+                    {
+                        message:
+                            "You must be logged in to chat."
+                    }
+                );
+
+                return;
+
+            }
+
+
+            /*
+             * Process through the shared
+             * storage + broadcast pipeline.
+             */
+
+            const message =
+                await saveAndBroadcastChat(
+                    streamId,
+                    data,
+                    socket.user
+                );
+
+
+            if (!message) {
+
+                socket.emit(
+                    "chat-error",
+                    {
+                        message:
+                            "Unable to send message"
+                    }
+                );
+
+            }
+
+        } catch (error) {
+
+            console.error(
+                "chat-message error:",
+                error
+            );
+
+
+            socket.emit(
+                "chat-error",
+                {
+                    message:
+                        "Unable to send message"
+                }
+            );
+
+        }
+
+    }
+);      
 
         /* =====================================================
            LEGACY CHAT MESSAGE ALIAS
