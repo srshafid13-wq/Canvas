@@ -3968,18 +3968,13 @@ isFollowing =
          false;
 
 
-     socket =
-         io(
-             API_BASE,
-             {
-                 transports: [
-                     "websocket",
-                     "polling"
-                 ],
-
-                 reconnection:
-                     true,
-
+     socket = io(API_BASE, {
+    transports:["websocket","polling"],
+    auth:{
+        token:getAuthToken()
+    },
+    reconnection:true,
+         
                  reconnectionAttempts:
                      Infinity,
 
