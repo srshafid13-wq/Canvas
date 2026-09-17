@@ -1,0 +1,4366 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Canvas - Go Live</title>
+
+<style>
+
+/* =========================================================
+   BASE
+========================================================= */
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+html,
+body{
+    width:100%;
+    min-height:100%;
+}
+
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    background:#FAF9F6;
+    color:#4B3326;
+    padding-bottom:82px;
+}
+
+
+/* =========================================================
+   TOP NAV — MATCH STREAM
+========================================================= */
+
+.top-nav{
+    width:100%;
+    height:70px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 20px;
+    background:#fff;
+    border-bottom:2px solid #d4a62a;
+    position:sticky;
+    top:0;
+    z-index:1000;
+}
+
+.logo{
+    font-size:32px;
+    font-weight:800;
+    color:#4b3326;
+}
+
+
+/* =========================================================
+   MAIN
+========================================================= */
+
+main{
+    width:100%;
+    max-width:900px;
+    margin:0 auto;
+    padding:24px 18px 30px;
+}
+
+
+/* =========================================================
+   CAMERA AREA
+========================================================= */
+
+.camera-section{
+    width:100%;
+    display:flex;
+    justify-content:center;
+    margin-bottom:22px;
+}
+
+.camera-box{
+    width:350px;
+    height:350px;
+    max-width:100%;
+    background:#000;
+    border-radius:18px;
+    overflow:hidden;
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+#cameraPreview{
+    width:100%;
+    height:100%;
+    object-fit:contain;
+    background:#000;
+    display:block;
+}
+
+.camera-placeholder{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#fff;
+    font-size:15px;
+    text-align:center;
+    padding:20px;
+    pointer-events:none;
+}
+
+.camera-placeholder.hidden{
+    display:none;
+}
+
+
+/* =========================================================
+   CAMERA CONTROLS
+========================================================= */
+
+.media-controls{
+    width:100%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:10px;
+    margin-bottom:25px;
+    flex-wrap:wrap;
+}
+
+.media-btn{
+    min-width:125px;
+    height:42px;
+    border:none;
+    border-radius:10px;
+    background:#4b3326;
+    color:#fff;
+    font-size:14px;
+    font-weight:700;
+    cursor:pointer;
+}
+
+.media-btn:active{
+    transform:scale(.98);
+}
+
+.switch-camera-btn{
+    width:46px;
+    min-width:46px;
+    height:42px;
+    border:none;
+    border-radius:10px;
+    background:#d4a62a;
+    color:#4b3326;
+    font-size:20px;
+    font-weight:700;
+    cursor:pointer;
+}
+
+
+/* =========================================================
+   FORM
+========================================================= */
+
+.form-section{
+    width:100%;
+}
+
+.form-group{
+    margin-bottom:18px;
+}
+
+.form-group label{
+    display:block;
+    margin-bottom:7px;
+    font-size:14px;
+    font-weight:700;
+    color:#4b3326;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select{
+    width:100%;
+    border:1px solid #d8cfc7;
+    border-radius:10px;
+    background:#fff;
+    color:#4b3326;
+    padding:12px 13px;
+    font-size:14px;
+    outline:none;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus{
+    border-color:#d4a62a;
+}
+
+.form-group textarea{
+    min-height:105px;
+    resize:vertical;
+}
+
+
+/* =========================================================
+   THUMBNAIL
+========================================================= */
+
+.thumbnail-section{
+    margin-top:5px;
+}
+
+.thumbnail-label{
+    display:block;
+    margin-bottom:8px;
+    font-size:14px;
+    font-weight:700;
+}
+
+#thumbnailInput{
+    width:100%;
+    font-size:13px;
+}
+
+.thumbnail-preview{
+    width:100%;
+    max-width:350px;
+    height:190px;
+    margin-top:12px;
+    border-radius:12px;
+    overflow:hidden;
+    background:#eee;
+    display:none;
+}
+
+.thumbnail-preview img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+
+/* =========================================================
+   START / END
+========================================================= */
+
+.start-btn,
+.end-btn{
+    width:100%;
+    height:48px;
+    margin-top:25px;
+    border:none;
+    border-radius:12px;
+    font-size:15px;
+    font-weight:800;
+    cursor:pointer;
+}
+
+.start-btn{
+    background:#d4a62a;
+    color:#4b3326;
+}
+
+.end-btn{
+    background:#a33a2b;
+    color:#fff;
+    display:none;
+}
+
+.start-btn:disabled,
+.end-btn:disabled{
+    opacity:.55;
+    cursor:not-allowed;
+}
+
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+#streamStatus{
+    min-height:20px;
+    margin-top:12px;
+    text-align:center;
+    font-size:13px;
+    font-weight:600;
+}
+
+.status-error{
+    color:#a33a2b;
+}
+
+.status-success{
+    color:#4b3326;
+}
+
+
+/* =========================================================
+   BOTTOM NAV — EXACT STREAM STYLE
+========================================================= */
+
+.bottom-nav{
+    position:fixed;
+    left:0;
+    bottom:0;
+    width:100%;
+    height:70px;
+    display:flex;
+    align-items:center;
+    justify-content:space-around;
+    padding:5px 7px;
+    background:#fff;
+    border-top:none !important;
+    box-shadow:0 -5px 20px rgba(75,51,38,.08);
+    z-index:1000;
+}
+
+.bottom-nav a{
+    flex:1;
+    min-width:0;
+    height:58px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:2px;
+    border-radius:12px;
+    color:#4b3326;
+    text-decoration:none;
+    font-size:23px;
+    background:transparent !important;
+    border:none !important;
+    box-shadow:none !important;
+    outline:none !important;
+}
+
+.bottom-nav a.active,
+.bottom-nav a.active:hover,
+.bottom-nav a.active:focus,
+.bottom-nav a.active:active{
+    background:transparent !important;
+    border:none !important;
+    box-shadow:none !important;
+    outline:none !important;
+    color:#4b3326 !important;
+}
+
+.bottom-nav a.active::before,
+.bottom-nav a.active::after{
+    content:none !important;
+    display:none !important;
+    background:none !important;
+    border:none !important;
+    box-shadow:none !important;
+}
+
+.bottom-nav a span{
+    font-size:10px;
+    font-weight:700;
+}
+
+.explore-icon{
+    width:23px;
+    height:23px;
+    display:block;
+}
+
+#bottomProfileIcon img{
+    width:25px;
+    height:25px;
+    object-fit:cover;
+    border-radius:50%;
+    border:1.5px solid #d4a62a;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media(max-width:600px){
+
+    .top-nav{
+        height:66px;
+        padding:0 15px;
+    }
+
+    .logo{
+        font-size:29px;
+    }
+
+    main{
+        padding:20px 15px 30px;
+    }
+
+    .camera-box{
+        width:300px;
+        height:300px;
+    }
+
+    .media-btn{
+        min-width:115px;
+    }
+
+}
+
+@media(max-width:360px){
+
+    .logo{
+        font-size:26px;
+    }
+
+    .camera-box{
+        width:100%;
+        height:300px;
+    }
+
+    .media-btn{
+        min-width:105px;
+        font-size:13px;
+    }
+
+}
+
+
+/* =========================================================
+   HIDDEN
+========================================================= */
+
+.hidden{
+    display:none !important;
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+<!-- =======================================================
+     TOP NAV
+======================================================== -->
+
+<header class="top-nav">
+
+    <div class="logo">
+        Canvas
+    </div>
+
+</header>
+
+
+<!-- =======================================================
+     MAIN
+======================================================== -->
+
+<main>
+
+
+    <!-- CAMERA -->
+
+    <section class="camera-section">
+
+        <div class="camera-box">
+
+            <video
+                id="cameraPreview"
+                autoplay
+                muted
+                playsinline
+            ></video>
+
+            <div
+                id="cameraPlaceholder"
+                class="camera-placeholder"
+            >
+                Camera is off
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- MEDIA CONTROLS -->
+
+    <div class="media-controls">
+
+        <button
+            type="button"
+            class="media-btn"
+            id="cameraToggle"
+        >
+            Camera Off
+        </button>
+
+        <button
+            type="button"
+            class="media-btn"
+            id="micToggle"
+        >
+            Microphone Off
+        </button>
+
+        <button
+            type="button"
+            class="switch-camera-btn"
+            id="switchCamera"
+            aria-label="Switch camera"
+        >
+            ↻
+        </button>
+
+    </div>
+
+
+    <!-- STREAM FORM -->
+
+    <section class="form-section">
+
+        <div class="form-group">
+
+            <label for="streamTitle">
+                Title
+            </label>
+
+            <input
+                type="text"
+                id="streamTitle"
+                placeholder="Canvas Live Stream"
+                maxlength="120"
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="streamCategory">
+                Category
+            </label>
+
+            <select id="streamCategory">
+
+                <option value="Entertainment">
+                    Entertainment
+                </option>
+
+                <option value="Gaming">
+                    Gaming
+                </option>
+
+                <option value="Music">
+                    Music
+                </option>
+
+                <option value="Education">
+                    Education
+                </option>
+
+                <option value="Sports">
+                    Sports
+                </option>
+
+                <option value="Other">
+                    Other
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="streamDescription">
+                Description
+            </label>
+
+            <textarea
+                id="streamDescription"
+                placeholder="Tell viewers about your stream..."
+                maxlength="500"
+            ></textarea>
+
+        </div>
+
+
+        <div class="form-group thumbnail-section">
+
+            <label
+                class="thumbnail-label"
+                for="thumbnailInput"
+            >
+                Thumbnail
+            </label>
+
+            <input
+                type="file"
+                id="thumbnailInput"
+                accept="image/*"
+            >
+
+            <div
+                id="thumbnailPreview"
+                class="thumbnail-preview"
+            >
+                <img
+                    id="thumbnailPreviewImage"
+                    alt="Stream thumbnail preview"
+                >
+            </div>
+
+        </div>
+
+
+        <button
+            type="button"
+            id="startStreaming"
+            class="start-btn"
+        >
+            Start Streaming
+        </button>
+
+
+        <button
+            type="button"
+            id="endStreaming"
+            class="end-btn"
+        >
+            End Streaming
+        </button>
+
+
+        <div id="streamStatus"></div>
+
+    </section>
+
+</main>
+
+
+<!-- =======================================================
+     BOTTOM NAV
+======================================================== -->
+
+<nav class="bottom-nav">
+
+    <a
+        href="stream.html"
+        aria-label="Home"
+    >
+        ⌂
+        <span>Home</span>
+    </a>
+
+
+    <a
+        href="explore.html"
+        aria-label="Explore"
+    >
+
+        <svg
+            class="explore-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+        >
+
+            <circle
+                cx="11"
+                cy="11"
+                r="7"
+                stroke="currentColor"
+                stroke-width="2.8"
+            ></circle>
+
+            <path
+                d="M16.5 16.5L21 21"
+                stroke="currentColor"
+                stroke-width="2.8"
+                stroke-linecap="round"
+            ></path>
+
+        </svg>
+
+        <span>Explore</span>
+
+    </a>
+
+
+    <a
+        href="golive.html"
+        class="active"
+        aria-label="Go Live"
+    >
+        ⊙
+        <span>Go Live</span>
+    </a>
+
+
+    <a
+        href="profile.html"
+        id="bottomProfileIcon"
+        aria-label="Profile"
+    >
+        ⬤
+        <span>Profile</span>
+    </a>
+
+</nav>
+
+
+<script>
+/* JavaScript continues in Part 2/5 */
+</script>
+<script>
+
+/* =========================================================
+   CANVAS GO LIVE — PART 2
+   AUTH + PROFILE + THUMBNAIL + MEDIA STATE
+========================================================= */
+
+
+/* =========================================================
+   CONFIG
+========================================================= */
+
+const API_BASE =
+    "https://canvas-kh9p.onrender.com";
+
+const SOCKET_URL =
+    API_BASE;
+
+
+/* =========================================================
+   DOM
+========================================================= */
+
+const cameraPreview =
+    document.getElementById("cameraPreview");
+
+const cameraPlaceholder =
+    document.getElementById("cameraPlaceholder");
+
+const cameraToggle =
+    document.getElementById("cameraToggle");
+
+const micToggle =
+    document.getElementById("micToggle");
+
+const switchCameraButton =
+    document.getElementById("switchCamera");
+
+const startStreamingButton =
+    document.getElementById("startStreaming");
+
+const endStreamingButton =
+    document.getElementById("endStreaming");
+
+const streamTitleInput =
+    document.getElementById("streamTitle");
+
+const streamCategoryInput =
+    document.getElementById("streamCategory");
+
+const streamDescriptionInput =
+    document.getElementById("streamDescription");
+
+const thumbnailInput =
+    document.getElementById("thumbnailInput");
+
+const thumbnailPreview =
+    document.getElementById("thumbnailPreview");
+
+const thumbnailPreviewImage =
+    document.getElementById("thumbnailPreviewImage");
+
+const streamStatus =
+    document.getElementById("streamStatus");
+
+
+/* =========================================================
+   AUTH
+========================================================= */
+
+function getAuthToken(){
+
+    return (
+        localStorage.getItem("canvasAuthToken") ||
+        localStorage.getItem("authToken") ||
+        localStorage.getItem("token") ||
+        ""
+    );
+
+}
+
+
+function authHeaders(){
+
+    const token =
+        getAuthToken();
+
+    const headers = {
+        "Content-Type":
+            "application/json"
+    };
+
+    if(token){
+
+        headers.Authorization =
+            "Bearer " + token;
+
+    }
+
+    return headers;
+
+}
+
+
+/* =========================================================
+   PROFILE CACHE CLEANUP
+========================================================= */
+
+function clearStoredProfileImage(){
+
+    localStorage.removeItem(
+        "canvasProfilePicture"
+    );
+
+    localStorage.removeItem(
+        "profilePicture"
+    );
+
+
+    const possibleKeys = [
+        "canvasProfile",
+        "canvasCurrentUser",
+        "canvasAccount"
+    ];
+
+
+    possibleKeys.forEach(function(key){
+
+        try{
+
+            const raw =
+                localStorage.getItem(key);
+
+            if(!raw){
+                return;
+            }
+
+            const data =
+                JSON.parse(raw);
+
+            if(!data || typeof data !== "object"){
+                return;
+            }
+
+
+            [
+                "photo",
+                "profileImage",
+                "profilePhoto",
+                "image",
+                "profile_picture",
+                "avatar"
+            ].forEach(function(field){
+
+                if(
+                    Object.prototype.hasOwnProperty.call(
+                        data,
+                        field
+                    )
+                ){
+
+                    data[field] = "";
+
+                }
+
+            });
+
+
+            localStorage.setItem(
+                key,
+                JSON.stringify(data)
+            );
+
+        }catch(error){
+
+            console.warn(
+                "Could not clear cached profile:",
+                error
+            );
+
+        }
+
+    });
+
+}
+
+
+/* =========================================================
+   PROFILE VALUE HELPER
+========================================================= */
+
+function getProfileImageValue(data){
+
+    if(!data){
+        return "";
+    }
+
+
+    return (
+        data.profile_picture ||
+        data.profilePicture ||
+        data.profile_image ||
+        data.profileImage ||
+        data.photo ||
+        data.avatar ||
+        data.image ||
+        ""
+    );
+
+}
+
+
+/* =========================================================
+   LOAD PROFILE
+========================================================= */
+
+async function loadGoLiveProfile(){
+
+    const token =
+        getAuthToken();
+
+    if(!token){
+        return null;
+    }
+
+
+    try{
+
+        let me = null;
+        let profile = null;
+
+
+        /* ---------------------------------------------
+           CURRENT USER
+        --------------------------------------------- */
+
+        const meResponse =
+            await fetch(
+                API_BASE + "/api/me",
+                {
+                    method:"GET",
+                    headers:authHeaders()
+                }
+            );
+
+
+        if(meResponse.ok){
+
+            const meData =
+                await meResponse.json();
+
+            me =
+                meData?.user ||
+                meData?.data ||
+                meData ||
+                null;
+
+        }
+
+
+        /* ---------------------------------------------
+           PROFILE
+        --------------------------------------------- */
+
+        const profileResponse =
+            await fetch(
+                API_BASE + "/api/profile",
+                {
+                    method:"GET",
+                    headers:authHeaders()
+                }
+            );
+
+
+        if(profileResponse.ok){
+
+            const profileData =
+                await profileResponse.json();
+
+            profile =
+                profileData?.profile ||
+                profileData?.data ||
+                profileData ||
+                null;
+
+        }
+
+
+        const combined = {
+            ...(me || {}),
+            ...(profile || {})
+        };
+
+
+        /* ---------------------------------------------
+           EXPLICITLY EMPTY PHOTO
+        --------------------------------------------- */
+
+        const photoFields = [
+            "profile_picture",
+            "profilePicture",
+            "profile_image",
+            "profileImage",
+            "photo",
+            "avatar",
+            "image"
+        ];
+
+
+        let explicitlyEmpty = false;
+
+
+        photoFields.forEach(function(field){
+
+            if(
+                Object.prototype.hasOwnProperty.call(
+                    combined,
+                    field
+                ) &&
+                combined[field] === ""
+            ){
+
+                explicitlyEmpty = true;
+
+            }
+
+        });
+
+
+        if(explicitlyEmpty){
+
+            clearStoredProfileImage();
+
+        }
+
+
+        /* ---------------------------------------------
+           SAVE CURRENT PROFILE
+        --------------------------------------------- */
+
+        try{
+
+            localStorage.setItem(
+                "canvasProfile",
+                JSON.stringify(combined)
+            );
+
+        }catch(error){
+
+            console.warn(
+                "Could not cache Canvas profile:",
+                error
+            );
+
+        }
+
+
+        updateBottomProfile(
+            combined
+        );
+
+
+        return combined;
+
+    }catch(error){
+
+        console.error(
+            "Profile loading failed:",
+            error
+        );
+
+        return null;
+
+    }
+
+}
+
+
+/* =========================================================
+   BOTTOM PROFILE
+========================================================= */
+
+function updateBottomProfile(profile){
+
+    const container =
+        document.getElementById(
+            "bottomProfileIcon"
+        );
+
+    if(!container){
+        return;
+    }
+
+
+    const image =
+        getProfileImageValue(profile);
+
+
+    if(image){
+
+        container.innerHTML =
+            '<img src="' +
+            escapeHtmlAttribute(image) +
+            '" alt="Profile">';
+
+    }else{
+
+        container.textContent =
+            "⬤";
+
+    }
+
+}
+
+
+/* =========================================================
+   SAFE HTML ATTRIBUTE
+========================================================= */
+
+function escapeHtmlAttribute(value){
+
+    return String(value || "")
+        .replace(/&/g,"&amp;")
+        .replace(/"/g,"&quot;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/'/g,"&#039;");
+
+}
+
+
+/* =========================================================
+   THUMBNAIL STATE
+========================================================= */
+
+let selectedThumbnail =
+    "";
+
+let selectedThumbnailObjectUrl =
+    "";
+
+
+/* =========================================================
+   THUMBNAIL INPUT
+========================================================= */
+
+if(thumbnailInput){
+
+    thumbnailInput.addEventListener(
+        "change",
+        function(){
+
+            const file =
+                thumbnailInput.files?.[0];
+
+            if(!file){
+
+                selectedThumbnail = "";
+
+                if(
+                    selectedThumbnailObjectUrl
+                ){
+
+                    URL.revokeObjectURL(
+                        selectedThumbnailObjectUrl
+                    );
+
+                    selectedThumbnailObjectUrl =
+                        "";
+
+                }
+
+                if(thumbnailPreview){
+
+                    thumbnailPreview.style.display =
+                        "none";
+
+                }
+
+                return;
+
+            }
+
+
+            if(
+                !file.type ||
+                !file.type.startsWith("image/")
+            ){
+
+                thumbnailInput.value =
+                    "";
+
+                selectedThumbnail =
+                    "";
+
+                setStatus(
+                    "Please select an image.",
+                    true
+                );
+
+                return;
+
+            }
+
+
+            if(
+                selectedThumbnailObjectUrl
+            ){
+
+                URL.revokeObjectURL(
+                    selectedThumbnailObjectUrl
+                );
+
+            }
+
+
+            selectedThumbnailObjectUrl =
+                URL.createObjectURL(file);
+
+
+            selectedThumbnail =
+                selectedThumbnailObjectUrl;
+
+
+            if(thumbnailPreviewImage){
+
+                thumbnailPreviewImage.src =
+                    selectedThumbnail;
+
+            }
+
+
+            if(thumbnailPreview){
+
+                thumbnailPreview.style.display =
+                    "block";
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   STREAM STATE
+========================================================= */
+
+let currentStreamId =
+    null;
+
+let currentStreamData =
+    null;
+
+
+/* =========================================================
+   MEDIA STATE
+========================================================= */
+
+let mediaStream =
+    null;
+
+let cameraEnabled =
+    false;
+
+let microphoneEnabled =
+    false;
+
+let currentFacingMode =
+    "user";
+
+
+/* =========================================================
+   SOCKET STATE
+========================================================= */
+
+let socket =
+    null;
+
+let broadcasterRoom =
+    null;
+
+let streamHeartbeat =
+    null;
+
+let peerConnections =
+    new Map();
+
+
+/* =========================================================
+   UI STATE
+========================================================= */
+
+let isStreaming =
+    false;
+
+let leavingStream =
+    false;
+
+
+/* =========================================================
+   STREAM ID
+========================================================= */
+
+function createStreamId(){
+
+    return (
+        "canvas-" +
+        Date.now().toString(36) +
+        "-" +
+        Math.random()
+            .toString(36)
+            .slice(2,10)
+    );
+
+}
+
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+function setStatus(
+    message,
+    isError = false
+){
+
+    if(!streamStatus){
+        return;
+    }
+
+
+    streamStatus.textContent =
+        message || "";
+
+
+    streamStatus.className =
+        isError
+            ? "status-error"
+            : "status-success";
+
+}
+
+
+/* =========================================================
+   MEDIA BUTTON UI
+========================================================= */
+
+function updateMediaButtons(){
+
+    if(cameraToggle){
+
+        cameraToggle.textContent =
+            cameraEnabled
+                ? "Camera On"
+                : "Camera Off";
+
+    }
+
+
+    if(micToggle){
+
+        micToggle.textContent =
+            microphoneEnabled
+                ? "Microphone On"
+                : "Microphone Off";
+
+    }
+
+
+    if(cameraPlaceholder){
+
+        cameraPlaceholder.classList.toggle(
+            "hidden",
+            cameraEnabled
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   CAMERA PREVIEW
+========================================================= */
+
+function updateCameraPreview(){
+
+    if(!cameraPreview){
+        return;
+    }
+
+
+    if(mediaStream){
+
+        cameraPreview.srcObject =
+            mediaStream;
+
+    }else{
+
+        cameraPreview.srcObject =
+            null;
+
+    }
+
+
+    if(
+        mediaStream &&
+        cameraEnabled
+    ){
+
+        cameraPreview.play()
+            .catch(function(){});
+
+    }
+
+}
+
+
+/* =========================================================
+   CURRENT PROFILE DATA
+========================================================= */
+
+function getCurrentProfileData(){
+
+    try{
+
+        const raw =
+            localStorage.getItem(
+                "canvasProfile"
+            );
+
+        if(raw){
+
+            const parsed =
+                JSON.parse(raw);
+
+            if(parsed){
+
+                return parsed;
+
+            }
+
+        }
+
+    }catch(error){
+
+        console.warn(
+            "Profile cache read failed:",
+            error
+        );
+
+    }
+
+
+    return {};
+
+}
+
+
+/* =========================================================
+   BUILD STREAM DATA
+========================================================= */
+
+function buildStreamData(){
+
+    const profile =
+        getCurrentProfileData();
+
+
+    const title =
+        String(
+            streamTitleInput?.value ||
+            "Canvas Live Stream"
+        ).trim();
+
+
+    const category =
+        String(
+            streamCategoryInput?.value ||
+            "Entertainment"
+        ).trim();
+
+
+    const description =
+        String(
+            streamDescriptionInput?.value ||
+            ""
+        ).trim();
+
+
+    const username =
+        profile.username ||
+        profile.user?.username ||
+        "";
+
+
+    const name =
+        profile.name ||
+        profile.user?.name ||
+        username ||
+        "Canvas Creator";
+
+
+    return {
+
+        title:
+            title || "Canvas Live Stream",
+
+        category:
+            category || "Entertainment",
+
+        description,
+
+        thumbnail:
+            selectedThumbnail || "",
+
+        status:
+            "live",
+
+        is_live:
+            true,
+
+        username,
+
+        name
+
+    };
+
+}
+
+
+/* =========================================================
+   VALIDATE STREAM
+========================================================= */
+
+function validateStream(){
+
+    const token =
+        getAuthToken();
+
+
+    if(!token){
+
+        setStatus(
+            "Please log in before going live.",
+            true
+        );
+
+        return false;
+
+    }
+
+
+    if(
+        !mediaStream ||
+        !cameraEnabled
+    ){
+
+        setStatus(
+            "Turn on your camera before starting.",
+            true
+        );
+
+        return false;
+
+    }
+
+
+    return true;
+
+}
+
+
+/* =========================================================
+   MEDIA CONSTRAINTS
+========================================================= */
+
+function getCameraConstraints(){
+
+    return {
+
+        video:{
+            facingMode:{
+                ideal:
+                    currentFacingMode
+            },
+
+            width:{
+                ideal:1280
+            },
+
+            height:{
+                ideal:720
+            },
+
+            frameRate:{
+                ideal:30
+            }
+
+        }
+
+    };
+
+}
+
+
+function getMicrophoneConstraints(){
+
+    return {
+
+        audio:{
+            echoCancellation:true,
+            noiseSuppression:true,
+            autoGainControl:true
+        }
+
+    };
+
+}
+
+
+/* =========================================================
+   PART 3 CONTINUES:
+   MEDIA ACQUISITION + CAMERA/MIC CONTROLS
+========================================================= */
+ <script>
+
+/* =========================================================
+   CANVAS GO LIVE — PART 3
+   CAMERA + MICROPHONE + SWITCH CAMERA
+========================================================= */
+
+
+/* =========================================================
+   START CAMERA / MICROPHONE
+========================================================= */
+
+async function startCameraAndMicrophone(
+    wantCamera = true,
+    wantMicrophone = true
+){
+
+    try{
+
+        /*
+         * If we already have a stream, only request
+         * the device that is actually missing.
+         */
+
+        if(!mediaStream){
+
+            const constraints = {};
+
+
+            if(wantCamera){
+
+                constraints.video =
+                    getCameraConstraints().video;
+
+            }
+
+
+            if(wantMicrophone){
+
+                constraints.audio =
+                    getMicrophoneConstraints().audio;
+
+            }
+
+
+            /*
+             * At least one device must be requested.
+             */
+
+            if(
+                !constraints.video &&
+                !constraints.audio
+            ){
+
+                return false;
+
+            }
+
+
+            const newStream =
+                await navigator.mediaDevices
+                    .getUserMedia(
+                        constraints
+                    );
+
+
+            mediaStream =
+                newStream;
+
+        }else{
+
+            /*
+             * Existing stream:
+             * request only the missing track.
+             */
+
+            if(
+                wantCamera &&
+                mediaStream.getVideoTracks().length === 0
+            ){
+
+                const cameraStream =
+                    await navigator.mediaDevices
+                        .getUserMedia({
+                            video:
+                                getCameraConstraints().video
+                        });
+
+
+                const videoTrack =
+                    cameraStream.getVideoTracks()[0];
+
+
+                if(videoTrack){
+
+                    mediaStream.addTrack(
+                        videoTrack
+                    );
+
+                }
+
+
+                /*
+                 * The temporary stream contains only
+                 * the camera track, so its other tracks
+                 * can be stopped safely.
+                 */
+
+                cameraStream
+                    .getAudioTracks()
+                    .forEach(function(track){
+
+                        track.stop();
+
+                    });
+
+            }
+
+
+            if(
+                wantMicrophone &&
+                mediaStream.getAudioTracks().length === 0
+            ){
+
+                const microphoneStream =
+                    await navigator.mediaDevices
+                        .getUserMedia({
+                            audio:
+                                getMicrophoneConstraints().audio
+                        });
+
+
+                const audioTrack =
+                    microphoneStream.getAudioTracks()[0];
+
+
+                if(audioTrack){
+
+                    mediaStream.addTrack(
+                        audioTrack
+                    );
+
+                }
+
+
+                microphoneStream
+                    .getVideoTracks()
+                    .forEach(function(track){
+
+                        track.stop();
+
+                    });
+
+            }
+
+        }
+
+
+        /*
+         * Update actual track state.
+         */
+
+        const videoTracks =
+            mediaStream.getVideoTracks();
+
+        const audioTracks =
+            mediaStream.getAudioTracks();
+
+
+        cameraEnabled =
+            videoTracks.length > 0 &&
+            videoTracks.some(function(track){
+
+                return track.enabled;
+
+            });
+
+
+        microphoneEnabled =
+            audioTracks.length > 0 &&
+            audioTracks.some(function(track){
+
+                return track.enabled;
+
+            });
+
+
+        updateCameraPreview();
+
+        updateMediaButtons();
+
+
+        /*
+         * Start playback immediately.
+         */
+
+        if(cameraEnabled){
+
+            try{
+
+                await cameraPreview.play();
+
+            }catch(error){
+
+                console.warn(
+                    "Preview playback:",
+                    error
+                );
+
+            }
+
+        }
+
+
+        return true;
+
+    }catch(error){
+
+        console.error(
+            "getUserMedia failed:",
+            error
+        );
+
+
+        /*
+         * Keep the existing media state intact
+         * when permission is denied or unavailable.
+         */
+
+        if(
+            error &&
+            error.name ===
+                "NotAllowedError"
+        ){
+
+            setStatus(
+                "Camera or microphone permission was denied.",
+                true
+            );
+
+        }else if(
+            error &&
+            error.name ===
+                "NotFoundError"
+        ){
+
+            setStatus(
+                "Camera or microphone was not found.",
+                true
+            );
+
+        }else if(
+            error &&
+            error.name ===
+                "NotReadableError"
+        ){
+
+            setStatus(
+                "Camera or microphone is already being used.",
+                true
+            );
+
+        }else{
+
+            setStatus(
+                "Could not access camera or microphone.",
+                true
+            );
+
+        }
+
+
+        return false;
+
+    }
+
+}
+
+
+/* =========================================================
+   CAMERA TOGGLE
+========================================================= */
+
+async function toggleCamera(){
+
+    try{
+
+        /*
+         * If there is no media stream yet,
+         * request CAMERA ONLY.
+         */
+
+        if(!mediaStream){
+
+            const started =
+                await startCameraAndMicrophone(
+                    true,
+                    false
+                );
+
+
+            if(started){
+
+                const videoTracks =
+                    mediaStream.getVideoTracks();
+
+
+                videoTracks.forEach(
+                    function(track){
+
+                        track.enabled =
+                            true;
+
+                    }
+                );
+
+
+                cameraEnabled =
+                    videoTracks.length > 0;
+
+
+                updateCameraPreview();
+                updateMediaButtons();
+
+            }
+
+            return;
+
+        }
+
+
+        const videoTracks =
+            mediaStream.getVideoTracks();
+
+
+        /*
+         * No camera track exists:
+         * request CAMERA ONLY.
+         */
+
+        if(videoTracks.length === 0){
+
+            const cameraStream =
+                await navigator.mediaDevices
+                    .getUserMedia({
+                        video:
+                            getCameraConstraints().video
+                    });
+
+
+            const newVideoTrack =
+                cameraStream.getVideoTracks()[0];
+
+
+            if(newVideoTrack){
+
+                mediaStream.addTrack(
+                    newVideoTrack
+                );
+
+            }
+
+
+            cameraStream
+                .getAudioTracks()
+                .forEach(function(track){
+
+                    track.stop();
+
+                });
+
+
+            cameraEnabled =
+                !!newVideoTrack;
+
+
+            updateCameraPreview();
+            updateMediaButtons();
+
+            return;
+
+        }
+
+
+        /*
+         * Camera track already exists:
+         * ONLY toggle its enabled state.
+         */
+
+        videoTracks.forEach(
+            function(track){
+
+                track.enabled =
+                    !track.enabled;
+
+            }
+        );
+
+
+        cameraEnabled =
+            videoTracks.some(
+                function(track){
+
+                    return track.enabled;
+
+                }
+            );
+
+
+        updateCameraPreview();
+        updateMediaButtons();
+
+    }catch(error){
+
+        console.error(
+            "Camera toggle failed:",
+            error
+        );
+
+        setStatus(
+            "Camera could not be changed.",
+            true
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   MICROPHONE TOGGLE
+========================================================= */
+
+async function toggleMicrophone(){
+
+    try{
+
+        /*
+         * If there is no stream yet,
+         * request MICROPHONE ONLY.
+         */
+
+        if(!mediaStream){
+
+            const started =
+                await startCameraAndMicrophone(
+                    false,
+                    true
+                );
+
+
+            if(started){
+
+                const audioTracks =
+                    mediaStream.getAudioTracks();
+
+
+                audioTracks.forEach(
+                    function(track){
+
+                        track.enabled =
+                            true;
+
+                    }
+                );
+
+
+                microphoneEnabled =
+                    audioTracks.length > 0;
+
+
+                updateMediaButtons();
+
+            }
+
+            return;
+
+        }
+
+
+        const audioTracks =
+            mediaStream.getAudioTracks();
+
+
+        /*
+         * No microphone track exists:
+         * request MICROPHONE ONLY.
+         */
+
+        if(audioTracks.length === 0){
+
+            const microphoneStream =
+                await navigator.mediaDevices
+                    .getUserMedia({
+                        audio:
+                            getMicrophoneConstraints().audio
+                    });
+
+
+            const newAudioTrack =
+                microphoneStream.getAudioTracks()[0];
+
+
+            if(newAudioTrack){
+
+                mediaStream.addTrack(
+                    newAudioTrack
+                );
+
+            }
+
+
+            microphoneStream
+                .getVideoTracks()
+                .forEach(function(track){
+
+                    track.stop();
+
+                });
+
+
+            microphoneEnabled =
+                !!newAudioTrack;
+
+
+            updateMediaButtons();
+
+            return;
+
+        }
+
+
+        /*
+         * Microphone track already exists:
+         * ONLY toggle its enabled state.
+         */
+
+        audioTracks.forEach(
+            function(track){
+
+                track.enabled =
+                    !track.enabled;
+
+            }
+        );
+
+
+        microphoneEnabled =
+            audioTracks.some(
+                function(track){
+
+                    return track.enabled;
+
+                }
+            );
+
+
+        updateMediaButtons();
+
+    }catch(error){
+
+        console.error(
+            "Microphone toggle failed:",
+            error
+        );
+
+        setStatus(
+            "Microphone could not be changed.",
+            true
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   SWITCH CAMERA
+========================================================= */
+
+async function switchCamera(){
+
+    try{
+
+        /*
+         * No camera currently available.
+         */
+
+        if(!mediaStream){
+
+            setStatus(
+                "Turn on the camera first.",
+                true
+            );
+
+            return;
+
+        }
+
+
+        const oldVideoTracks =
+            mediaStream.getVideoTracks();
+
+
+        if(oldVideoTracks.length === 0){
+
+            setStatus(
+                "Turn on the camera first.",
+                true
+            );
+
+            return;
+
+        }
+
+
+        const wasCameraEnabled =
+            oldVideoTracks.some(
+                function(track){
+
+                    return track.enabled;
+
+                }
+            );
+
+
+        /*
+         * Change facing mode.
+         */
+
+        currentFacingMode =
+            currentFacingMode === "user"
+                ? "environment"
+                : "user";
+
+
+        /*
+         * Request ONLY the replacement camera.
+         * Microphone is deliberately untouched.
+         */
+
+        const newCameraStream =
+            await navigator.mediaDevices
+                .getUserMedia({
+
+                    video:{
+                        facingMode:{
+                            ideal:
+                                currentFacingMode
+                        },
+
+                        width:{
+                            ideal:1920
+                        },
+
+                        height:{
+                            ideal:1080
+                        },
+
+                        frameRate:{
+                            ideal:30
+                        }
+
+                    }
+
+                });
+
+
+        const newVideoTrack =
+            newCameraStream.getVideoTracks()[0];
+
+
+        if(!newVideoTrack){
+
+            throw new Error(
+                "No replacement camera track."
+            );
+
+        }
+
+
+        /*
+         * Preserve the previous on/off state.
+         */
+
+        newVideoTrack.enabled =
+            wasCameraEnabled;
+
+
+        /*
+         * Remove old camera tracks.
+         */
+
+        oldVideoTracks.forEach(
+            function(oldTrack){
+
+                try{
+
+                    mediaStream.removeTrack(
+                        oldTrack
+                    );
+
+                }catch(error){
+
+                    console.warn(
+                        "Could not remove old camera:",
+                        error
+                    );
+
+                }
+
+
+                try{
+
+                    oldTrack.stop();
+
+                }catch(error){
+
+                    console.warn(
+                        "Could not stop old camera:",
+                        error
+                    );
+
+                }
+
+            }
+        );
+
+
+        /*
+         * Add replacement camera.
+         */
+
+        mediaStream.addTrack(
+            newVideoTrack
+        );
+
+
+        cameraEnabled =
+            newVideoTrack.enabled;
+
+
+        /*
+         * Keep the microphone exactly as it was.
+         */
+
+        const audioTracks =
+            mediaStream.getAudioTracks();
+
+
+        microphoneEnabled =
+            audioTracks.some(
+                function(track){
+
+                    return track.enabled;
+
+                }
+            );
+
+
+        updateCameraPreview();
+        updateMediaButtons();
+
+
+        /*
+         * Replace the video track in any active
+         * WebRTC peer connections.
+         */
+
+        for(
+            const peerConnection
+            of peerConnections.values()
+        ){
+
+            try{
+
+                const senders =
+                    peerConnection.getSenders();
+
+
+                const videoSender =
+                    senders.find(
+                        function(sender){
+
+                            return (
+                                sender.track &&
+                                sender.track.kind ===
+                                    "video"
+                            );
+
+                        }
+                    );
+
+
+                if(videoSender){
+
+                    await videoSender.replaceTrack(
+                        newVideoTrack
+                    );
+
+                }
+
+            }catch(error){
+
+                console.warn(
+                    "Could not replace peer video track:",
+                    error
+                );
+
+            }
+
+        }
+
+
+    }catch(error){
+
+        console.error(
+            "Switch camera failed:",
+            error
+        );
+
+
+        /*
+         * If switching failed, keep the old camera
+         * and restore the previous facing mode.
+         */
+
+        currentFacingMode =
+            currentFacingMode === "user"
+                ? "environment"
+                : "user";
+
+
+        setStatus(
+            "Could not switch camera.",
+            true
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   BUTTON EVENTS
+========================================================= */
+
+if(cameraToggle){
+
+    cameraToggle.addEventListener(
+        "click",
+        function(event){
+
+            event.preventDefault();
+
+            toggleCamera();
+
+        }
+    );
+
+}
+
+
+if(micToggle){
+
+    micToggle.addEventListener(
+        "click",
+        function(event){
+
+            event.preventDefault();
+
+            toggleMicrophone();
+
+        }
+    );
+
+}
+
+
+if(switchCameraButton){
+
+    switchCameraButton.addEventListener(
+        "click",
+        function(event){
+
+            event.preventDefault();
+
+            switchCamera();
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   INITIAL MEDIA UI
+========================================================= */
+
+cameraEnabled =
+    false;
+
+microphoneEnabled =
+    false;
+
+updateMediaButtons();
+
+updateCameraPreview();
+
+
+/* =========================================================
+   PART 4 CONTINUES:
+   SOCKET.IO + STREAM REGISTRATION
+========================================================= */
+
+</script>
+<script>
+
+/* =========================================================
+   CANVAS GO LIVE — PART 4
+   SOCKET.IO + SERVER STREAM + START STREAM
+========================================================= */
+
+
+/* =========================================================
+   SOCKET.IO LOADER
+========================================================= */
+
+function loadSocketIO(){
+
+    return new Promise(function(resolve, reject){
+
+        if(typeof io === "function"){
+
+            resolve();
+
+            return;
+
+        }
+
+
+        const existing =
+            document.querySelector(
+                'script[data-canvas-socket]'
+            );
+
+
+        if(existing){
+
+            existing.addEventListener(
+                "load",
+                function(){
+
+                    if(typeof io === "function"){
+
+                        resolve();
+
+                    }else{
+
+                        reject(
+                            new Error(
+                                "Socket.IO failed to load."
+                            )
+                        );
+
+                    }
+
+                }
+            );
+
+
+            existing.addEventListener(
+                "error",
+                function(){
+
+                    reject(
+                        new Error(
+                            "Socket.IO failed to load."
+                        )
+                    );
+
+                }
+            );
+
+
+            return;
+
+        }
+
+
+        const script =
+            document.createElement("script");
+
+
+        script.src =
+            "https://cdn.socket.io/4.8.1/socket.io.min.js";
+
+        script.async =
+            true;
+
+        script.dataset.canvasSocket =
+            "true";
+
+
+        script.onload =
+            function(){
+
+                if(typeof io === "function"){
+
+                    resolve();
+
+                }else{
+
+                    reject(
+                        new Error(
+                            "Socket.IO failed to initialize."
+                        )
+                    );
+
+                }
+
+            };
+
+
+        script.onerror =
+            function(){
+
+                reject(
+                    new Error(
+                        "Could not load Socket.IO."
+                    )
+                );
+
+            };
+
+
+        document.head.appendChild(
+            script
+        );
+
+    });
+
+}
+
+
+/* =========================================================
+   CONNECT SOCKET
+========================================================= */
+
+async function connectSocket(){
+
+    const token =
+        getAuthToken();
+
+
+    if(!token){
+
+        throw new Error(
+            "AUTH_REQUIRED"
+        );
+
+    }
+
+
+    await loadSocketIO();
+
+
+    /*
+     * Reuse an already-connected socket.
+     */
+
+    if(
+        socket &&
+        socket.connected
+    ){
+
+        return socket;
+
+    }
+
+
+    /*
+     * Clean up a previous dead socket.
+     */
+
+    if(socket){
+
+        try{
+
+            socket.disconnect();
+
+        }catch(error){
+
+            console.warn(
+                "Socket cleanup:",
+                error
+            );
+
+        }
+
+        socket =
+            null;
+
+    }
+
+
+    socket =
+        io(
+            SOCKET_URL,
+            {
+
+                transports:[
+                    "websocket",
+                    "polling"
+                ],
+
+                auth:{
+                    token:token
+                },
+
+                reconnection:true,
+
+                reconnectionAttempts:
+                    Infinity,
+
+                timeout:
+                    10000
+
+            }
+        );
+
+
+    await new Promise(
+        function(resolve, reject){
+
+            let settled =
+                false;
+
+
+            const success =
+                function(){
+
+                    if(settled){
+                        return;
+                    }
+
+                    settled =
+                        true;
+
+                    resolve();
+
+                };
+
+
+            const failure =
+                function(error){
+
+                    if(settled){
+                        return;
+                    }
+
+                    settled =
+                        true;
+
+                    reject(
+                        error ||
+                        new Error(
+                            "Socket connection failed."
+                        )
+                    );
+
+                };
+
+
+            socket.once(
+                "connect",
+                success
+            );
+
+
+            socket.once(
+                "connect_error",
+                failure
+            );
+
+
+            setTimeout(
+                function(){
+
+                    if(!settled){
+
+                        settled =
+                            true;
+
+                        reject(
+                            new Error(
+                                "Socket connection timed out."
+                            )
+                        );
+
+                    }
+
+                },
+                12000
+            );
+
+        }
+    );
+
+
+    /*
+     * Socket reconnect handling.
+     */
+
+    socket.on(
+        "reconnect",
+        function(){
+
+            if(
+                currentStreamId
+            ){
+
+                joinBroadcasterRoom(
+                    currentStreamId
+                );
+
+            }
+
+        }
+    );
+
+
+    socket.on(
+        "disconnect",
+        function(reason){
+
+            console.warn(
+                "Canvas socket disconnected:",
+                reason
+            );
+
+        }
+    );
+
+
+    socket.on(
+        "connect_error",
+        function(error){
+
+            console.warn(
+                "Canvas socket error:",
+                error
+            );
+
+        }
+    );
+
+
+    return socket;
+
+}
+
+
+/* =========================================================
+   JOIN BROADCASTER ROOM
+========================================================= */
+
+function joinBroadcasterRoom(
+    streamId
+){
+
+    if(
+        !socket ||
+        !socket.connected ||
+        !streamId
+    ){
+
+        return;
+
+    }
+
+
+    const id =
+        String(streamId);
+
+
+    broadcasterRoom =
+        id;
+
+
+    /*
+     * Support the server's room naming.
+     * The primary room name is the stream ID.
+     */
+
+    socket.emit(
+        "join-stream",
+        {
+            streamId:id,
+            stream_id:id,
+            room:id
+        }
+    );
+
+
+    socket.emit(
+        "join-room",
+        {
+            streamId:id,
+            stream_id:id,
+            room:id
+        }
+    );
+
+}
+
+
+/* =========================================================
+   LEAVE BROADCASTER ROOM
+========================================================= */
+
+function leaveBroadcasterRoom(){
+
+    if(
+        !socket ||
+        !broadcasterRoom
+    ){
+
+        return;
+
+    }
+
+
+    socket.emit(
+        "leave-stream",
+        {
+            streamId:
+                broadcasterRoom,
+            stream_id:
+                broadcasterRoom,
+            room:
+                broadcasterRoom
+        }
+    );
+
+
+    socket.emit(
+        "leave-room",
+        {
+            streamId:
+                broadcasterRoom,
+            stream_id:
+                broadcasterRoom,
+            room:
+                broadcasterRoom
+        }
+    );
+
+
+    broadcasterRoom =
+        null;
+
+}
+
+
+/* =========================================================
+   STREAM START EVENT
+========================================================= */
+
+function emitStreamStarted(){
+
+    if(
+        !socket ||
+        !socket.connected ||
+        !currentStreamId
+    ){
+
+        return;
+
+    }
+
+
+    const payload = {
+
+        streamId:
+            String(currentStreamId),
+
+        stream_id:
+            String(currentStreamId),
+
+        id:
+            String(currentStreamId),
+
+        title:
+            currentStreamData?.title ||
+            "Canvas Live Stream",
+
+        category:
+            currentStreamData?.category ||
+            "Entertainment",
+
+        status:
+            "live",
+
+        is_live:
+            true
+
+    };
+
+
+    socket.emit(
+        "stream-started",
+        payload
+    );
+
+
+    socket.emit(
+        "stream-updated",
+        payload
+    );
+
+}
+
+
+/* =========================================================
+   HEARTBEAT
+========================================================= */
+
+function startStreamHeartbeat(){
+
+    stopStreamHeartbeat();
+
+
+    if(!currentStreamId){
+        return;
+    }
+
+
+    streamHeartbeat =
+        setInterval(
+            function(){
+
+                if(
+                    !socket ||
+                    !socket.connected ||
+                    !currentStreamId
+                ){
+
+                    return;
+
+                }
+
+
+                const payload = {
+
+                    streamId:
+                        String(currentStreamId),
+
+                    stream_id:
+                        String(currentStreamId),
+
+                    id:
+                        String(currentStreamId),
+
+                    status:
+                        "live",
+
+                    is_live:
+                        true
+
+                };
+
+
+                socket.emit(
+                    "stream-heartbeat",
+                    payload
+                );
+
+
+                socket.emit(
+                    "stream-updated",
+                    payload
+                );
+
+            },
+            10000
+        );
+
+}
+
+
+/* =========================================================
+   STOP HEARTBEAT
+========================================================= */
+
+function stopStreamHeartbeat(){
+
+    if(streamHeartbeat){
+
+        clearInterval(
+            streamHeartbeat
+        );
+
+        streamHeartbeat =
+            null;
+
+    }
+
+}
+
+
+/* =========================================================
+   REGISTER STREAM ON SERVER
+========================================================= */
+
+async function registerStreamOnServer(
+    streamData
+){
+
+    const token =
+        getAuthToken();
+
+
+    if(!token){
+
+        throw new Error(
+            "AUTH_REQUIRED"
+        );
+
+    }
+
+
+    const payload = {
+
+        title:
+            streamData.title,
+
+        category:
+            streamData.category,
+
+        description:
+            streamData.description || "",
+
+        thumbnail:
+            streamData.thumbnail || "",
+
+        status:
+            "live",
+
+        is_live:
+            true
+
+    };
+
+
+    const response =
+        await fetch(
+            API_BASE + "/api/streams",
+            {
+
+                method:
+                    "POST",
+
+                headers:
+                    authHeaders(),
+
+                body:
+                    JSON.stringify(
+                        payload
+                    )
+
+            }
+        );
+
+
+    let data = null;
+
+
+    try{
+
+        data =
+            await response.json();
+
+    }catch(error){
+
+        data =
+            null;
+
+    }
+
+
+    if(!response.ok){
+
+        const message =
+            data?.message ||
+            data?.error ||
+            "Could not start the Canvas stream.";
+
+        throw new Error(
+            message
+        );
+
+    }
+
+
+    /*
+     * The DATABASE/SERVER ID is authoritative.
+     * Never replace it with our local temporary ID.
+     */
+
+    const serverStream =
+        data?.stream ||
+        data?.data ||
+        data;
+
+
+    const serverStreamId =
+        serverStream?.id ||
+        serverStream?.streamId ||
+        serverStream?.stream_id;
+
+
+    if(!serverStreamId){
+
+        throw new Error(
+            "Server did not return a stream ID."
+        );
+
+    }
+
+
+    return {
+
+        data:data,
+
+        streamId:
+            String(serverStreamId)
+
+    };
+
+}
+
+
+/* =========================================================
+   START LIVE STREAM
+========================================================= */
+
+async function createLiveStream(){
+
+    if(isStreaming){
+
+        return;
+
+    }
+
+
+    if(!validateStream()){
+
+        return;
+
+    }
+
+
+    const token =
+        getAuthToken();
+
+
+    if(!token){
+
+        setStatus(
+            "Please log in before going live.",
+            true
+        );
+
+        return;
+
+    }
+
+
+    startStreamingButton.disabled =
+        true;
+
+
+    setStatus(
+        "Starting your live stream..."
+    );
+
+
+    try{
+
+        /*
+         * Make the stream object.
+         */
+
+        const streamData =
+            buildStreamData();
+
+
+        /*
+         * Temporary ID is only used locally
+         * until the server gives us the real DB ID.
+         */
+
+        const temporaryStreamId =
+            createStreamId();
+
+
+        currentStreamData = {
+
+            ...streamData,
+
+            id:
+                temporaryStreamId
+
+        };
+
+
+        /*
+         * Register with the actual Canvas server.
+         */
+
+        const registered =
+            await registerStreamOnServer(
+                streamData
+            );
+
+
+        /*
+         * IMPORTANT:
+         * Always use the server/database ID.
+         */
+
+        currentStreamId =
+            String(
+                registered.streamId
+            );
+
+
+        currentStreamData = {
+
+            ...currentStreamData,
+
+            id:
+                currentStreamId,
+
+            streamId:
+                currentStreamId
+
+        };
+
+
+        /*
+         * Connect Socket.IO.
+         */
+
+        try{
+
+            await connectSocket();
+
+        }catch(socketError){
+
+            console.warn(
+                "Socket connection unavailable:",
+                socketError
+            );
+
+        }
+
+
+        /*
+         * Join the stream room.
+         */
+
+        joinBroadcasterRoom(
+            currentStreamId
+        );
+
+
+        /*
+         * Tell connected Canvas clients
+         * that this stream is live.
+         */
+
+        emitStreamStarted();
+
+
+        /*
+         * Keep the stream alive.
+         */
+
+        startStreamHeartbeat();
+
+
+        isStreaming =
+            true;
+
+        leavingStream =
+            false;
+
+
+        /*
+         * Update UI.
+         */
+
+        startStreamingButton.style.display =
+            "none";
+
+        endStreamingButton.style.display =
+            "block";
+
+        endStreamingButton.disabled =
+            false;
+
+
+        setStatus(
+            "You are live."
+        );
+
+
+        /*
+         * Keep the local stream reference
+         * available for the Watch/WebRTC layer.
+         */
+
+        updateCameraPreview();
+
+
+    }catch(error){
+
+        console.error(
+            "Could not start stream:",
+            error
+        );
+
+
+        /*
+         * If registration failed, don't pretend
+         * the stream is live.
+         */
+
+        currentStreamId =
+            null;
+
+        currentStreamData =
+            null;
+
+        isStreaming =
+            false;
+
+
+        stopStreamHeartbeat();
+
+
+        startStreamingButton.disabled =
+            false;
+
+
+        startStreamingButton.style.display =
+            "block";
+
+        endStreamingButton.style.display =
+            "none";
+
+
+        if(
+            error &&
+            error.message ===
+                "AUTH_REQUIRED"
+        ){
+
+            setStatus(
+                "Please log in before going live.",
+                true
+            );
+
+        }else{
+
+            setStatus(
+                error?.message ||
+                "Could not start the live stream.",
+                true
+            );
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   START BUTTON
+========================================================= */
+
+if(startStreamingButton){
+
+    startStreamingButton.addEventListener(
+        "click",
+        function(event){
+
+            event.preventDefault();
+
+            createLiveStream();
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   PART 5 CONTINUES:
+   END STREAM + CLEANUP + PROFILE + RECOVERY
+========================================================= */
+
+      </script>
+  <script>
+
+/* =========================================================
+   CANVAS GO LIVE — PART 5
+   END STREAM + CLEANUP + RECOVERY + INIT
+========================================================= */
+
+
+/* =========================================================
+   END STREAM ON SERVER
+========================================================= */
+
+async function endServerStream(
+    streamId
+){
+
+    const id =
+        String(streamId || "");
+
+
+    if(!id){
+
+        return false;
+
+    }
+
+
+    const token =
+        getAuthToken();
+
+
+    if(!token){
+
+        return false;
+
+    }
+
+
+    /*
+     * Primary endpoint used by Canvas server.
+     */
+
+    try{
+
+        const response =
+            await fetch(
+                API_BASE +
+                "/api/streams/" +
+                encodeURIComponent(id) +
+                "/end",
+                {
+
+                    method:
+                        "PUT",
+
+                    headers:
+                        authHeaders(),
+
+                    body:
+                        JSON.stringify({
+                            status:"ended",
+                            is_live:false
+                        })
+
+                }
+            );
+
+
+        if(response.ok){
+
+            return true;
+
+        }
+
+
+        /*
+         * Compatibility fallback for older
+         * Canvas server versions.
+         */
+
+        if(
+            response.status !== 404 &&
+            response.status !== 405
+        ){
+
+            console.warn(
+                "End stream request failed:",
+                response.status
+            );
+
+        }
+
+    }catch(error){
+
+        console.warn(
+            "PUT end-stream failed:",
+            error
+        );
+
+    }
+
+
+    /*
+     * Older server fallback.
+     */
+
+    try{
+
+        const response =
+            await fetch(
+                API_BASE +
+                "/api/streams/" +
+                encodeURIComponent(id) +
+                "/end",
+                {
+
+                    method:
+                        "POST",
+
+                    headers:
+                        authHeaders(),
+
+                    body:
+                        JSON.stringify({
+                            status:"ended",
+                            is_live:false
+                        })
+
+                }
+            );
+
+
+        return response.ok;
+
+    }catch(error){
+
+        console.warn(
+            "POST end-stream failed:",
+            error
+        );
+
+        return false;
+
+    }
+
+}
+
+
+/* =========================================================
+   CLEAN PEER CONNECTIONS
+========================================================= */
+
+function cleanupPeerConnections(){
+
+    if(!peerConnections){
+        return;
+    }
+
+
+    peerConnections.forEach(
+        function(peerConnection){
+
+            try{
+
+                peerConnection.close();
+
+            }catch(error){
+
+                console.warn(
+                    "Peer cleanup:",
+                    error
+                );
+
+            }
+
+        }
+    );
+
+
+    peerConnections.clear();
+
+}
+
+
+/* =========================================================
+   STOP MEDIA
+========================================================= */
+
+function stopMediaStream(){
+
+    if(!mediaStream){
+
+        cameraEnabled =
+            false;
+
+        microphoneEnabled =
+            false;
+
+        updateMediaButtons();
+
+        updateCameraPreview();
+
+        return;
+
+    }
+
+
+    mediaStream
+        .getTracks()
+        .forEach(function(track){
+
+            try{
+
+                track.stop();
+
+            }catch(error){
+
+                console.warn(
+                    "Media track cleanup:",
+                    error
+                );
+
+            }
+
+        });
+
+
+    mediaStream =
+        null;
+
+
+    cameraEnabled =
+        false;
+
+    microphoneEnabled =
+        false;
+
+
+    if(cameraPreview){
+
+        cameraPreview.pause();
+
+        cameraPreview.srcObject =
+            null;
+
+    }
+
+
+    updateMediaButtons();
+
+    updateCameraPreview();
+
+}
+
+
+/* =========================================================
+   DISCONNECT SOCKET
+========================================================= */
+
+function cleanupSocket(){
+
+    leaveBroadcasterRoom();
+
+
+    if(socket){
+
+        try{
+
+            socket.disconnect();
+
+        }catch(error){
+
+            console.warn(
+                "Socket disconnect:",
+                error
+            );
+
+        }
+
+    }
+
+
+    socket =
+        null;
+
+}
+
+
+/* =========================================================
+   END LIVE STREAM
+========================================================= */
+
+async function endLiveStream(){
+
+    if(
+        leavingStream
+    ){
+
+        return;
+
+    }
+
+
+    if(
+        !isStreaming &&
+        !currentStreamId
+    ){
+
+        return;
+
+    }
+
+
+    leavingStream =
+        true;
+
+
+    endStreamingButton.disabled =
+        true;
+
+
+    setStatus(
+        "Ending your stream..."
+    );
+
+
+    const streamId =
+        currentStreamId;
+
+
+    try{
+
+        /*
+         * Tell connected viewers first.
+         */
+
+        if(
+            socket &&
+            socket.connected &&
+            streamId
+        ){
+
+            const payload = {
+
+                streamId:
+                    String(streamId),
+
+                stream_id:
+                    String(streamId),
+
+                id:
+                    String(streamId),
+
+                status:
+                    "ended",
+
+                is_live:
+                    false
+
+            };
+
+
+            socket.emit(
+                "stream-ended",
+                payload
+            );
+
+
+            socket.emit(
+                "stream-updated",
+                payload
+            );
+
+        }
+
+
+        /*
+         * Tell the database that the stream ended.
+         */
+
+        if(streamId){
+
+            await endServerStream(
+                streamId
+            );
+
+        }
+
+
+    }catch(error){
+
+        console.error(
+            "End stream error:",
+            error
+        );
+
+    }finally{
+
+        /*
+         * Always clean the local state even if
+         * the network request fails.
+         */
+
+        stopStreamHeartbeat();
+
+        cleanupPeerConnections();
+
+        cleanupSocket();
+
+        stopMediaStream();
+
+
+        currentStreamId =
+            null;
+
+        currentStreamData =
+            null;
+
+        broadcasterRoom =
+            null;
+
+        isStreaming =
+            false;
+
+        leavingStream =
+            false;
+
+
+        startStreamingButton.style.display =
+            "block";
+
+        startStreamingButton.disabled =
+            false;
+
+        endStreamingButton.style.display =
+            "none";
+
+        endStreamingButton.disabled =
+            false;
+
+
+        setStatus(
+            "Stream ended."
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   END BUTTON
+========================================================= */
+
+if(endStreamingButton){
+
+    endStreamingButton.addEventListener(
+        "click",
+        function(event){
+
+            event.preventDefault();
+
+            endLiveStream();
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   VISIBILITY RECOVERY
+========================================================= */
+
+document.addEventListener(
+    "visibilitychange",
+    function(){
+
+        if(
+            document.visibilityState !==
+            "visible"
+        ){
+
+            return;
+
+        }
+
+
+        /*
+         * Reattach preview if the browser
+         * temporarily detached it.
+         */
+
+        if(mediaStream){
+
+            updateCameraPreview();
+
+        }
+
+
+        /*
+         * Rejoin the broadcaster room after
+         * a mobile browser background/resume.
+         */
+
+        if(
+            isStreaming &&
+            currentStreamId
+        ){
+
+            if(
+                socket &&
+                socket.connected
+            ){
+
+                joinBroadcasterRoom(
+                    currentStreamId
+                );
+
+                emitStreamStarted();
+
+            }else{
+
+                connectSocket()
+                    .then(function(){
+
+                        if(
+                            currentStreamId
+                        ){
+
+                            joinBroadcasterRoom(
+                                currentStreamId
+                            );
+
+                            emitStreamStarted();
+
+                        }
+
+                    })
+                    .catch(function(error){
+
+                        console.warn(
+                            "Socket recovery failed:",
+                            error
+                        );
+
+                    });
+
+            }
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   ONLINE RECOVERY
+========================================================= */
+
+window.addEventListener(
+    "online",
+    function(){
+
+        if(
+            !isStreaming ||
+            !currentStreamId
+        ){
+
+            return;
+
+        }
+
+
+        connectSocket()
+            .then(function(){
+
+                joinBroadcasterRoom(
+                    currentStreamId
+                );
+
+                emitStreamStarted();
+
+            })
+            .catch(function(error){
+
+                console.warn(
+                    "Online socket recovery:",
+                    error
+                );
+
+            });
+
+    }
+);
+
+
+/* =========================================================
+   PROFILE REFRESH
+========================================================= */
+
+window.addEventListener(
+    "storage",
+    function(event){
+
+        if(
+            event.key ===
+                "canvasProfile" ||
+            event.key ===
+                "canvasProfilePicture"
+        ){
+
+            try{
+
+                const profile =
+                    getCurrentProfileData();
+
+                updateBottomProfile(
+                    profile
+                );
+
+            }catch(error){
+
+                console.warn(
+                    "Profile refresh failed:",
+                    error
+                );
+
+            }
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   PROFILE PAGE RETURN
+========================================================= */
+
+window.addEventListener(
+    "pageshow",
+    function(){
+
+        try{
+
+            const profile =
+                getCurrentProfileData();
+
+            updateBottomProfile(
+                profile
+            );
+
+        }catch(error){
+
+            console.warn(
+                "Profile pageshow update:",
+                error
+            );
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   LOAD PROFILE
+========================================================= */
+
+loadGoLiveProfile()
+    .catch(function(error){
+
+        console.warn(
+            "Initial profile load:",
+            error
+        );
+
+    });
+
+
+/* =========================================================
+   BEFORE UNLOAD
+========================================================= */
+
+window.addEventListener(
+    "beforeunload",
+    function(){
+
+        /*
+         * Do NOT automatically end the database stream
+         * here. Mobile browsers can unload/reload pages
+         * temporarily.
+         *
+         * Stop the heartbeat only.
+         */
+
+        stopStreamHeartbeat();
+
+    }
+);
+
+
+/* =========================================================
+   PAGE INITIALIZATION
+========================================================= */
+
+(function initializeGoLive(){
+
+    /*
+     * Camera and microphone intentionally remain OFF
+     * until the user presses their buttons.
+     */
+
+    cameraEnabled =
+        false;
+
+    microphoneEnabled =
+        false;
+
+
+    updateMediaButtons();
+
+    updateCameraPreview();
+
+
+    /*
+     * Load cached profile immediately so the bottom
+     * navigation can show the correct image.
+     */
+
+    try{
+
+        const profile =
+            getCurrentProfileData();
+
+        updateBottomProfile(
+            profile
+        );
+
+    }catch(error){
+
+        console.warn(
+            "Cached profile initialization:",
+            error
+        );
+
+    }
+
+
+    /*
+     * Clean up an old thumbnail object URL.
+     */
+
+    window.addEventListener(
+        "pagehide",
+        function(){
+
+            if(
+                selectedThumbnailObjectUrl
+            ){
+
+                try{
+
+                    URL.revokeObjectURL(
+                        selectedThumbnailObjectUrl
+                    );
+
+                }catch(error){
+
+                    console.warn(
+                        "Thumbnail cleanup:",
+                        error
+                    );
+
+                }
+
+
+                selectedThumbnailObjectUrl =
+                    "";
+
+            }
+
+        }
+    );
+
+
+    console.log(
+        "Canvas Go Live ready."
+    );
+
+})();
+
+      </script>
+      </body>
+</html>
