@@ -1,0 +1,1813 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Canvas - Go Live</title>
+<link rel="stylesheet" href="style.css">
+
+<style>
+/* =========================================
+   CANVAS GO LIVE
+   PART 1 — SETUP AND STYLES
+========================================= */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html,
+body{
+    width:100%;
+    min-height:100%;
+}
+
+body{
+    background:#fff;
+    color:#4b3326;
+    font-family:Arial,Helvetica,sans-serif;
+    padding-bottom:82px;
+}
+
+/* =========================================
+   TOP NAV — MATCHES STREAM.HTML
+========================================= */
+
+.navbar{
+    width:100%;
+    height:70px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 20px;
+    background:#fff;
+    border-bottom:2px solid #d4a62a;
+    position:sticky;
+    top:0;
+    z-index:1000;
+}
+
+.logo{
+    font-size:32px;
+    font-weight:800;
+    color:#4b3326;
+}
+
+/* =========================================
+   GO LIVE CONTENT
+========================================= */
+
+.container{
+    width:100%;
+    max-width:760px;
+    margin:0 auto;
+    padding:24px 18px 30px;
+}
+
+.page-heading{
+    margin-bottom:18px;
+}
+
+.page-heading h1{
+    font-size:25px;
+    font-weight:800;
+    color:#4b3326;
+    margin-bottom:6px;
+}
+
+.page-heading p{
+    color:#6a574c;
+    font-size:14px;
+    line-height:1.5;
+}
+
+.camera-card{
+    width:100%;
+    overflow:hidden;
+    background:#faf9f6;
+    border:1px solid #eadfd8;
+    border-radius:18px;
+    padding:14px;
+    margin-bottom:20px;
+}
+
+.camera-preview{
+    width:100%;
+    height:350px;
+    position:relative;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:12px;
+    background:#251b17;
+}
+
+#cameraPreview{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+    transform:scaleX(-1);
+}
+
+.camera-message{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    color:#fff;
+    text-align:center;
+    font-size:14px;
+    line-height:1.5;
+    pointer-events:none;
+}
+
+.camera-controls{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-top:14px;
+}
+
+.control-button{
+    flex:1;
+    min-width:110px;
+    min-height:42px;
+    padding:10px 12px;
+    border:1px solid #dfcdbf;
+    border-radius:10px;
+    background:#fff;
+    color:#4b3326;
+    font-size:13px;
+    font-weight:700;
+    cursor:pointer;
+}
+
+.control-button:disabled{
+    opacity:.6;
+    cursor:not-allowed;
+}
+
+.permission-message,
+.webrtc-status{
+    margin-top:12px;
+    color:#6a574c;
+    font-size:12px;
+    line-height:1.5;
+    overflow-wrap:anywhere;
+}
+
+/* =========================================
+   STREAM DETAILS
+========================================= */
+
+.stream-form{
+    width:100%;
+    padding:18px;
+    background:#fff;
+    border:1px solid #eadfd8;
+    border-radius:18px;
+}
+
+.form-heading{
+    font-size:19px;
+    font-weight:800;
+    margin-bottom:16px;
+    color:#4b3326;
+}
+
+.form-group{
+    display:flex;
+    flex-direction:column;
+    gap:7px;
+    margin-bottom:16px;
+}
+
+.form-group label{
+    color:#4b3326;
+    font-size:13px;
+    font-weight:700;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea{
+    width:100%;
+    min-height:44px;
+    padding:11px 12px;
+    border:1px solid #dfcdbf;
+    border-radius:10px;
+    outline:none;
+    background:#fff;
+    color:#4b3326;
+    font-family:Arial,Helvetica,sans-serif;
+    font-size:14px;
+}
+
+.form-group textarea{
+    min-height:90px;
+    resize:vertical;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus{
+    border-color:#d4a62a;
+}
+
+.thumbnail-actions{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+}
+
+.thumbnail-button{
+    min-height:40px;
+    padding:10px 14px;
+    border:1px solid #dfcdbf;
+    border-radius:10px;
+    background:#f3e8d3;
+    color:#4b3326;
+    font-size:13px;
+    font-weight:700;
+    cursor:pointer;
+}
+
+.thumbnail-preview{
+    display:none;
+    width:100%;
+    margin-top:12px;
+}
+
+.thumbnail-preview img{
+    display:block;
+    width:100%;
+    max-height:220px;
+    object-fit:cover;
+    border-radius:10px;
+}
+
+.stream-status{
+    margin-top:14px;
+    font-size:13px;
+    line-height:1.5;
+    color:#6a574c;
+    overflow-wrap:anywhere;
+}
+
+.start-stream-button{
+    width:100%;
+    min-height:48px;
+    margin-top:16px;
+    padding:12px 16px;
+    border:none;
+    border-radius:12px;
+    background:#d4a62a;
+    color:#4b3326;
+    font-size:15px;
+    font-weight:800;
+    cursor:pointer;
+}
+
+.start-stream-button:disabled{
+    opacity:.6;
+    cursor:not-allowed;
+}
+
+.start-stream-button.is-live{
+    background:#a33a2b;
+    color:#fff;
+}
+
+/* =========================================
+   BOTTOM NAV — MATCHES STREAM.HTML
+========================================= */
+
+.bottom-nav{
+    position:fixed;
+    left:0;
+    bottom:0;
+    width:100%;
+    height:70px;
+    display:flex;
+    align-items:center;
+    justify-content:space-around;
+    padding:5px 7px;
+    background:#fff;
+    border-top:none !important;
+    box-shadow:0 -5px 20px rgba(75,51,38,.08);
+    z-index:1000;
+}
+
+.bottom-nav a{
+    flex:1;
+    min-width:0;
+    height:58px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:2px;
+    border-radius:12px;
+    color:#4b3326;
+    text-decoration:none;
+    font-size:23px;
+    background:transparent !important;
+    border:none !important;
+    box-shadow:none !important;
+    outline:none !important;
+}
+
+.bottom-nav a.active,
+.bottom-nav a.active:hover,
+.bottom-nav a.active:focus,
+.bottom-nav a.active:active{
+    background:transparent !important;
+    border:none !important;
+    box-shadow:none !important;
+    outline:none !important;
+    color:#4b3326 !important;
+}
+
+.bottom-nav a.active::before,
+.bottom-nav a.active::after{
+    content:none !important;
+    display:none !important;
+    background:none !important;
+    border:none !important;
+    box-shadow:none !important;
+}
+
+.bottom-nav a span{
+    font-size:10px;
+    font-weight:700;
+}
+
+.explore-icon{
+    width:23px;
+    height:23px;
+    display:block;
+}
+
+#bottomProfileIcon img{
+    width:25px;
+    height:25px;
+    object-fit:cover;
+    border-radius:50%;
+    border:1.5px solid #d4a62a;
+}
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media(max-width:600px){
+    .navbar{
+        height:66px;
+        padding:0 15px;
+    }
+
+    .logo{
+        font-size:29px;
+    }
+
+    .container{
+        padding:20px 14px 25px;
+    }
+
+    .camera-preview{
+        height:300px;
+    }
+
+    .camera-card{
+        padding:10px;
+    }
+
+    .stream-form{
+        padding:15px;
+    }
+}
+
+@media(max-width:360px){
+    .logo{
+        font-size:26px;
+    }
+
+    .container{
+        padding-left:12px;
+        padding-right:12px;
+    }
+
+    .camera-preview{
+        height:260px;
+    }
+
+    .camera-controls{
+        gap:7px;
+    }
+
+    .control-button{
+        min-width:95px;
+        padding:9px 7px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- =====================================
+     TOP NAV — EXACT STREAM.HTML MARKUP
+===================================== -->
+
+<header class="navbar">
+    <div class="logo">
+        Canvas
+    </div>
+</header>
+
+<!-- =====================================
+     GO LIVE CONTENT
+===================================== -->
+
+<main class="container">
+
+    <section class="page-heading">
+        <h1>Go Live</h1>
+        <p>Set up your camera and microphone, then start your stream.</p>
+    </section>
+
+    <!-- CAMERA PREVIEW -->
+
+    <section class="camera-card">
+
+        <div class="camera-preview">
+
+            <video
+                id="cameraPreview"
+                autoplay
+                playsinline
+                muted
+            ></video>
+
+            <div
+                id="cameraMessage"
+                class="camera-message"
+            >
+                Camera is off. Turn it on to preview your stream.
+            </div>
+
+        </div>
+
+        <div class="camera-controls">
+
+            <button
+                type="button"
+                id="cameraButton"
+                class="control-button"
+            >
+                Camera Off
+            </button>
+
+            <button
+                type="button"
+                id="micButton"
+                class="control-button"
+            >
+                Microphone Off
+            </button>
+
+            <button
+                type="button"
+                id="switchCameraButton"
+                class="control-button"
+            >
+                Switch Camera
+            </button>
+
+        </div>
+
+        <p
+            id="permissionMessage"
+            class="permission-message"
+            role="status"
+            aria-live="polite"
+        >
+            Camera and microphone are off.
+        </p>
+
+        <p
+            id="webrtcStatus"
+            class="webrtc-status"
+        ></p>
+
+    </section>
+
+    <!-- STREAM DETAILS -->
+
+    <section class="stream-form">
+
+        <h2 class="form-heading">
+            Stream Details
+        </h2>
+
+        <div class="form-group">
+
+            <label for="streamTitle">
+                Stream Title
+            </label>
+
+            <input
+                type="text"
+                id="streamTitle"
+                maxlength="120"
+                placeholder="What are you streaming?"
+                required
+            >
+
+        </div>
+
+        <div class="form-group">
+
+            <label for="category">
+                Category
+            </label>
+
+            <select id="category" required>
+
+                <option value="Entertainment">
+                    Entertainment
+                </option>
+
+                <option value="Gaming">
+                    Gaming
+                </option>
+
+                <option value="Music">
+                    Music
+                </option>
+
+                <option value="Education">
+                    Education
+                </option>
+
+                <option value="Sports">
+                    Sports
+                </option>
+
+                <option value="Talk">
+                    Talk
+                </option>
+
+            </select>
+
+        </div>
+
+        <div class="form-group">
+
+            <label for="description">
+                Description
+            </label>
+
+            <textarea
+                id="description"
+                maxlength="1000"
+                placeholder="Tell viewers what your stream is about..."
+            ></textarea>
+
+        </div>
+
+        <!-- THUMBNAIL -->
+
+        <div class="form-group">
+
+            <label for="thumbnailInput">
+                Stream Thumbnail (Optional)
+            </label>
+
+            <input
+                type="file"
+                id="thumbnailInput"
+                accept="image/*"
+                hidden
+            >
+
+            <div class="thumbnail-actions">
+
+                <button
+                    type="button"
+                    id="choosePhotoButton"
+                    class="thumbnail-button"
+                >
+                    Choose Thumbnail
+                </button>
+
+                <button
+                    type="button"
+                    id="removeThumbnailButton"
+                    class="thumbnail-button"
+                >
+                    Remove Thumbnail
+                </button>
+
+            </div>
+
+            <div
+                id="thumbnailPreview"
+                class="thumbnail-preview"
+            >
+                <img
+                    id="thumbnailImage"
+                    src=""
+                    alt="Selected stream thumbnail"
+                >
+            </div>
+
+        </div>
+
+        <p
+            id="streamStatus"
+            class="stream-status"
+            role="status"
+            aria-live="polite"
+        >
+            Ready to go live.
+        </p>
+
+        <button
+            type="button"
+            id="startStreamingButton"
+            class="start-stream-button"
+        >
+            Start Streaming
+        </button>
+
+    </section>
+
+</main>
+
+<!-- =====================================
+     BOTTOM NAV — MATCHES STREAM.HTML
+===================================== -->
+
+<nav class="bottom-nav">
+
+    <!-- HOME -->
+
+    <a
+        href="stream.html"
+        aria-label="Home"
+    >
+        ⌂
+        <span>Home</span>
+    </a>
+
+    <!-- EXPLORE -->
+
+    <a
+        href="explore.html"
+        aria-label="Explore"
+    >
+
+        <svg
+            class="explore-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+        >
+
+            <circle
+                cx="11"
+                cy="11"
+                r="7"
+                stroke="currentColor"
+                stroke-width="2.8"
+            />
+
+            <path
+                d="M16.5 16.5L21 21"
+                stroke="currentColor"
+                stroke-width="2.8"
+                stroke-linecap="round"
+            />
+
+        </svg>
+
+        <span>Explore</span>
+
+    </a>
+
+    <!-- GO LIVE -->
+
+    <a
+        href="golive.html"
+        class="active"
+        aria-label="Go Live"
+        aria-current="page"
+    >
+        ⊙
+        <span>Go Live</span>
+    </a>
+
+    <!-- PROFILE -->
+
+    <a
+        href="profile.html"
+        id="bottomProfileIcon"
+        aria-label="Profile"
+    >
+        ⬤
+        <span>Profile</span>
+    </a>
+
+</nav>
+
+<!-- SOCKET.IO CLIENT -->
+
+<script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+
+<script>
+/* =========================================
+   CANVAS GO LIVE — PART 3
+   JAVASCRIPT SETUP
+========================================= */
+
+"use strict";
+
+/* SERVER */
+
+const API_BASE = "https://canvas-kh9p.onrender.com";
+const SOCKET_URL = API_BASE;
+
+/* STREAM STATE */
+
+let canvasStream = null;
+let cameraEnabled = false;
+let microphoneEnabled = false;
+let currentFacingMode = "user";
+
+let isStreaming = false;
+let currentStreamId = null;
+let broadcasterRoom = null;
+let socket = null;
+let streamHeartbeat = null;
+
+let selectedThumbnail = "";
+let mediaBusy = false;
+let streamRequestBusy = false;
+
+const peerConnections = Object.create(null);
+
+/* PAGE ELEMENTS */
+
+const cameraPreview =
+    document.getElementById("cameraPreview");
+
+const cameraMessage =
+    document.getElementById("cameraMessage");
+
+const cameraButton =
+    document.getElementById("cameraButton");
+
+const micButton =
+    document.getElementById("micButton");
+
+const switchCameraButton =
+    document.getElementById("switchCameraButton");
+
+const permissionMessage =
+    document.getElementById("permissionMessage");
+
+const webrtcStatus =
+    document.getElementById("webrtcStatus");
+
+const streamTitleInput =
+    document.getElementById("streamTitle");
+
+const categorySelect =
+    document.getElementById("category");
+
+const descriptionInput =
+    document.getElementById("description");
+
+const thumbnailInput =
+    document.getElementById("thumbnailInput");
+
+const thumbnailPreview =
+    document.getElementById("thumbnailPreview");
+
+const thumbnailImage =
+    document.getElementById("thumbnailImage");
+
+const chooseThumbnailButton =
+    document.getElementById("choosePhotoButton");
+
+const removeThumbnailButton =
+    document.getElementById("removeThumbnailButton");
+
+const startStreamButton =
+    document.getElementById("startStreamingButton");
+
+const streamStatus =
+    document.getElementById("streamStatus");
+
+/* AUTHENTICATION */
+
+function getAuthToken() {
+    const keys = [
+        "canvasAuthToken",
+        "authToken",
+        "token"
+    ];
+
+    for (const key of keys) {
+        const value = localStorage.getItem(key);
+
+        if (value && value.trim()) {
+            return value.trim();
+        }
+    }
+
+    return "";
+}
+
+function authHeaders() {
+    const headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json"
+    };
+
+    const token = getAuthToken();
+
+    if (token) {
+        headers.Authorization = "Bearer " + token;
+    }
+
+    return headers;
+}
+
+/* STATUS MESSAGES */
+
+function setStatus(message, isError) {
+    if (!streamStatus) return;
+
+    streamStatus.textContent = message;
+    streamStatus.style.color = isError
+        ? "#a33a2b"
+        : "#6a574c";
+}
+
+function setPermissionMessage(message) {
+    if (permissionMessage) {
+        permissionMessage.textContent = message;
+    }
+}
+
+/* PROFILE PHOTO */
+
+function getStoredProfileImage() {
+    try {
+        const profile = JSON.parse(
+            localStorage.getItem("canvasProfile") || "{}"
+        );
+
+        return (
+            profile.photo ||
+            profile.profileImage ||
+            profile.profilePhoto ||
+            profile.image ||
+            profile.profile_picture ||
+            ""
+        );
+    } catch (error) {
+        console.warn("Could not read Canvas profile:", error);
+        return "";
+    }
+}
+
+function updateGoLiveProfile() {
+    const bottom = document.getElementById("bottomProfileIcon");
+
+    if (!bottom) return;
+
+    const photo = getStoredProfileImage();
+
+    bottom.replaceChildren();
+
+    if (photo) {
+        const image = document.createElement("img");
+
+        image.src = photo;
+        image.alt = "Profile";
+
+        image.addEventListener("error", function () {
+            image.remove();
+            bottom.insertAdjacentText("afterbegin", "⬤");
+        });
+
+        bottom.appendChild(image);
+    } else {
+        bottom.appendChild(
+            document.createTextNode("⬤")
+        );
+    }
+
+    const label = document.createElement("span");
+    label.textContent = "Profile";
+    bottom.appendChild(label);
+}
+
+window.addEventListener("storage", function (event) {
+    if (event.key === "canvasProfile") {
+        updateGoLiveProfile();
+    }
+});
+
+/* THUMBNAIL */
+
+function resetThumbnail() {
+    selectedThumbnail = "";
+    thumbnailInput.value = "";
+    thumbnailImage.removeAttribute("src");
+    thumbnailPreview.style.display = "none";
+
+    setStatus("Thumbnail removed.", false);
+}
+
+function chooseThumbnail() {
+    thumbnailInput.click();
+}
+
+chooseThumbnailButton.addEventListener(
+    "click",
+    chooseThumbnail
+);
+
+removeThumbnailButton.addEventListener(
+    "click",
+    resetThumbnail
+);
+
+thumbnailInput.addEventListener("change", function () {
+    const file = thumbnailInput.files &&
+        thumbnailInput.files[0];
+
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+        setStatus("Choose a valid image file.", true);
+        thumbnailInput.value = "";
+        return;
+    }
+
+    if (file.size > 3 * 1024 * 1024) {
+        setStatus("Thumbnail must be 3 MB or smaller.", true);
+        thumbnailInput.value = "";
+        return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = function () {
+        selectedThumbnail = String(reader.result || "");
+        thumbnailImage.src = selectedThumbnail;
+        thumbnailPreview.style.display = "block";
+
+        setStatus("Thumbnail selected.", false);
+    };
+
+    reader.onerror = function () {
+        setStatus("Could not read that image.", true);
+    };
+
+    reader.readAsDataURL(file);
+});
+
+/* INITIAL SETUP */
+
+updateGoLiveProfile();
+setStatus("Ready to go live.", false);
+</script>
+
+<script>
+/* =========================================
+   CANVAS GO LIVE — PART 4
+   CAMERA AND MICROPHONE CONTROLS
+========================================= */
+
+/* UPDATE CAMERA BUTTON */
+
+function updateCameraButton() {
+    const track = canvasStream &&
+        canvasStream.getVideoTracks().find(
+            item => item.readyState === "live"
+        );
+
+    cameraEnabled = Boolean(track && track.enabled);
+
+    cameraButton.textContent = cameraEnabled
+        ? "Camera On"
+        : "Camera Off";
+}
+
+/* UPDATE MICROPHONE BUTTON */
+
+function updateMicButton() {
+    const track = canvasStream &&
+        canvasStream.getAudioTracks().find(
+            item => item.readyState === "live"
+        );
+
+    microphoneEnabled = Boolean(track && track.enabled);
+
+    micButton.textContent = microphoneEnabled
+        ? "Microphone On"
+        : "Microphone Off";
+}
+
+/* UPDATE CAMERA PREVIEW */
+
+function updatePreview() {
+    const videoTrack = canvasStream &&
+        canvasStream.getVideoTracks().find(
+            item => item.readyState === "live"
+        );
+
+    if (videoTrack) {
+        cameraPreview.srcObject = canvasStream;
+        cameraPreview.play().catch(() => {});
+    } else {
+        cameraPreview.srcObject = null;
+    }
+
+    cameraMessage.style.display =
+        videoTrack && videoTrack.enabled
+            ? "none"
+            : "flex";
+
+    cameraMessage.textContent = videoTrack
+        ? "Camera is off."
+        : "Camera is off. Turn it on to preview your stream.";
+}
+
+/* REPLACE TRACKS IN EXISTING PEER CONNECTIONS */
+
+async function replaceOutgoingTrack(kind, newTrack) {
+    const tasks = [];
+
+    Object.values(peerConnections).forEach(connection => {
+        if (!connection || connection.connectionState === "closed") {
+            return;
+        }
+
+        connection.getSenders().forEach(sender => {
+            if (sender.track && sender.track.kind === kind) {
+                tasks.push(sender.replaceTrack(newTrack));
+            }
+        });
+    });
+
+    const results = await Promise.allSettled(tasks);
+
+    results.forEach(result => {
+        if (result.status === "rejected") {
+            console.warn("Could not replace outgoing track:", result.reason);
+        }
+    });
+}
+
+/* ACQUIRE CAMERA OR MICROPHONE */
+
+async function acquireMediaTrack(kind) {
+    if (!navigator.mediaDevices ||
+        !navigator.mediaDevices.getUserMedia) {
+        throw new Error(
+            "Camera and microphone access requires HTTPS and a supported browser."
+        );
+    }
+
+    const constraints = kind === "video"
+        ? {
+            audio: false,
+            video: {
+                facingMode: {
+                    ideal: currentFacingMode
+                }
+            }
+        }
+        : {
+            audio: true,
+            video: false
+        };
+
+    const temporaryStream =
+        await navigator.mediaDevices.getUserMedia(constraints);
+
+    const newTrack = kind === "video"
+        ? temporaryStream.getVideoTracks()[0]
+        : temporaryStream.getAudioTracks()[0];
+
+    if (!newTrack) {
+        temporaryStream.getTracks().forEach(track => track.stop());
+        throw new Error("The requested media device was not found.");
+    }
+
+    if (!canvasStream) {
+        canvasStream = new MediaStream();
+    }
+
+    const oldTracks = kind === "video"
+        ? canvasStream.getVideoTracks()
+        : canvasStream.getAudioTracks();
+
+    await replaceOutgoingTrack(kind, newTrack);
+
+    oldTracks.forEach(track => {
+        canvasStream.removeTrack(track);
+        track.stop();
+    });
+
+    canvasStream.addTrack(newTrack);
+
+    // Stop any unused tracks from the temporary stream.
+    temporaryStream.getTracks().forEach(track => {
+        if (track !== newTrack) track.stop();
+    });
+
+    updateCameraButton();
+    updateMicButton();
+    updatePreview();
+
+    return newTrack;
+}
+
+/* TOGGLE CAMERA */
+
+async function toggleCamera() {
+    const track = canvasStream &&
+        canvasStream.getVideoTracks().find(
+            item => item.readyState === "live"
+        );
+
+    if (!track) {
+        await acquireMediaTrack("video");
+        return;
+    }
+
+    track.enabled = !track.enabled;
+
+    updateCameraButton();
+    updatePreview();
+
+    setPermissionMessage(
+        track.enabled ? "Camera is on." : "Camera is off."
+    );
+}
+
+/* TOGGLE MICROPHONE */
+
+async function toggleMicrophone() {
+    const track = canvasStream &&
+        canvasStream.getAudioTracks().find(
+            item => item.readyState === "live"
+        );
+
+    if (!track) {
+        await acquireMediaTrack("audio");
+        setPermissionMessage("Microphone is on.");
+        return;
+    }
+
+    track.enabled = !track.enabled;
+
+    updateMicButton();
+
+    setPermissionMessage(
+        track.enabled
+            ? "Microphone is on."
+            : "Microphone is muted."
+    );
+}
+
+/* SWITCH FRONT / REAR CAMERA */
+
+async function switchCamera() {
+    currentFacingMode =
+        currentFacingMode === "user"
+            ? "environment"
+            : "user";
+
+    try {
+        const newTrack = await acquireMediaTrack("video");
+
+        newTrack.enabled = true;
+
+        updateCameraButton();
+        updatePreview();
+
+        setPermissionMessage(
+            currentFacingMode === "user"
+                ? "Front camera selected."
+                : "Rear camera selected."
+        );
+    } catch (error) {
+        currentFacingMode =
+            currentFacingMode === "user"
+                ? "environment"
+                : "user";
+
+        throw error;
+    }
+}
+
+/* USER-FRIENDLY MEDIA ERRORS */
+
+function showMediaError(error, device) {
+    console.error(device + " error:", error);
+
+    let message = "Could not access the " + device + ".";
+
+    if (error.name === "NotAllowedError" ||
+        error.name === "PermissionDeniedError") {
+        message = "Allow Canvas to access your " + device +
+            " in your browser settings.";
+    } else if (error.name === "NotFoundError" ||
+               error.name === "DevicesNotFoundError") {
+        message = "No compatible " + device + " was found.";
+    } else if (error.name === "NotReadableError" ||
+               error.name === "TrackStartError") {
+        message = "Your " + device +
+            " may already be in use by another app.";
+    } else if (error.name === "OverconstrainedError") {
+        message = "That camera setting is unavailable.";
+    } else if (error.name === "SecurityError") {
+        message = "Media access is blocked. Open Canvas over HTTPS.";
+    } else if (error.message) {
+        message = error.message;
+    }
+
+    setPermissionMessage(message);
+    setStatus(message, true);
+}
+
+/* PREVENT SIMULTANEOUS DEVICE REQUESTS */
+
+async function runMediaAction(action, device) {
+    if (mediaBusy || streamRequestBusy) return;
+
+    mediaBusy = true;
+
+    cameraButton.disabled = true;
+    micButton.disabled = true;
+    switchCameraButton.disabled = true;
+
+    try {
+        await action();
+    } catch (error) {
+        showMediaError(error, device);
+    } finally {
+        mediaBusy = false;
+
+        cameraButton.disabled = false;
+        micButton.disabled = false;
+        switchCameraButton.disabled = false;
+
+        updateCameraButton();
+        updateMicButton();
+    }
+}
+
+/* BUTTON EVENTS */
+
+cameraButton.addEventListener("click", function () {
+    runMediaAction(toggleCamera, "camera");
+});
+
+micButton.addEventListener("click", function () {
+    runMediaAction(toggleMicrophone, "microphone");
+});
+
+switchCameraButton.addEventListener("click", function () {
+    runMediaAction(switchCamera, "camera");
+});
+
+/* INITIAL DEVICE STATE */
+
+updateCameraButton();
+updateMicButton();
+updatePreview();
+  </script>
+  
+<script>
+/* =========================================
+   CANVAS GO LIVE — PART 5
+   SOCKET CONNECTION AND STREAM START
+========================================= */
+
+/* CONNECT SOCKET.IO */
+
+function connectCanvasSocket() {
+    if (socket) return socket;
+
+    if (typeof window.io !== "function") {
+        throw new Error(
+            "Canvas's live connection could not load. Refresh and try again."
+        );
+    }
+
+    socket = window.io(SOCKET_URL, {
+        transports: ["websocket", "polling"],
+        reconnection: true,
+        reconnectionAttempts: 8,
+        reconnectionDelay: 1000,
+        timeout: 20000,
+        auth: {
+            token: getAuthToken()
+        }
+    });
+
+    socket.on("connect", function () {
+        console.log("Canvas socket connected:", socket.id);
+
+        if (isStreaming && currentStreamId) {
+            socket.emit("join-stream", {
+                streamId: currentStreamId
+            });
+        }
+    });
+
+    socket.on("connect_error", function (error) {
+        console.warn("Canvas socket error:", error.message);
+
+        if (isStreaming) {
+            webrtcStatus.textContent =
+                "Live connection is reconnecting.";
+        }
+    });
+
+    socket.on("disconnect", function (reason) {
+        console.warn("Canvas socket disconnected:", reason);
+
+        if (isStreaming) {
+            webrtcStatus.textContent =
+                "Connection interrupted. Reconnecting...";
+        }
+    });
+
+    return socket;
+}
+
+/* CHECK LOGIN */
+
+function ensureAuthenticated() {
+    if (!getAuthToken()) {
+        setStatus("Log in to Canvas before starting a stream.", true);
+        return false;
+    }
+
+    return true;
+}
+
+/* VALIDATE STREAM DETAILS */
+
+function getStreamDetails() {
+    const title = streamTitleInput.value.trim();
+    const category = categorySelect.value;
+    const description = descriptionInput.value.trim();
+
+    if (!title) {
+        streamTitleInput.focus();
+        setStatus("Enter a title for your stream.", true);
+        return null;
+    }
+
+    if (title.length > 120) {
+        setStatus("The stream title must be 120 characters or fewer.", true);
+        return null;
+    }
+
+    if (description.length > 1000) {
+        setStatus("The description must be 1,000 characters or fewer.", true);
+        return null;
+    }
+
+    return {
+        title: title,
+        category: category,
+        description: description
+    };
+}
+
+/* CHECK FOR ACTIVE MEDIA */
+
+function hasActiveMedia() {
+    return Boolean(
+        canvasStream &&
+        canvasStream.getTracks().some(function (track) {
+            return track.readyState === "live" && track.enabled;
+        })
+    );
+}
+
+/* CREATE A STREAM RECORD */
+
+async function createCanvasStream(details) {
+    const response = await fetch(API_BASE + "/api/streams", {
+        method: "POST",
+        headers: authHeaders(),
+        body: JSON.stringify({
+            title: details.title,
+            category: details.category,
+            description: details.description,
+            thumbnail: selectedThumbnail || null,
+            status: "live"
+        })
+    });
+
+    const result = await response.json().catch(function () {
+        return {};
+    });
+
+    if (!response.ok) {
+        throw new Error(
+            result.error ||
+            result.message ||
+            "Canvas could not create your stream."
+        );
+    }
+
+    const stream = result.stream || result.data || result;
+
+    const id =
+        stream.id ??
+        stream.stream_id ??
+        stream.streamId ??
+        result.streamId ??
+        result.stream_id;
+
+    if (id === undefined || id === null || id === "") {
+        throw new Error(
+            "The server response did not include a stream ID."
+        );
+    }
+
+    return {
+        id: id,
+        data: stream
+    };
+}
+
+/* START STREAM */
+
+async function startCanvasStream() {
+    if (streamRequestBusy || isStreaming) return;
+
+    if (!ensureAuthenticated()) return;
+
+    const details = getStreamDetails();
+
+    if (!details) return;
+
+    if (!hasActiveMedia()) {
+        setStatus(
+            "Turn on your camera or microphone before starting.",
+            true
+        );
+        return;
+    }
+
+    streamRequestBusy = true;
+    startStreamButton.disabled = true;
+
+    let createdStreamId = null;
+
+    try {
+        setStatus("Connecting to Canvas...", false);
+        webrtcStatus.textContent = "Registering your stream...";
+
+        connectCanvasSocket();
+
+        const created = await createCanvasStream(details);
+        createdStreamId = created.id;
+
+        currentStreamId = created.id;
+        broadcasterRoom = String(created.id);
+        isStreaming = true;
+
+        socket.emit("join-stream", {
+            streamId: currentStreamId
+        });
+
+        socket.emit("stream-started", {
+            streamId: currentStreamId,
+            title: details.title,
+            category: details.category,
+            description: details.description
+        });
+
+        streamHeartbeat = setInterval(function () {
+            if (isStreaming &&
+                currentStreamId &&
+                socket &&
+                socket.connected) {
+                socket.emit("stream-heartbeat", {
+                    streamId: currentStreamId
+                });
+            }
+        }, 20000);
+
+        startStreamButton.textContent = "End Stream";
+        startStreamButton.classList.add("is-live");
+
+        streamTitleInput.disabled = true;
+        categorySelect.disabled = true;
+        descriptionInput.disabled = true;
+        chooseThumbnailButton.disabled = true;
+        removeThumbnailButton.disabled = true;
+
+        setStatus("Your Canvas stream has been registered.", false);
+        webrtcStatus.textContent =
+            "Stream record created. Viewer playback requires working WebRTC signaling.";
+
+        console.log("Canvas stream registered:", currentStreamId);
+
+    } catch (error) {
+        console.error("Canvas stream start failed:", error);
+
+        // If creation succeeded but a later step failed,
+        // attempt to remove the newly created record.
+        if (createdStreamId !== null) {
+            try {
+                await fetch(
+                    API_BASE + "/api/streams/" +
+                    encodeURIComponent(createdStreamId),
+                    {
+                        method: "DELETE",
+                        headers: authHeaders()
+                    }
+                );
+            } catch (cleanupError) {
+                console.warn(
+                    "Could not clean up the new stream record:",
+                    cleanupError
+                );
+            }
+        }
+
+        isStreaming = false;
+        currentStreamId = null;
+        broadcasterRoom = null;
+
+        if (streamHeartbeat) {
+            clearInterval(streamHeartbeat);
+            streamHeartbeat = null;
+        }
+
+        setStatus(
+            error.message || "Could not start your Canvas stream.",
+            true
+        );
+
+        webrtcStatus.textContent = "";
+
+    } finally {
+        streamRequestBusy = false;
+        startStreamButton.disabled = false;
+    }
+}
+
+/* START / END BUTTON */
+
+startStreamButton.addEventListener("click", async function () {
+    if (streamRequestBusy) return;
+
+    if (isStreaming) {
+        await endCanvasStream();
+    } else {
+        await startCanvasStream();
+    }
+});
+              </script>
+             
+<script>
+/* =========================================
+   CANVAS GO LIVE — PART 6
+   END STREAM AND CLEANUP
+========================================= */
+
+/* CLOSE WEBRTC CONNECTIONS */
+
+function closePeerConnections() {
+    Object.keys(peerConnections).forEach(function (key) {
+        const connection = peerConnections[key];
+
+        if (connection) {
+            try {
+                connection.close();
+            } catch (error) {
+                console.warn(
+                    "Could not close peer connection:",
+                    error
+                );
+            }
+        }
+
+        delete peerConnections[key];
+    });
+}
+
+/* STOP LOCAL CAMERA AND MICROPHONE */
+
+function stopLocalMedia() {
+    if (canvasStream) {
+        canvasStream.getTracks().forEach(function (track) {
+            track.stop();
+        });
+    }
+
+    canvasStream = null;
+    cameraEnabled = false;
+    microphoneEnabled = false;
+
+    cameraPreview.srcObject = null;
+    cameraMessage.style.display = "flex";
+    cameraMessage.textContent =
+        "Camera is off. Turn it on to preview your stream.";
+
+    updateCameraButton();
+    updateMicButton();
+    updatePreview();
+}
+
+/* RESTORE FORM CONTROLS */
+
+function resetStreamControls() {
+    startStreamButton.textContent = "Start Streaming";
+    startStreamButton.classList.remove("is-live");
+
+    streamTitleInput.disabled = false;
+    categorySelect.disabled = false;
+    descriptionInput.disabled = false;
+    chooseThumbnailButton.disabled = false;
+    removeThumbnailButton.disabled = false;
+}
+
+/* RESET LOCAL STREAM STATE */
+
+function cleanupLocalStream(stopMedia) {
+    const oldStreamId = currentStreamId;
+
+    isStreaming = false;
+
+    if (streamHeartbeat) {
+        clearInterval(streamHeartbeat);
+        streamHeartbeat = null;
+    }
+
+    if (socket && socket.connected && oldStreamId) {
+        socket.emit("stream-ended", {
+            streamId: oldStreamId
+        });
+    }
+
+    closePeerConnections();
+
+    currentStreamId = null;
+    broadcasterRoom = null;
+
+    if (stopMedia) {
+        stopLocalMedia();
+    }
+
+    resetStreamControls();
+}
+
+/* END STREAM ON THE BACKEND */
+
+async function endCanvasStream() {
+    if (streamRequestBusy || !currentStreamId) return;
+
+    streamRequestBusy = true;
+    startStreamButton.disabled = true;
+
+    const endedStreamId = currentStreamId;
+
+    try {
+        setStatus("Ending your stream...", false);
+
+        const response = await fetch(
+            API_BASE + "/api/streams/" +
+            encodeURIComponent(endedStreamId),
+            {
+                method: "DELETE",
+                headers: authHeaders()
+            }
+        );
+
+        const result = await response.json().catch(function () {
+            return {};
+        });
+
+        if (!response.ok) {
+            throw new Error(
+                result.error ||
+                result.message ||
+                "The server could not end your stream."
+            );
+        }
+
+        cleanupLocalStream(true);
+
+        setStatus("Your stream has ended.", false);
+        webrtcStatus.textContent =
+            "Camera and microphone have been stopped.";
+
+        console.log(
+            "Canvas stream ended:",
+            endedStreamId
+        );
+
+    } catch (error) {
+        console.error(
+            "Canvas end-stream error:",
+            error
+        );
+
+        setStatus(
+            error.message ||
+            "Could not end your stream on the server. Try again.",
+            true
+        );
+
+        // Keep the stream active so the user can retry.
+        // Do not claim the server stream was deleted.
+
+    } finally {
+        streamRequestBusy = false;
+        startStreamButton.disabled = false;
+    }
+}
+
+/* HANDLE CAMERA TRACK ENDING */
+
+function watchMediaTracks() {
+    if (!canvasStream) return;
+
+    canvasStream.getTracks().forEach(function (track) {
+        track.addEventListener("ended", function () {
+            updateCameraButton();
+            updateMicButton();
+            updatePreview();
+        });
+    });
+}
+
+/* PAGE INITIALIZATION */
+
+function initializeGoLive() {
+    updateGoLiveProfile();
+    updateCameraButton();
+    updateMicButton();
+    updatePreview();
+
+    setStatus("Ready to go live.", false);
+
+    if (!navigator.mediaDevices ||
+        !navigator.mediaDevices.getUserMedia) {
+        setPermissionMessage(
+            "Camera access requires HTTPS and a supported browser."
+        );
+    }
+}
+
+/* CLEAN UP WHEN LEAVING THE PAGE */
+
+window.addEventListener("pagehide", function () {
+    if (streamHeartbeat) {
+        clearInterval(streamHeartbeat);
+        streamHeartbeat = null;
+    }
+
+    closePeerConnections();
+
+    if (canvasStream) {
+        canvasStream.getTracks().forEach(function (track) {
+            track.stop();
+        });
+    }
+
+    if (socket) {
+        socket.disconnect();
+    }
+});
+
+initializeGoLive();
+</script>
+
+</body>
+</html>
