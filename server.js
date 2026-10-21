@@ -4582,114 +4582,74 @@ app.post(
     "/api/streams",
     authenticateUser,
     async (req, res) => {
-
         try {
-
             if (!pool) {
-
                 return res.status(503).json({
-
                     success: false,
-
-                    message:
-                        "Database is not configured"
-
+                    message: "Database is not configured"
                 });
-
             }
 
-
-            const title =
-                String(
-                    req.body?.title ||
-                    req.body?.streamTitle ||
-                    "Live Stream"
-                )
+            const title = String(
+                req.body?.title ||
+                req.body?.streamTitle ||
+                "Live Stream"
+            )
                 .trim()
-                .slice(0, 200);
+                .slice(0, 200) || "Live Stream";
 
+            const result = await pool.query(
+                `
+                INSERT INTO streams (
+                    title,
+                    status,
+                    user_id,
+                    created_at
+                )
+                VALUES (
+                    $1,
+                    'live',
+                    $2,
+                    CURRENT_TIMESTAMP
+                )
+                RETURNING
+                    id,
+                    title,
+                    status,
+                    created_at,
+                    ended_at,
+                    user_id
+                `,
+                [
+                    title,
+                    req.user.id
+                ]
+            );
 
-            const result =
-               await
-               pool.query(
-                  `
-               INSERT INTO
-               streams
-               (
-                  title,
-                  status,
-                  user_id,
-                  created_at
-                  )
-               VALUES 
-           (
-              $1,
-         'live',     
-               $2,
-              CURRENT_TIMESTAMP
-              )
-           RETURNING 
-           id,
-              title,
-              status,
-              created_at,
-              ended_at
-           user_id
-           `
-                  '
-               [
-         title
-              ||"live stream",
-              req.user.id
-               ]
-           );
-           
+            const stream = result.rows[0];
 
-
-           const stream =
-                result.rows[0];
-
-
-            res.status(201).json({
-
+            return res.status(201).json({
                 success: true,
-
                 stream: {
-
                     ...stream,
-
                     viewerCount: 0,
-
                     viewers: 0,
-
                     watching: 0,
-
                     watchingCount: 0
-
                 }
-
             });
 
-
         } catch (error) {
-
             console.error(
                 "POST /api/streams error:",
                 error
             );
 
-
-            res.status(500).json({
-
+            return res.status(500).json({
                 success: false,
-
-                message:
-                    "Failed to create stream"
-
+                message: "Failed to create stream"
             });
-
         }
-
     }
 );
 
