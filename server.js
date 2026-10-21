@@ -4610,11 +4610,10 @@ app.post(
 
 
             const result = await pool.query(
-    `INSERT INTO streams
-        (title, status, user_id, created_at, thumbnail)
-     VALUES ($1, 'live', $2, NOW(), $3)
+    `INSERT INTO streams (title, status, user_id, created_at)
+     VALUES ($1, 'live', $2, NOW())
      RETURNING *`,
-    [title, userId, thumbnail || null]
+    [title, userId]
 );
 
 
