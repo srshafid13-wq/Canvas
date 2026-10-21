@@ -4609,15 +4609,36 @@ app.post(
                 .slice(0, 200);
 
 
-            const result = await pool.query(
-    `INSERT INTO streams (title, status, user_id, created_at)
-     VALUES ($1, 'live', $2, NOW())
-     RETURNING *`,
-    [title, userId]
-);
+            const result =
+               await.
+               pool query(
+               INSERT INTO STREAMS(
+                  title,
+                  status,
+                  user_id,
+                  created_at)
+               VALUES 
+           (
+              $1,
+         'live',     
+               $2,
+              CURRENT_TIMESTAMP
+              )
+           RETURNING 
+           id,
+              title,
+              status,
+              created_at,
+              ended_at
+           user_id
+           [title
+              ||"live stream",
+              req.user.id]
+           );
+           
 
 
-            const stream =
+           const stream =
                 result.rows[0];
 
 
