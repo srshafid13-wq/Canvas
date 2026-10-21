@@ -4610,13 +4610,17 @@ app.post(
 
 
             const result =
-               await.
-               pool query(
-               INSERT INTO STREAMS(
+               await
+               pool.query(
+                  `
+               INSERT INTO
+               streams
+               (
                   title,
                   status,
                   user_id,
-                  created_at)
+                  created_at
+                  )
                VALUES 
            (
               $1,
@@ -4631,9 +4635,13 @@ app.post(
               created_at,
               ended_at
            user_id
-           [title
+           `
+                  '
+               [
+         title
               ||"live stream",
-              req.user.id]
+              req.user.id
+               ]
            );
            
 
