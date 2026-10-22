@@ -1077,118 +1077,107 @@ function displayStreams(streams){
 }
 
 
+
 /* =========================================
-   LOAD LIVE STREAMS
+   LOAD LIVE STREAMS — FAST HOME FEED
 ========================================= */
 
-async function loadLiveStreams(){
+async function loadLiveStreams() {
 
-    if(!streamList){
-
+    if (!streamList) {
         return;
-
     }
 
+    const CACHE_KEY = "canvasLiveStreamsCache";
 
-    try{
+    // 1. Show cached streams immediately
+    try {
+        const cachedData =
+            localStorage.getItem(CACHE_KEY);
 
-const response =
-    await fetch(
-        CANVAS_API +
-        "/api/streams",
-                {
-                    method:"GET",
+        if (cachedData) {
+            const cachedStreams =
+                JSON.parse(cachedData);
 
-                    headers:{
-                        "Accept":
-                            "application/json"
-                    },
-
-                    cache:"no-store"
-
-                }
-            );
-
-
-        let data = {};
-
-
-        try{
-
-            data =
-                await response.json();
-
+            if (Array.isArray(cachedStreams)) {
+                displayStreams(cachedStreams);
+            }
         }
-        catch(error){
+    } catch (error) {
+        console.warn(
+            "Canvas stream cache unavailable:",
+            error
+        );
+    }
 
-            data = {};
-
-        }
-
-
-        if(!response.ok){
-
-            throw new Error(
-                data.message ||
-                "Unable to load streams."
-            );
-
-        }
-
-
-        const streams =
-            Array.isArray(
-                data.streams
-            )
-                ? data.streams
-                : [];
-
-
-        displayStreams(
-            streams
+    // 2. Fetch the latest streams from the backend
+    try {
+        const response = await fetch(
+            CANVAS_API + "/api/streams",
+            {
+                method: "GET",
+                headers: {
+                    "Accept": "application/json"
+                },
+                cache: "no-store"
+            }
         );
 
+        if (!response.ok) {
+            throw new Error(
+                "Unable to load streams. Status: " +
+                response.status
+            );
+        }
+
+        const data = await response.json();
+
+        const streams = Array.isArray(data.streams)
+            ? data.streams
+            : [];
+
+        // 3. Save fresh results for the next page visit
+        try {
+            localStorage.setItem(
+                CACHE_KEY,
+                JSON.stringify(streams)
+            );
+        } catch (error) {
+            console.warn(
+                "Unable to cache Canvas streams:",
+                error
+            );
+        }
+
+        // 4. Display the latest results
+        displayStreams(streams);
 
         console.log(
             "Canvas streams loaded:",
-            streams
+            streams.length
         );
 
-    }
-
-    catch(error){
-
+    } catch (error) {
         console.error(
             "Canvas stream loading error:",
             error
         );
 
+        // Don't erase cached streams if the server fails.
+        // Show an error only if no streams are already displayed.
+        if (!streamList.children.length) {
+            const box = document.createElement("div");
 
-        streamList.innerHTML =
-            "";
+            box.className = "no-streams";
 
+            box.textContent =
+                "Unable to load live streams. Please try again.";
 
-        const box =
-            document.createElement(
-                "div"
-            );
-
-
-        box.className =
-            "no-streams";
-
-
-        box.textContent =
-            "Unable to load live streams. Please try again.";
-
-
-        streamList.appendChild(
-            box
-        );
-
+            streamList.replaceChildren(box);
+        }
     }
-
-}
+    }
+    
 
 
 /* =========================================
