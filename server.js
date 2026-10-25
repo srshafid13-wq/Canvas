@@ -397,45 +397,35 @@ async function initializeDatabase() {
 
 
         /* =====================================
-           STREAMS
-        ===================================== */
+   STREAMS
+===================================== */
 
-        await pool.query(`
-            CREATE TABLE IF NOT EXISTS streams (
+await pool.query(`
+    CREATE TABLE IF NOT EXISTS streams (
 
-                id SERIAL PRIMARY KEY,
+        id SERIAL PRIMARY KEY,
 
-                title VARCHAR(255)
-                    DEFAULT 'Canvas Live Stream',
+        title VARCHAR(255)
+            DEFAULT 'Canvas Live Stream',
 
-                status VARCHAR(30)
-                    DEFAULT 'live',
+        status VARCHAR(30)
+            DEFAULT 'live',
 
-                created_at
-                    TIMESTAMP
-                    DEFAULT CURRENT_TIMESTAMP,
+        thumbnail TEXT DEFAULT '',
 
-                ended_at TIMESTAMP
+        created_at
+            TIMESTAMP
+            DEFAULT CURRENT_TIMESTAMP,
 
-            );
-        `);
+        ended_at TIMESTAMP
 
+    );
+`);
 
-        /* =====================================
-           STREAM OWNER
-        ===================================== */
-
-        await pool.query(`
-            ALTER TABLE streams
-
-            ADD COLUMN IF NOT EXISTS user_id
-
-            INTEGER
-            REFERENCES users(id)
-            ON DELETE CASCADE;
-        `);
-
-
+await pool.query(`
+    ALTER TABLE streams
+    ADD COLUMN IF NOT EXISTS thumbnail TEXT DEFAULT '';
+`);
         /* =====================================
            FOLLOW SYSTEM
         ===================================== */
@@ -2710,9 +2700,10 @@ async function getStreamById(streamId) {
             s.id,
             s.title,
             s.status,
-            s.created_at,
-            s.ended_at,
-            s.user_id,
+         s.created_at,
+s.ended_at,
+s.user_id,
+s.thumbnail,
 
             u.name AS creator_name,
             u.username AS creator_username,
@@ -2760,9 +2751,10 @@ async function getStreamById(streamId) {
         title: stream.title || "Live Stream",
         status: stream.status || "live",
         created_at: stream.created_at,
-        ended_at: stream.ended_at,
+ended_at: stream.ended_at,
 
-        user_id: stream.user_id,
+user_id: stream.user_id,
+thumbnail: stream.thumbnail || "",
 
         creator: {
             id: stream.user_id,
@@ -2807,8 +2799,9 @@ app.get("/api/streams", async (req, res) => {
                 s.title,
                 s.status,
                 s.created_at,
-                s.ended_at,
-                s.user_id,
+s.ended_at,
+s.user_id,
+s.thumbnail,
 
                 u.name AS creator_name,
                 u.username AS creator_username,
@@ -2842,9 +2835,10 @@ app.get("/api/streams", async (req, res) => {
                 status: stream.status || "live",
 
                 created_at: stream.created_at,
-                ended_at: stream.ended_at,
+ended_at: stream.ended_at,
 
-                user_id: stream.user_id,
+user_id: stream.user_id,
+thumbnail: stream.thumbnail || "",
 
                 creator: {
                     id: stream.user_id,
@@ -4582,7 +4576,9 @@ app.post(
     "/api/streams",
     authenticateUser,
     async (req, res) => {
+
         try {
+
             if (!pool) {
                 return res.status(503).json({
                     success: false,
@@ -4598,18 +4594,24 @@ app.post(
                 .trim()
                 .slice(0, 200) || "Live Stream";
 
+            const thumbnail = String(
+                req.body?.thumbnail || ""
+            ).trim();
+
             const result = await pool.query(
                 `
                 INSERT INTO streams (
                     title,
                     status,
                     user_id,
+                    thumbnail,
                     created_at
                 )
                 VALUES (
                     $1,
                     'live',
                     $2,
+                    $3,
                     CURRENT_TIMESTAMP
                 )
                 RETURNING
@@ -4618,11 +4620,13 @@ app.post(
                     status,
                     created_at,
                     ended_at,
-                    user_id
+                    user_id,
+                    thumbnail
                 `,
                 [
                     title,
-                    req.user.id
+                    req.user.id,
+                    thumbnail
                 ]
             );
 
@@ -4640,6 +4644,7 @@ app.post(
             });
 
         } catch (error) {
+
             console.error(
                 "POST /api/streams error:",
                 error
@@ -4649,10 +4654,11 @@ app.post(
                 success: false,
                 message: "Failed to create stream"
             });
+
         }
+
     }
 );
-
 
 /* =========================================================
    START STREAM
