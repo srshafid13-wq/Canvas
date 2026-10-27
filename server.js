@@ -2779,12 +2779,11 @@ thumbnail: stream.thumbnail || "",
 
 /* =========================================================
    GET ALL CURRENT STREAMS
+   Optimized live stream loading
 ========================================================= */
 
 app.get("/api/streams", async (req, res) => {
-
     try {
-
         if (!pool) {
             return res.status(503).json({
                 success: false,
@@ -2792,16 +2791,15 @@ app.get("/api/streams", async (req, res) => {
             });
         }
 
-        const result = await pool.query(
-            `
+        const result = await pool.query(`
             SELECT
                 s.id,
                 s.title,
                 s.status,
                 s.created_at,
-s.ended_at,
-s.user_id,
-s.thumbnail,
+                s.ended_at,
+                s.user_id,
+                s.thumbnail,
 
                 u.name AS creator_name,
                 u.username AS creator_username,
@@ -2817,15 +2815,12 @@ s.thumbnail,
                 ON p.user_id = s.user_id
 
             WHERE
-                LOWER(COALESCE(s.status, 'live')) IN
-                ('live', 'active', 'streaming')
+                s.status IN ('live', 'active', 'streaming')
 
             ORDER BY s.created_at DESC
-            `
-        );
+        `);
 
         const streams = result.rows.map(stream => {
-
             const viewers =
                 viewerRooms.get(String(stream.id))?.size || 0;
 
@@ -2833,12 +2828,10 @@ s.thumbnail,
                 id: stream.id,
                 title: stream.title || "Live Stream",
                 status: stream.status || "live",
-
                 created_at: stream.created_at,
-ended_at: stream.ended_at,
-
-user_id: stream.user_id,
-thumbnail: stream.thumbnail || "",
+                ended_at: stream.ended_at,
+                user_id: stream.user_id,
+                thumbnail: stream.thumbnail || "",
 
                 creator: {
                     id: stream.user_id,
@@ -2852,31 +2845,28 @@ thumbnail: stream.thumbnail || "",
                 creatorPhoto: stream.creator_photo || "",
 
                 viewerCount: viewers,
-                viewers: viewers,
+                viewers,
                 watching: viewers,
                 watchingCount: viewers
             };
-
         });
 
-        res.json({
+        res.set("Cache-Control", "no-store");
+
+        return res.json({
             success: true,
             streams
         });
 
     } catch (error) {
-
         console.error("GET /api/streams error:", error);
 
-        res.status(500).json({
+        return res.status(500).json({
             success: false,
             message: "Failed to load streams"
         });
     }
-
 });
-
-
 /* =========================================================
    GET ONE STREAM
 ========================================================= */
