@@ -1516,88 +1516,44 @@ app.get(
 
 
 /* =========================================
-   GET MY PROFILE
+   GET CURRENT USER PROFILE
 ========================================= */
 
 app.get(
-    "/api/profile",
+    "/api/me",
     authenticateUser,
     async (req, res) => {
-
         try {
-
-            const profile =
-                await getProfileByUserId(
-                    req.user.id
-                );
-
-
-            if (!profile) {
-
-                return res.status(404).json({
-
-                    success: false,
-
-                    message:
-                        "Canvas profile not found."
-
-                });
-
-            }
-
-
-            return res.json({
-
-                success: true,
-
-                profile,
-
-                id:
-                    profile.id,
-
-                name:
-                    profile.name,
-
-                username:
-                    profile.username,
-
-                email:
-                    profile.email,
-
-                bio:
-                    profile.bio,
-
-                profile_picture:
-                    profile.profile_picture,
-
-                followers_count:
-                    profile.followers_count,
-
-                following_count:
-                    profile.following_count
-
-            });
-
-
-        } catch (error) {
-
-            console.error(
-                "Get profile failed:",
-                error.message
+            const profile = await getProfileByUserId(
+                req.user.id
             );
 
+            if (!profile) {
+                return res.status(404).json({
+                    success: false,
+                    message: "User profile not found"
+                });
+            }
 
-            return res.status(500).json({
-
-                success: false,
-
-                message:
-                    "Unable to load Canvas profile."
-
+            return res.json({
+                success: true,
+                user: profile,
+                profile: profile,
+                profile_picture:
+                    profile.profile_picture || ""
             });
 
-        }
+        } catch (error) {
+            console.error(
+                "GET /api/me error:",
+                error
+            );
 
+            return res.status(500).json({
+                success: false,
+                message: "Failed to load user profile"
+            });
+        }
     }
 );
 
