@@ -3531,42 +3531,60 @@ async function authenticateSocket(socket) {
 
 
 /* =========================================================
-   SOCKET.IO CONNECTION
+   WEBRTC SIGNALING — LIVE VIDEO CONNECTION
 ========================================================= */
 
-io.on(
-    "connection",
-    async (socket) => {
+socket.on("webrtc-join", (data = {}) => {
+    const streamId = String(data.streamId || "").trim();
+    const role = String(data.role || "").trim();
 
-        console.log(
-            "Canvas Socket connected:",
-            socket.id
-        );
+    if (
+        !streamId ||
+        !["broadcaster", "viewer"].includes(role)
+    ) {
+        return;
+    }
 
+    const room = `webrtc:${streamId}`;
 
-        socket.user =
-            await authenticateSocket(
-                socket
-            );
+    socket.join(room);
 
+    socket.data.webrtcStreamId = streamId;
+    socket.data.webrtcRole = role;
 
-        if (socket.user) {
+    socket.to(room).emit("webrtc-peer-joined", {
+        streamId,
+        socketId: socket.id,
+        role
+    });
+});
 
-            console.log(
-                "Canvas Socket authenticated:",
-                socket.user.username
-            );
+socket.on("webrtc-signal", (data = {}) => {
+    const streamId = String(data.streamId || "").trim();
+    const targetSocketId = String(data.targetSocketId || "").trim();
 
-        } else {
+    if (!streamId || !targetSocketId || !data.signal) {
+        return;
+    }
 
-            console.log(
-                "Canvas Socket connected without authenticated user:",
-                socket.id
-            );
+    const room = `webrtc:${streamId}`;
 
-        }
+    if (!socket.rooms.has(room)) {
+        return;
+    }
 
+    const targetSocket = io.sockets.sockets.get(targetSocketId);
 
+    if (!targetSocket || !targetSocket.rooms.has(room)) {
+        return;
+    }
+
+    io.to(targetSocketId).emit("webrtc-signal", {
+        streamId,
+        fromSocketId: socket.id,
+        signal: data.signal
+    });
+});
         /* =====================================================
            INTERNAL JOIN FUNCTION
            Prevent duplicate room/viewer registration.
