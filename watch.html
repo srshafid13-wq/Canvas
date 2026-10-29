@@ -1815,22 +1815,32 @@ function setupVideo(
     }
 
 
-    const videoUrl =
-        getValue(
-            stream,
-            [
-                "videoUrl",
-                "video_url",
-                "streamUrl",
-                "stream_url",
-                "playbackUrl",
-                "playback_url",
-                "hlsUrl",
-                "hls_url",
-                "url"
-            ],
-            ""
-        );
+    /* =====================================================
+   DISPLAY INCOMING LIVE VIDEO
+===================================================== */
+
+const liveVideo = document.getElementById("liveVideo");
+const videoPlaceholder =
+    document.getElementById("videoPlaceholder");
+
+function displayIncomingLiveVideo(event) {
+    if (!liveVideo) return;
+
+    const incomingStream = event.streams[0];
+
+    if (!incomingStream) return;
+
+    liveVideo.srcObject = incomingStream;
+
+    liveVideo.play().catch((error) => {
+        console.warn("Live video playback failed:", error);
+    });
+
+    if (videoPlaceholder) {
+        videoPlaceholder.style.display = "none";
+    }
+            }
+        
 
 
     if(!videoUrl){
