@@ -2387,88 +2387,138 @@ async function refreshStream(
 
         const oldVideoUrl =
             getValue(
-                currentStream,
-                [
-                    "videoUrl",
-                    "video_url",
-                    "streamUrl",
-                    "stream_url",
-                    "playbackUrl",
-                    "playback_url",
-                    "hlsUrl",
-                    "hls_url",
-                    "url"
-                ],
-                ""
-            );
+/* =========================================
+STREAM REFRESH — CORRECTED
+========================================= */
 
+async function refreshStream(force = false) {
 
-        const newVideoUrl =
-            getValue(
-                stream,
-                [
-                    "videoUrl",
-                    "video_url",
-                    "streamUrl",
-                    "stream_url",
-                    "playbackUrl",
-                    "playback_url",
-                    "hlsUrl",
-                    "hls_url",
-                    "url"
-                ],
-                ""
-            );
+if (!currentStreamId) {
+    return;
+}
 
+// Prevent overlapping requests.
+if (refreshInProgress) {
+    return;
+}
 
-        renderStream(
-            stream
-        );
+const now = Date.now();
 
+if (
+    !force &&
+    now - lastRefreshAt < REFRESH_THROTTLE
+) {
+    return;
+}
 
-        /*
-           Only touch the video when its source
-           actually changed.
-        */
+refreshInProgress = true;
+lastRefreshAt = now;
 
-        if(
-            String(oldVideoUrl || "") !==
-            String(newVideoUrl || "")
-        ){
+try {
 
-            setupVideo(
-                stream
-            );
+    const endpoint =
+        API_BASE +
+        "/api/streams/" +
+        encodeURIComponent(currentStreamId);
 
-        }
+    const response = await fetch(endpoint, {
+        method: "GET",
+        headers: authHeaders(),
+        cache: "no-store"
+    });
 
-
-        if(
-            isStreamMarkedEnded(
-                stream
-            )
-        ){
-
-            showStreamEnded();
-
-        }
-
-    }catch(error){
-
+    if (!response.ok) {
         console.warn(
-            "Stream refresh failed:",
-            error
+            "Could not refresh stream:",
+            response.status
+        );
+        return;
+    }
+
+    const data = await response.json();
+
+    const stream =
+        data?.stream ||
+        data?.data ||
+        data;
+
+    if (!stream) {
+        return;
+    }
+
+    const oldVideoUrl = getValue(
+        currentStream,
+        [
+            "videoUrl",
+            "video_url",
+            "streamUrl",
+            "stream_url",
+            "playbackUrl",
+            "playback_url",
+            "hlsUrl",
+            "hls_url",
+            "url"
+        ],
+        ""
+    );
+
+    const newVideoUrl = getValue(
+        stream,
+        [
+            "videoUrl",
+            "video_url",
+            "streamUrl",
+            "stream_url",
+            "playbackUrl",
+            "playback_url",
+            "hlsUrl",
+            "hls_url",
+            "url"
+        ],
+        ""
+    );
+
+    // Update the stream details.
+    renderStream(stream);
+
+    // Reinitialize when the source changes or
+    // when the video element has no source yet.
+    const videoElement =
+        document.getElementById("streamVideo") ||
+        document.getElementById("videoPlayer") ||
+        document.querySelector("video");
+
+    const videoNeedsSetup =
+        String(oldVideoUrl || "") !==
+            String(newVideoUrl || "") ||
+        (
+            videoElement &&
+            !videoElement.src &&
+            !videoElement.srcObject
         );
 
-    }finally{
-
-        refreshInProgress =
-            false;
-
+    if (videoNeedsSetup) {
+        setupVideo(stream);
     }
+
+    if (isStreamMarkedEnded(stream)) {
+        showStreamEnded();
+    }
+
+} catch (error) {
+
+    console.warn(
+        "Stream refresh failed:",
+        error
+    );
+
+} finally {
+
+    refreshInProgress = false;
 
 }
 
+    }
 
 /* =========================================
    STREAM REFRESH TIMER
