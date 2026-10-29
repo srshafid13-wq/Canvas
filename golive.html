@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1502,17 +1501,31 @@ async function startCanvasStream() {
         socket.emit("join-stream", {
             streamId: currentStreamId
         });
-
-      /* =====================================================
+       /* =====================================================
    START WEBRTC BROADCAST
 ===================================================== */
 
-setupBroadcasterWebRTC();
+if (typeof setupBroadcasterWebRTC === "function") {
+    setupBroadcasterWebRTC();
 
-socket.emit("webrtc-join", {
-    streamId: String(currentStreamId),
-    role: "broadcaster"
-});
+    if (socket && socket.connected && currentStreamId) {
+        socket.emit("webrtc-join", {
+            streamId: String(currentStreamId),
+            role: "broadcaster"
+        });
+    } else {
+        console.error(
+            "Canvas WebRTC: Socket or stream ID is unavailable."
+        );
+    }
+} else {
+    console.error(
+        "Canvas WebRTC: setupBroadcasterWebRTC() is not defined."
+    );
+
+    webrtcStatus.textContent =
+        "Live video connection is not configured.";
+}
 
         streamHeartbeat = setInterval(function () {
             if (isStreaming &&
