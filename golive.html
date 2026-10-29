@@ -1503,12 +1503,16 @@ async function startCanvasStream() {
             streamId: currentStreamId
         });
 
-        socket.emit("stream-started", {
-            streamId: currentStreamId,
-            title: details.title,
-            category: details.category,
-            description: details.description
-        });
+      /* =====================================================
+   START WEBRTC BROADCAST
+===================================================== */
+
+setupBroadcasterWebRTC();
+
+socket.emit("webrtc-join", {
+    streamId: String(currentStreamId),
+    role: "broadcaster"
+});
 
         streamHeartbeat = setInterval(function () {
             if (isStreaming &&
