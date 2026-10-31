@@ -396,9 +396,10 @@ async function initializeDatabase() {
         `);
 
 
-        /* =====================================
-   STREAMS
-===================================== */
+ /* =========================================================
+   STREAMS TABLE
+   FIX: ENSURE CREATOR ID EXISTS
+========================================================= */
 
 await pool.query(`
     CREATE TABLE IF NOT EXISTS streams (
@@ -413,8 +414,11 @@ await pool.query(`
 
         thumbnail TEXT DEFAULT '',
 
-        created_at
-            TIMESTAMP
+        user_id INTEGER
+            REFERENCES users(id)
+            ON DELETE CASCADE,
+
+        created_at TIMESTAMP
             DEFAULT CURRENT_TIMESTAMP,
 
         ended_at TIMESTAMP
@@ -422,6 +426,20 @@ await pool.query(`
     );
 `);
 
+
+/* Ensure existing databases receive missing columns. */
+
+await pool.query(`
+    ALTER TABLE streams
+    ADD COLUMN IF NOT EXISTS thumbnail TEXT DEFAULT '';
+`);
+
+await pool.query(`
+    ALTER TABLE streams
+    ADD COLUMN IF NOT EXISTS user_id INTEGER
+    REFERENCES users(id)
+    ON DELETE CASCADE;
+`);
 await pool.query(`
     ALTER TABLE streams
     ADD COLUMN IF NOT EXISTS thumbnail TEXT DEFAULT '';
@@ -3153,6 +3171,7 @@ async function buildChatMessage(
 
 /* =========================================================
    CHAT BROADCAST HELPER
+   FIX: EMIT ONE CANONICAL CHAT EVENT
 ========================================================= */
 
 function broadcastChatMessage(
@@ -3160,26 +3179,11 @@ function broadcastChatMessage(
     message
 ) {
 
-    const room =
-        "stream:" + String(streamId);
+    const room = "stream:" + String(streamId);
 
-
-    /*
-     * Main event used by current Watch.
-     */
-
+    // Emit each new message only once.
     io.to(room).emit(
         "chat-message",
-        message
-    );
-
-
-    /*
-     * Compatibility event for older Canvas pages.
-     */
-
-    io.to(room).emit(
-        "new-chat-message",
         message
     );
 
@@ -3535,6 +3539,7 @@ async function authenticateSocket(socket) {
 ========================================================= */
 
 socket.on("webrtc-join", (data = {}) => {
+
     const streamId = String(data.streamId || "").trim();
     const role = String(data.role || "").trim();
 
@@ -3547,35 +3552,62 @@ socket.on("webrtc-join", (data = {}) => {
 
     const room = `webrtc:${streamId}`;
 
+    // Leave the previous WebRTC room if switching streams.
+    if (socket.data.webrtcRoom) {
+        socket.leave(socket.data.webrtcRoom);
+    }
+
     socket.join(room);
 
+    socket.data.webrtcRoom = room;
     socket.data.webrtcStreamId = streamId;
     socket.data.webrtcRole = role;
 
+    // Notify other peers that this peer has joined.
     socket.to(room).emit("webrtc-peer-joined", {
         streamId,
         socketId: socket.id,
         role
     });
+
 });
 
+
 socket.on("webrtc-signal", (data = {}) => {
+
     const streamId = String(data.streamId || "").trim();
-    const targetSocketId = String(data.targetSocketId || "").trim();
 
-    if (!streamId || !targetSocketId || !data.signal) {
+    const targetSocketId = String(
+        data.targetSocketId || ""
+    ).trim();
+
+    if (
+        !streamId ||
+        !targetSocketId ||
+        !data.signal
+    ) {
         return;
     }
 
-    const room = `webrtc:${streamId}`;
+    const expectedRoom = `webrtc:${streamId}`;
 
-    if (!socket.rooms.has(room)) {
+    // The sender must have joined this stream's WebRTC room.
+    if (
+        socket.data.webrtcRoom !== expectedRoom ||
+        socket.data.webrtcStreamId !== streamId
+    ) {
         return;
     }
 
-    const targetSocket = io.sockets.sockets.get(targetSocketId);
+    const targetSocket = io.sockets.sockets.get(
+        targetSocketId
+    );
 
-    if (!targetSocket || !targetSocket.rooms.has(room)) {
+    if (
+        !targetSocket ||
+        targetSocket.data.webrtcRoom !== expectedRoom ||
+        targetSocket.data.webrtcStreamId !== streamId
+    ) {
         return;
     }
 
@@ -3584,6 +3616,7 @@ socket.on("webrtc-signal", (data = {}) => {
         fromSocketId: socket.id,
         signal: data.signal
     });
+
 });
         /* =====================================================
            INTERNAL JOIN FUNCTION
