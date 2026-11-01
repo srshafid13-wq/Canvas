@@ -92,33 +92,38 @@ body{
     cursor:pointer;
 }
 
-.stream-thumbnail{
-    width:100%;
-    aspect-ratio:16/9;
-    background:#251b17;
-    overflow:hidden;
-    position:relative;
+/* =========================================
+   CANVAS HOME — RESPONSIVE STREAM THUMBNAIL
+========================================= */
+
+.stream-thumbnail {
+    position: relative;
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: #251b17;
+    overflow: hidden;
+    box-sizing: border-box;
+    flex-shrink: 0;
 }
 
-.stream-thumbnail img{
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    display:block;
+.stream-thumbnail img {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
 }
 
-.stream-thumbnail-placeholder{
-    width:100%;
-    height:100%;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    background:#f3e8d3;
-    color:#4b3326;
-    font-size:16px;
-    font-weight:700;
+/* Keep the thumbnail ratio on smaller screens. */
+@media (max-width: 600px) {
+    .stream-thumbnail {
+        width: 100%;
+        aspect-ratio: 16 / 9;
+    }
 }
-
 
 /* ONLY LIVE BADGE */
 
