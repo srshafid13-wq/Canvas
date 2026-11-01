@@ -1461,9 +1461,12 @@ async function createCanvasStream(details) {
     };
 }
 
-/* START STREAM */
+/* =========================================
+   START STREAM
+========================================= */
 
 async function startCanvasStream() {
+
     if (streamRequestBusy || isStreaming) return;
 
     if (!ensureAuthenticated()) return;
@@ -1486,21 +1489,131 @@ async function startCanvasStream() {
     let createdStreamId = null;
 
     try {
+
         setStatus("Connecting to Canvas...", false);
-        webrtcStatus.textContent = "Registering your stream...";
+
+        webrtcStatus.textContent =
+            "Registering your stream...";
 
         connectCanvasSocket();
 
         const created = await createCanvasStream(details);
+
         createdStreamId = created.id;
 
-        currentStreamId = created.id;
+        currentStreamId = String(created.id);
+
         broadcasterRoom = String(created.id);
+
         isStreaming = true;
 
+        /* =========================================
+           JOIN STREAM
+        ========================================= */
+
         socket.emit("join-stream", {
-            streamId: currentStreamId
+            streamId: String(currentStreamId)
         });
+
+        /* =========================================
+           ANNOUNCE STREAM STARTED
+        ========================================= */
+
+        socket.emit("stream-started", {
+            streamId: String(currentStreamId),
+            title: details.title,
+            category: details.category
+        });
+
+        /* =========================================
+           UPDATE STATUS
+        ========================================= */
+
+        setStatus("Your stream has started.", false);
+
+        webrtcStatus.textContent =
+            "Stream registered. Waiting for viewer connections.";
+
+        /* =========================================
+           START STREAM HEARTBEAT
+        ========================================= */
+
+        if (streamHeartbeat) {
+            clearInterval(streamHeartbeat);
+        }
+
+        streamHeartbeat = setInterval(function () {
+
+            if (!isStreaming || !currentStreamId) {
+                return;
+            }
+
+            if (socket && socket.connected) {
+                socket.emit("stream-heartbeat", {
+                    streamId: String(currentStreamId)
+                });
+            }
+
+        }, 20000);
+
+    } catch (error) {
+
+        console.error(
+            "Canvas stream start failed:",
+            error
+        );
+
+        isStreaming = false;
+
+        currentStreamId = null;
+
+        broadcasterRoom = null;
+
+        if (streamHeartbeat) {
+            clearInterval(streamHeartbeat);
+            streamHeartbeat = null;
+        }
+
+        /* Clean up the database stream if it was created. */
+
+        if (createdStreamId !== null) {
+
+            try {
+
+                await fetch(
+                    API_BASE + "/api/streams/" +
+                    encodeURIComponent(createdStreamId),
+                    {
+                        method: "DELETE",
+                        headers: authHeaders()
+                    }
+                );
+
+            } catch (cleanupError) {
+
+                console.error(
+                    "Stream cleanup failed:",
+                    cleanupError
+                );
+
+            }
+        }
+
+        setStatus(
+            error.message || "Failed to start the stream.",
+            true
+        );
+
+        webrtcStatus.textContent =
+            "Could not start the stream.";
+
+    } finally {
+
+        streamRequestBusy = false;
+        startStreamButton.disabled = false;
+
+    }
+   }
        /* =====================================================
    START WEBRTC BROADCAST
 ===================================================== */
