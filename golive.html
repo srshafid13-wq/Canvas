@@ -1498,19 +1498,23 @@ async function startCanvasStream() {
         isStreaming = true;
 
         socket.emit("join-stream", {
-            streamId: currentStreamId
-        });
-
-        socket.emit("join-stream", {
     streamId: String(currentStreamId)
 });
 
-socket.emit("stream-started", {
-    streamId: String(currentStreamId),
-    title: title,
-    category: category
-});
+localStorage.setItem(
+    "canvasStreamId",
+    String(currentStreamId)
+);
 
+localStorage.setItem(
+    "canvasStreamTitle",
+    details.title
+);
+
+localStorage.setItem(
+    "canvasStreamCategory",
+    details.category
+);
         streamHeartbeat = setInterval(function () {
             if (isStreaming &&
                 currentStreamId &&
@@ -1671,10 +1675,10 @@ function cleanupLocalStream(stopMedia) {
     }
 
     if (socket && socket.connected && oldStreamId) {
-        socket.emit("stream-ended", {
-            streamId: oldStreamId
-        });
-    }
+    socket.emit("leave-stream", {
+        streamId: String(oldStreamId)
+    });
+   }
 
     closePeerConnections();
 
@@ -1702,14 +1706,15 @@ async function endCanvasStream() {
         setStatus("Ending your stream...", false);
 
         const response = await fetch(
-            API_BASE + "/api/streams/" +
-            encodeURIComponent(endedStreamId),
-            {
-                method: "DELETE",
-                headers: authHeaders()
-            }
-        );
-
+    API_BASE + "/api/streams/" +
+    encodeURIComponent(endedStreamId) +
+    "/end",
+    {
+        method: "POST",
+        headers: authHeaders(),
+        body: JSON.stringify({})
+    }
+);
         const result = await response.json().catch(function () {
             return {};
         });
