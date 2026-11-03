@@ -1471,11 +1471,10 @@ app.post(
     }
 );
 
-
-/* =========================================
-   CURRENT USER
-   GET /api/me
-========================================= */
+/* =====================================================
+   GET CURRENT USER
+   Includes profile picture and account information
+===================================================== */
 
 app.get(
     "/api/me",
@@ -1484,53 +1483,60 @@ app.get(
 
         try {
 
+            const result = await pool.query(
+                `
+                SELECT
+                    u.id,
+                    u.name,
+                    u.username,
+                    u.email,
+                    u.created_at,
+                    p.bio,
+                    p.profile_picture
+
+                FROM users u
+
+                LEFT JOIN profiles p
+                    ON p.user_id = u.id
+
+                WHERE u.id = $1
+
+                LIMIT 1
+                `,
+                [req.user.id]
+            );
+
+            if (!result.rows.length) {
+
+                return res.status(404).json({
+                    success: false,
+                    message: "User not found"
+                });
+
+            }
+
             return res.json({
-
                 success: true,
-
-                user: {
-
-                    id:
-                        req.user.id,
-
-                    name:
-                        req.user.name,
-
-                    username:
-                        req.user.username,
-
-                    email:
-                        req.user.email,
-
-                    created_at:
-                        req.user.created_at
-
-                }
-
+                user: result.rows[0]
             });
-
 
         } catch (error) {
 
             console.error(
-                "Get current user failed:",
-                error.message
+                "GET /api/me error:",
+                error
             );
 
-
             return res.status(500).json({
-
                 success: false,
-
-                message:
-                    "Unable to get current user."
-
+                message: "Unable to load user profile"
             });
 
         }
 
     }
 );
+
 
 
 /* =========================================
