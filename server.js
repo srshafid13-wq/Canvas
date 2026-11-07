@@ -4572,7 +4572,7 @@ app.get(
 
 
 /* =========================================================
-   CREATE STREAM
+   CREATE STREAM — CORRECTED
 ========================================================= */
 
 app.post(
@@ -5517,80 +5517,152 @@ app.get(
                             creator: {
 
                                 id:
-                                    stream.user_id,
+/* =========================================================
+   SEARCH USERS + STREAMS — CORRECTED
+========================================================= */
 
-                                name:
-                                    stream.creator_name ||
-                                    "Creator",
+app.get(
+    "/api/search",
+    async (req, res) => {
 
-                                username:
-                                    stream.creator_username ||
-                                    "",
+        try {
 
-                                profile_picture:
-                                    stream.creator_photo ||
-                                    ""
+            if (!pool) {
+                return res.status(503).json({
+                    success: false,
+                    message: "Database is not configured"
+                });
+            }
 
-                            },
+            const query = String(
+                req.query.q ||
+                req.query.query ||
+                req.query.search ||
+                ""
+            )
+                .trim()
+                .slice(0, 100);
 
-                            creatorName:
-                                stream.creator_name ||
-                                "Creator",
+            if (!query) {
+                return res.json({
+                    success: true,
+                    users: [],
+                    streams: []
+                });
+            }
 
-                            creatorUsername:
-                                stream.creator_username ||
-                                "",
+            const pattern = "%" + query + "%";
 
-                            creatorPhoto:
-                                stream.creator_photo ||
-                                "",
+            const usersResult = await pool.query(
+                `
+                SELECT
+                    u.id,
+                    u.name,
+                    u.username,
+                    p.profile_picture
 
-                            viewerCount:
-                                count,
+                FROM users u
 
-                            viewers:
-                                count,
+                LEFT JOIN profiles p
+                    ON p.user_id = u.id
 
-                            watching:
-                                count,
+                WHERE
+                    LOWER(u.username) LIKE LOWER($1)
+                    OR LOWER(u.name) LIKE LOWER($1)
 
-                            watchingCount:
-                                count
+                ORDER BY
+                    CASE
+                        WHEN LOWER(u.username) = LOWER($2)
+                        THEN 0
+                        ELSE 1
+                    END,
+                    u.username ASC
 
-                        };
+                LIMIT 30
+                `,
+                [pattern, query]
+            );
 
-                    }
+            const streamsResult = await pool.query(
+                `
+                SELECT
+                    s.id,
+                    s.title,
+                    s.status,
+                    s.created_at,
+                    s.user_id,
+
+                    u.name AS creator_name,
+                    u.username AS creator_username,
+
+                    p.profile_picture AS creator_photo
+
+                FROM streams s
+
+                LEFT JOIN users u
+                    ON u.id = s.user_id
+
+                LEFT JOIN profiles p
+                    ON p.user_id = s.user_id
+
+                WHERE
+                    LOWER(COALESCE(s.status, 'live'))
+                    IN ('live', 'active', 'streaming')
+
+                    AND LOWER(COALESCE(s.title, ''))
+                    LIKE LOWER($1)
+
+                ORDER BY s.created_at DESC
+
+                LIMIT 30
+                `,
+                [pattern]
+            );
+
+            const users = usersResult.rows.map(user => ({
+                id: user.id,
+                name: user.name || "User",
+                username: user.username,
+                profile_picture: user.profile_picture || ""
+            }));
+
+            const streams = streamsResult.rows.map(stream => {
+
+                const count = getViewerCount(
+                    String(stream.id)
                 );
 
+                return {
+                    id: stream.id,
+                    title: stream.title || "Live Stream",
+                    status: stream.status || "live",
+                    created_at: stream.created_at,
+                    user_id: stream.user_id,
 
-            res.json({
+                    creator: {
+                        id: stream.user_id,
+                        name: stream.creator_name || "Creator",
+                        username: stream.creator_username || "",
+                        profile_picture: stream.creator_photo || ""
+                    },
 
-                success: true,
+                    creatorName: stream.creator_name || "Creator",
+                    creatorUsername: stream.creator_username || "",
+                    creatorPhoto: stream.creator_photo || "",
 
-                users,
-
-                streams,
-
-                results: [
-
-                    ...users.map(
-                        user => ({
-                            type: "user",
-                            ...user
-                        })
-                    ),
-
-                    ...streams.map(
-                        stream => ({
-                            type: "stream",
-                            ...stream
-                        })
-                    )
-
-                ]
+                    viewerCount: count,
+                    viewers: count,
+                    watching: count,
+                    watchingCount: count
+                };
 
             });
 
+            return res.json({
+                success: true,
+                users,
+                streams
+            });
 
         } catch (error) {
 
@@ -5599,14 +5671,9 @@ app.get(
                 error
             );
 
-
-            res.status(500).json({
-
+            return res.status(500).json({
                 success: false,
-
-                message:
-                    "Search failed"
-
+                message: "Search failed"
             });
 
         }
