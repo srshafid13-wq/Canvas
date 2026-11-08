@@ -1053,99 +1053,67 @@ function getCreatorObjects(
     return objects;
 
 }
-
-
 /* =========================================
    CREATOR ID
 ========================================= */
 
-function getCreatorId(
-    stream
-){
+function getCreatorId(stream){
 
-    const creators =
-        getCreatorObjects(
-            stream
+    if(!stream || typeof stream !== "object"){
+        return "";
+    }
+
+    const nestedCreators = [
+        stream.creator,
+        stream.user,
+        stream.profile,
+        stream.owner,
+        stream.streamer,
+        stream.broadcaster
+    ];
+
+    // First: look for the actual creator object.
+    for(const creator of nestedCreators){
+
+        if(!creator || typeof creator !== "object"){
+            continue;
+        }
+
+        const id = getValue(
+            creator,
+            [
+                "userId",
+                "user_id",
+                "creatorId",
+                "creator_id",
+                "id"
+            ],
+            ""
         );
-
-
-    for(
-        const creator of creators
-    ){
-
-        const id =
-            getValue(
-                creator,
-                [
-                    "id",
-                    "userId",
-                    "user_id",
-                    "creatorId",
-                    "creator_id",
-                    "profileId",
-                    "profile_id"
-                ],
-                ""
-            );
-
 
         if(id){
-
             return String(id);
-
         }
 
     }
 
+    // Second: check flat creator ID fields.
+    const flatCreatorId = getValue(
+        stream,
+        [
+            "user_id",
+            "userId",
+            "creator_id",
+            "creatorId",
+            "owner_id",
+            "broadcaster_id"
+        ],
+        ""
+    );
 
-    return "";
-
-}
-
-
-/* =========================================
-   CREATOR NAME
-========================================= */
-
-function getCreatorNameValue(
-    stream
-){
-
-    const creators =
-        getCreatorObjects(
-            stream
-        );
-
-
-    for(
-        const creator of creators
-    ){
-
-        const name =
-            getValue(
-                creator,
-                [
-                    "name",
-                    "displayName",
-                    "display_name",
-                    "fullName",
-                    "full_name",
-                    "username"
-                ],
-                ""
-            );
-
-
-        if(name){
-
-            return String(name);
-
-        }
-
-    }
-
-
-    return "Creator";
+    return flatCreatorId
+        ? String(flatCreatorId)
+        : "";
 
 }
 
