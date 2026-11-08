@@ -4572,16 +4572,14 @@ app.get(
 
 
 /* =========================================================
-   CREATE STREAM — CORRECTED
+   CREATE STREAM
 ========================================================= */
 
 app.post(
     "/api/streams",
     authenticateUser,
     async (req, res) => {
-
         try {
-
             if (!pool) {
                 return res.status(503).json({
                     success: false,
@@ -4593,9 +4591,7 @@ app.post(
                 req.body?.title ||
                 req.body?.streamTitle ||
                 "Live Stream"
-            )
-                .trim()
-                .slice(0, 200) || "Live Stream";
+            ).trim().slice(0, 200) || "Live Stream";
 
             const thumbnail = String(
                 req.body?.thumbnail || ""
@@ -4647,7 +4643,6 @@ app.post(
             });
 
         } catch (error) {
-
             console.error(
                 "POST /api/streams error:",
                 error
@@ -4657,9 +4652,7 @@ app.post(
                 success: false,
                 message: "Failed to create stream"
             });
-
         }
-
     }
 );
 
