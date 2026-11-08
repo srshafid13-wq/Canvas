@@ -3087,86 +3087,77 @@ async function loadExistingChat(){
 
 }
                             
+/* =========================================
+   SEND CHAT MESSAGE
+========================================= */
 
-  /* =========================================
-    SEND CHAT MESSAGE
- ========================================= */
+async function sendChatMessage(messageText){
 
- async function sendChatMessage(
-     messageText
- ){
+    const text = String(messageText || "").trim();
 
-     const text =
-         String(
-             messageText || ""
-         ).trim();
+    if(!text || !currentStreamId){
+        return;
+    }
 
+    const username = await getCurrentUserName();
 
-     if(
-         !text ||
-         !currentStreamId
-     ){
+    const messageObject = {
+        streamId: currentStreamId,
+        stream_id: currentStreamId,
+        username: username,
+        message: text
+    };
 
-         return;
+    // Use Socket.IO as the primary delivery method.
+    if(socket && socketConnected){
 
-     }
+        socket.emit(
+            "chat-message",
+            messageObject
+        );
 
+    }else{
 
-     const username =
-         await getCurrentUserName();
+        // Use ONE HTTP request only when Socket.IO is unavailable.
+        try{
 
+            const response = await fetch(
+                API_BASE +
+                "/api/streams/" +
+                encodeURIComponent(currentStreamId) +
+                "/chat",
+                {
+                    method: "POST",
+                    headers: authHeaders(),
+                    body: JSON.stringify(messageObject),
+                    cache: "no-store"
+                }
+            );
 
-     const messageObject = {
+            if(!response.ok){
+                throw new Error("Chat request failed");
+            }
 
-         streamId:
-             currentStreamId,
+        }catch(error){
 
-         stream_id:
-             currentStreamId,
+            console.warn(
+                "Chat send failed:",
+                error
+            );
 
-         username:
-             username,
+            return;
 
-         message:
-             text
+        }
 
-     };
+    }
 
+    // Show the message immediately.
+    addChatMessage(
+        messageObject,
+        username + "|" + text
+    );
 
-     /*
-        Socket.IO remains the primary real-time
-        delivery method.
-     */
-
-     if(
-         socket &&
-         socketConnected
-     ){
-
-         try{
-
-             socket.emit(
-                 "chat-message",
-                 messageObject
-             );
-
-         }catch(error){
-
-             console.warn(
-                 "Socket chat send failed:",
-                 error
-             );
-
-         }
-
-     }
-
-
-     /*
-        Keep the API request as a background
-        fallback for servers that persist chat
-        through HTTP.
-     */
+}
 
      /* =====================================================
    CHAT HISTORY ENDPOINTS
