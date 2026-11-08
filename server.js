@@ -5547,6 +5547,40 @@ app.get(
             const pattern = "%" + query + "%";
 
             const usersResult = await pool.query(
+/* =========================================================
+   SEARCH USERS + STREAMS
+========================================================= */
+
+app.get(
+    "/api/search",
+    async (req, res) => {
+        try {
+            if (!pool) {
+                return res.status(503).json({
+                    success: false,
+                    message: "Database is not configured"
+                });
+            }
+
+            const query = String(
+                req.query.q ||
+                req.query.query ||
+                req.query.search ||
+                ""
+            ).trim().slice(0, 100);
+
+            if (!query) {
+                return res.json({
+                    success: true,
+                    users: [],
+                    streams: []
+                });
+            }
+
+            const pattern = "%" + query + "%";
+
+            // SEARCH USERS
+            const usersResult = await pool.query(
                 `
                 SELECT
                     u.id,
@@ -5576,6 +5610,7 @@ app.get(
                 [pattern, query]
             );
 
+            // SEARCH LIVE STREAMS
             const streamsResult = await pool.query(
                 `
                 SELECT
@@ -5620,7 +5655,6 @@ app.get(
             }));
 
             const streams = streamsResult.rows.map(stream => {
-
                 const count = getViewerCount(
                     String(stream.id)
                 );
@@ -5648,7 +5682,6 @@ app.get(
                     watching: count,
                     watchingCount: count
                 };
-
             });
 
             return res.json({
@@ -5658,7 +5691,6 @@ app.get(
             });
 
         } catch (error) {
-
             console.error(
                 "GET /api/search error:",
                 error
@@ -5668,11 +5700,10 @@ app.get(
                 success: false,
                 message: "Search failed"
             });
-
         }
-
     }
 );
+               
 /* =========================================================
    SEARCH USERS COMPATIBILITY ROUTE
 ========================================================= */
