@@ -2975,16 +2975,16 @@ async function loadExistingChat(){
 
     const endpoints = [
 
-        API_BASE +
-        "/api/streams/" +
-        encodeURIComponent(currentStreamId) +
-        "/chat",
+             ",
 
-        API_BASE +
-        "/api/chat/" +
-        encodeURIComponent(currentStreamId)
+         API_BASE +
+         "/api/stream/" +
+         encodeURIComponent(
+             currentStreamId
+         ) +
+         "/chat"
 
-    ];
+];
 
     for(const endpoint of endpoints){
 
