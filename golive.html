@@ -1303,62 +1303,44 @@ updatePreview();
 
 <script>
 /* =========================================
-   CANVAS GO LIVE — PART 5
-   SOCKET CONNECTION AND STREAM START
+   WEBRTC BROADCASTER
+   MISSING PUBLISHING FUNCTIONALITY
 ========================================= */
 
-/* CONNECT SOCKET.IO */
+async function createBroadcasterConnection(viewerId) {
 
-function connectCanvasSocket() {
-    if (socket) return socket;
-
-    if (typeof window.io !== "function") {
-        throw new Error(
-            "Canvas's live connection could not load. Refresh and try again."
-        );
+    if (!canvasStream || !currentStreamId) {
+        throw new Error("Camera stream is not available.");
     }
 
-    socket = window.io(SOCKET_URL, {
-        transports: ["websocket", "polling"],
-        reconnection: true,
-        reconnectionAttempts: 8,
-        reconnectionDelay: 1000,
-        timeout: 20000,
-        auth: {
-            token: getAuthToken()
-        }
+    const connection = new RTCPeerConnection({
+        iceServers: [
+            { urls: "stun:stun.l.google.com:19302" }
+        ]
     });
 
-    socket.on("connect", function () {
-        console.log("Canvas socket connected:", socket.id);
+    peerConnections[viewerId] = connection;
 
-        if (isStreaming && currentStreamId) {
-            socket.emit("join-stream", {
-                streamId: currentStreamId
-            });
-        }
+    canvasStream.getTracks().forEach(track => {
+        connection.addTrack(track, canvasStream);
     });
 
-    socket.on("connect_error", function (error) {
-        console.warn("Canvas socket error:", error.message);
-
-        if (isStreaming) {
-            webrtcStatus.textContent =
-                "Live connection is reconnecting.";
+    connection.onicecandidate = event => {
+        if (event.candidate && socket && socket.connected) {
+            // Send ICE candidate using the server's
+            // exact WebRTC signaling event and payload.
         }
-    });
+    };
 
-    socket.on("disconnect", function (reason) {
-        console.warn("Canvas socket disconnected:", reason);
+    const offer = await connection.createOffer();
 
-        if (isStreaming) {
-            webrtcStatus.textContent =
-                "Connection interrupted. Reconnecting...";
-        }
-    });
+    await connection.setLocalDescription(offer);
 
-    return socket;
-}
+    // Send offer using the server's exact signaling
+    // event and payload.
+
+    return connection;
+   }
 
 /* CHECK LOGIN */
 
